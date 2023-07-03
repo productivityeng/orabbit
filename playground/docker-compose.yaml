@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+  keykloack:
+    image: "quay.io/keycloak/keycloak:21.1.2"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=mysql
+      - KC_DB_USERNAME=keycloak
+      - KC_DB_PASSWORD=keycloak
+      - KC_DB_URL_HOST=database
+      - KC_DB_URL_PORT=3306
+      - KC_DB_SCHEMA=keycloak
+    ports:
+      - '8081:8080'
+    command: start-dev
+    depends_on:
+      - database
+  database:
+    image: mysql:8.0
+    container_name: db_mysql
+    ports:
+      - '3306:3306'
+    environment:
+      - MYSQL_DATABASE=orabbit_app
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - db:/var/lib/mysql
+      - ./initialize_database.sql:/docker-entrypoint-initdb.d/init.sql
+  rabbitmq-blue:
+    image: rabbitmq:management
+    container_name: rabbitmq-blue
+    environment:
+      - RABBITMQ_DEFAULT_USER=radmin
+      - RABBITMQ_DEFAULT_PASS=radmin
+    ports:
+      - "5671:5672"
+      - "15671:15672"
+  rabbitmq-green:
+    image: rabbitmq:management
+    container_name: rabbitmq-green
+    environment:
+      - RABBITMQ_DEFAULT_USER=radmin
+      - RABBITMQ_DEFAULT_PASS=radmin
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  rabbitmq-red:
+    image: rabbitmq:management
+    container_name: rabbitmq-red
+    environment:
+      - RABBITMQ_DEFAULT_USER=radmin
+      - RABBITMQ_DEFAULT_PASS=radmin
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+volumes:
+  db:
+    driver: local
