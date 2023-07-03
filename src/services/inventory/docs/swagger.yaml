@@ -1,0 +1,71 @@
+definitions:
+  contracts.CreateBrokerRequest:
+    properties:
+      description:
+        type: string
+      host:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      port:
+        type: integer
+      user:
+        type: string
+    required:
+    - description
+    - host
+    - name
+    - password
+    - port
+    - user
+    type: object
+info:
+  contact: {}
+paths:
+  /broker:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a paginated list of cluster that the user has access
+      parameters:
+      - description: Number of items in one page
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: Page number starting from 1
+        in: query
+        name: pageNumber
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Retrieve a list of rabbitmq clusters registered
+      tags:
+      - Broker
+    post:
+      consumes:
+      - application/json
+      description: Create a new <b>RabbitMQ</b> broker. The credential provider must
+        be valid and the cluster operational
+      parameters:
+      - description: Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/contracts.CreateBrokerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+      summary: Register a new RabbitMQ Broker
+      tags:
+      - Broker
+swagger: "2.0"

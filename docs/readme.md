@@ -1,0 +1,2 @@
+# We encorage, strongly, overdocumentation
+Our objectve is that all code could be understand by the majority of software engineers. Excessive documentation, is this repository, will never be considered a waste of time.
