@@ -30,11 +30,3 @@ jobs:
         uses: codecov/codecov-action@v2
         with:
           file: ./src/services/inventory/coverage.txt
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
-          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
-          SONAR_GO_COVERAGE_REPORT_PATH: src/services/inventory/coverage.txt
