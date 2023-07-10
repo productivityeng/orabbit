@@ -55,7 +55,7 @@ func TestValidateShouldReturnBadRequestWhenContractValidationFail(t *testing.T) 
 
 }
 
-func TestBrokerControllerDefaultImp_CreateBroker_ErrorWithMissingRequiredParameter(t *testing.T) {
+func TestBrokerControllerDefaultImpCreateBrokerErrorWithMissingRequiredParameter(t *testing.T) {
 	//Dependencies
 	brokerValidatorObj := new(validators.BrokerValidatorMockedObject)
 	brokerRepositoryObject := new(repository.BrokerRepositoryMockedObject)
@@ -76,7 +76,7 @@ func TestBrokerControllerDefaultImp_CreateBroker_ErrorWithMissingRequiredParamet
 	assert.Equal(t, http.StatusBadRequest, res.Code)
 }
 
-func TestBrokerControllerDefaultImp_CreateBroker_InternalServerError_When_FailToSave(t *testing.T) {
+func TestBrokerControllerDefaultImpCreateBrokerInternalServerErrorWhenFailToSave(t *testing.T) {
 
 	brokerRequest := contracts.CreateBrokerRequest{
 		Name:        "test",

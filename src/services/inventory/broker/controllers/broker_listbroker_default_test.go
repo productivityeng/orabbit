@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestBrokerControllerDefaultImp_ListBrokers_ShouldReturn_BadRequest_WhenAtLeastOneQueryParameterIsMissing(t *testing.T) {
+func TestBrokerControllerDefaultImpListBrokersShouldReturnBadRequestWhenAtLeastOneQueryParameterIsMissing(t *testing.T) {
 	brokerValidatorObj := new(validators.BrokerValidatorMockedObject)
 	brokerRepositoryObject := new(repository.BrokerRepositoryMockedObject)
 
