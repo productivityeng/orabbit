@@ -7,5 +7,5 @@ import (
 
 type BrokerRepositoryInterface interface {
 	CreateBroker(request contracts.CreateBrokerRequest) (*entities.BrokerEntity, error)
-	ListBroker(pageSize int, pageNumber int) ([]*entities.BrokerEntity, error)
+	ListBroker(pageSize int, pageNumber int) ([]entities.BrokerEntity, error)
 }

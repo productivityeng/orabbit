@@ -29,6 +29,17 @@ func (repo *BrokerRepositoryMysqlImpl) CreateBroker(request contracts.CreateBrok
 	return entityToCreate, nil
 }
 
-func (repo *BrokerRepositoryMysqlImpl) ListBroker(pageSize int, pageNumber int) ([]*entities.BrokerEntity, error) {
-	return nil, nil
+func (repo *BrokerRepositoryMysqlImpl) ListBroker(pageSize int, pageNumber int) ([]entities.BrokerEntity, error) {
+	var brokers []entities.BrokerEntity
+	offset := (pageNumber - 1) * pageSize
+
+	err := repo.Db.Offset(offset).Limit(pageSize).Find(&brokers).Error
+
+	if err != nil {
+		log.WithError(err).WithFields(log.Fields{"pageSize": pageSize, "pageNumber": pageNumber})
+		return nil, err
+	}
+
+	repo.Db.Scan(&brokers)
+	return brokers, nil
 }

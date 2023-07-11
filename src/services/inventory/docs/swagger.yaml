@@ -30,14 +30,12 @@ paths:
       - application/json
       description: Retrieve a paginated list of cluster that the user has access
       parameters:
-      - description: Number of items in one page
-        in: query
-        name: pageSize
+      - in: query
+        name: PageNumber
         required: true
         type: integer
-      - description: Page number starting from 1
-        in: query
-        name: pageNumber
+      - in: query
+        name: PageSize
         required: true
         type: integer
       produces:
