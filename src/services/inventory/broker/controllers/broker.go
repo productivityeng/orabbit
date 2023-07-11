@@ -2,6 +2,7 @@ package broker
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/productivityeng/orabbit/broker/entities"
 	"github.com/productivityeng/orabbit/broker/repository"
 	"github.com/productivityeng/orabbit/contracts"
 	"github.com/productivityeng/orabbit/core/validators"
@@ -55,7 +56,10 @@ func (ctrl *brokerControllerDefaultImp) CreateBroker(c *gin.Context) {
 		return
 	}
 
-	resp, err := ctrl.BrokerRepository.CreateBroker(request)
+	entityToCreate := &entities.BrokerEntity{Name: request.Name, Host: request.Host, User: request.User, Password: request.Password, Port: request.Port,
+		Description: request.Description}
+
+	resp, err := ctrl.BrokerRepository.CreateBroker(entityToCreate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
