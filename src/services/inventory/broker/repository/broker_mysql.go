@@ -20,7 +20,7 @@ func NewBrokerMysqlImpl(Db *gorm.DB) *BrokerRepositoryMysqlImpl {
 func (repo *BrokerRepositoryMysqlImpl) CreateBroker(entityToCreate *entities.BrokerEntity) (*entities.BrokerEntity, error) {
 	tx := repo.Db.Save(entityToCreate)
 	if tx.Error != nil {
-		log.WithError(tx.Error).WithField("request", entityToCreate).Error("Erro when trying save")
+		//log.WithError(tx.Error).WithField("request", entityToCreate).Error("Erro when trying save")
 		return nil, tx.Error
 	}
 	return entityToCreate, nil

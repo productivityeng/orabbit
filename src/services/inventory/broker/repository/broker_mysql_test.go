@@ -53,12 +53,12 @@ func (brs *BrokerRepositorySuite) SetupSuite() {
 	}
 }
 
-/*
 func (brs *BrokerRepositorySuite) TestCreateBroker() {
+
 	brs.mock.ExpectBegin()
-	brs.mock.ExpectQuery(`(.+) VALUES (.+)`).WithArgs(sqlmock.AnyArg()).WillReturnRows(sqlmock.NewRows([]string{"id", "created_at", "updated_at", "deleted_at",
-		"name", "description", "host", "port", "user", "password"}).AddRow(1, time.Now(), time.Now(), nil,
-		brs.broker.Name, brs.broker.Description, brs.broker.Host, brs.broker.Port, brs.broker.User, brs.broker.Password))
+	brs.mock.ExpectExec("INSERT INTO `broker` (.+) VALUES (.+)").
+		WillReturnResult(sqlmock.NewResult(1, 1))
+
 	brs.mock.ExpectCommit()
 
 	broker, err := brs.repo.CreateBroker(brs.broker)
@@ -66,7 +66,7 @@ func (brs *BrokerRepositorySuite) TestCreateBroker() {
 	assert.NoError(brs.T(), err)
 	brokerGTZero := broker.Id >= 1
 	assert.True(brs.T(), brokerGTZero)
-}*/
+}
 
 func TestBrokerRepositorySuit(t *testing.T) {
 	suite.Run(t, new(BrokerRepositorySuite))
