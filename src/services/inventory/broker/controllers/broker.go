@@ -2,6 +2,7 @@ package broker
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/productivityeng/orabbit/broker/entities"
 	"github.com/productivityeng/orabbit/broker/repository"
 	"github.com/productivityeng/orabbit/contracts"
 	"github.com/productivityeng/orabbit/core/validators"
@@ -9,6 +10,10 @@ import (
 	"net/http"
 )
 
+type PageParam struct {
+	PageSize   int `json:"PageSize" binding:"required,gt=0"`
+	PageNumber int `json:"PageNumber" binding:"required,gt=0"`
+}
 type BrokerController interface {
 	ListBrokers(c *gin.Context)
 	CreateBroker(c *gin.Context)
@@ -51,7 +56,10 @@ func (ctrl *brokerControllerDefaultImp) CreateBroker(c *gin.Context) {
 		return
 	}
 
-	resp, err := ctrl.BrokerRepository.CreateBroker(request)
+	entityToCreate := &entities.BrokerEntity{Name: request.Name, Host: request.Host, User: request.User, Password: request.Password, Port: request.Port,
+		Description: request.Description}
+
+	resp, err := ctrl.BrokerRepository.CreateBroker(entityToCreate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -64,22 +72,6 @@ func (ctrl *brokerControllerDefaultImp) DeleteBroker(c *gin.Context) {
 
 }
 
-func (ctrl *brokerControllerDefaultImp) ListBrokers(c *gin.Context) {
-	type PageParam struct {
-		PageSize   int `json:"pageSize" binding:"required,gt=0"`
-		PageNumber int `json:"pageNumber" binding:"required,gt=0"`
-	}
-	var param PageParam
-	err := c.BindQuery(&param)
-	if err != nil {
-		log.WithError(err).Error("Error trying to parse query params")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
-	}
-
-	c.JSON(http.StatusOK, nil)
-
-}
-
 // PingExample godoc
 // @Summary Retrieve a list of rabbitmq clusters registered
 // @Schemes
@@ -87,9 +79,28 @@ func (ctrl *brokerControllerDefaultImp) ListBrokers(c *gin.Context) {
 // @Tags Broker
 // @Accept json
 // @Produce json
-// @Param pageSize query int true "Number of items in one page"
-// @Param pageNumber query int true "Page number starting from 1"
+// @Param params query PageParam true "Number of items in one page"
 // @Router /broker [get]
+func (ctrl *brokerControllerDefaultImp) ListBrokers(c *gin.Context) {
+
+	var param PageParam
+	err := c.BindQuery(&param)
+	if err != nil {
+		log.WithError(err).Error("Error trying to parse query params")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	brokers, err := ctrl.BrokerRepository.ListBroker(param.PageSize, param.PageNumber)
+	if err != nil {
+		log.WithError(err).Error("Error retrieving brokers from repository")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+	c.JSON(http.StatusOK, brokers)
+
+}
+
 func (ctrl *brokerControllerDefaultImp) UpdateBroker(c *gin.Context) {
 
 }

@@ -32,15 +32,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Number of items in one page",
-                        "name": "pageSize",
+                        "name": "PageNumber",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Page number starting from 1",
-                        "name": "pageNumber",
+                        "name": "PageSize",
                         "in": "query",
                         "required": true
                     }
