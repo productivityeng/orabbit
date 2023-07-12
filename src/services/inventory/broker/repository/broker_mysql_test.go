@@ -2,9 +2,11 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/productivityeng/orabbit/broker/entities"
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/driver/mysql"
@@ -24,6 +26,7 @@ type BrokerRepositorySuite struct {
 }
 
 func (brs *BrokerRepositorySuite) SetupSuite() {
+	log.SetLevel(log.FatalLevel)
 	var err error
 	brs.conn, brs.mock, err = sqlmock.New()
 	assert.NoError(brs.T(), err)
@@ -66,6 +69,18 @@ func (brs *BrokerRepositorySuite) TestCreateBroker() {
 	assert.NoError(brs.T(), err)
 	brokerGTZero := broker.Id >= 1
 	assert.True(brs.T(), brokerGTZero)
+}
+
+func (brs *BrokerRepositorySuite) TestCreateBrokerError() {
+	brs.mock.ExpectBegin()
+	brs.mock.ExpectExec("INSERT INTO `broker` (.+) VALUES (.+)").
+		WillReturnResult(sqlmock.NewErrorResult(errors.New("error executing query proposital")))
+	brs.mock.ExpectCommit()
+
+	broker, err := brs.repo.CreateBroker(brs.broker)
+	assert.Error(brs.T(), err)
+	assert.Nil(brs.T(), broker)
+
 }
 
 func TestBrokerRepositorySuit(t *testing.T) {
