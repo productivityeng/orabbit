@@ -12,15 +12,20 @@ type BrokerRepositoryMysqlImpl struct {
 
 func NewBrokerMysqlImpl(Db *gorm.DB) *BrokerRepositoryMysqlImpl {
 	Db.AutoMigrate(&entities.BrokerEntity{})
+	/* if err != nil {
+		log.WithError(err).Fatal("erro migrating entity broker")
+	} */
 	return &BrokerRepositoryMysqlImpl{
 		Db: Db,
 	}
 }
 
 func (repo *BrokerRepositoryMysqlImpl) CreateBroker(entityToCreate *entities.BrokerEntity) (*entities.BrokerEntity, error) {
+
 	tx := repo.Db.Save(entityToCreate)
 	if tx.Error != nil {
-		//log.WithError(tx.Error).WithField("request", entityToCreate).Error("Erro when trying save")
+		log.WithError(tx.Error).WithField("request", entityToCreate).Error("Erro when trying save")
+		tx.Rollback()
 		return nil, tx.Error
 	}
 	return entityToCreate, nil
