@@ -21,6 +21,40 @@ definitions:
     - port
     - user
     type: object
+  contracts.PaginatedResult-entities_BrokerEntity:
+    properties:
+      pageNumber:
+        type: integer
+      pageSize:
+        type: integer
+      result:
+        items:
+          $ref: '#/definitions/entities.BrokerEntity'
+        type: array
+      totalItems:
+        type: integer
+    type: object
+  entities.BrokerEntity:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      host:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      port:
+        type: integer
+      updatedAt:
+        type: string
+      user:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -40,7 +74,11 @@ paths:
         type: integer
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/contracts.PaginatedResult-entities_BrokerEntity'
       summary: Retrieve a list of rabbitmq clusters registered
       tags:
       - Broker

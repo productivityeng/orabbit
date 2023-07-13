@@ -31,7 +31,14 @@
                         "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/contracts.PaginatedResult-entities_BrokerEntity"
+                        }
+                    }
+                }
             },
             "post": {
                 "description": "Create a new \u003cb\u003eRabbitMQ\u003c/b\u003e broker. The credential provider must be valid and the cluster operational",
@@ -93,6 +100,58 @@
                 },
                 "port": {
                     "type": "integer"
+                },
+                "user": {
+                    "type": "string"
+                }
+            }
+        },
+        "contracts.PaginatedResult-entities_BrokerEntity": {
+            "type": "object",
+            "properties": {
+                "pageNumber": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.BrokerEntity"
+                    }
+                },
+                "totalItems": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entities.BrokerEntity": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
                 },
                 "user": {
                     "type": "string"

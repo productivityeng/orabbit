@@ -56,6 +56,7 @@ func (brs *BrokerRepositorySuite) SetupSuite() {
 	}
 }
 
+// TestCreateBroker check if can execute query correctly
 func (brs *BrokerRepositorySuite) TestCreateBroker() {
 
 	brs.mock.ExpectBegin()
@@ -71,6 +72,7 @@ func (brs *BrokerRepositorySuite) TestCreateBroker() {
 	assert.True(brs.T(), brokerGTZero)
 }
 
+// TestCreateBrokerError check if can deal with error in create a broker
 func (brs *BrokerRepositorySuite) TestCreateBrokerError() {
 	brs.mock.ExpectBegin()
 	brs.mock.ExpectExec("INSERT INTO `broker` (.+) VALUES (.+)").

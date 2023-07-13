@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/productivityeng/orabbit/broker/entities"
+	"github.com/productivityeng/orabbit/contracts"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -14,7 +15,7 @@ func (brmo *BrokerRepositoryMockedObject) CreateBroker(entityToCreate *entities.
 	return args.Get(0).(*entities.BrokerEntity), args.Error(1)
 }
 
-func (brmo *BrokerRepositoryMockedObject) ListBroker(pageSize int, pageNumber int) ([]entities.BrokerEntity, error) {
+func (brmo *BrokerRepositoryMockedObject) ListBroker(pageSize int, pageNumber int) (*contracts.PaginatedResult[entities.BrokerEntity], error) {
 	args := brmo.Called(pageSize, pageNumber)
-	return args.Get(0).([]entities.BrokerEntity), args.Error(1)
+	return args.Get(0).(*contracts.PaginatedResult[entities.BrokerEntity]), args.Error(1)
 }

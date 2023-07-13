@@ -79,6 +79,7 @@ func (ctrl *brokerControllerDefaultImp) DeleteBroker(c *gin.Context) {
 // @Tags Broker
 // @Accept json
 // @Produce json
+// @Success 200 {object} contracts.PaginatedResult[entities.BrokerEntity]
 // @Param params query PageParam true "Number of items in one page"
 // @Router /broker [get]
 func (ctrl *brokerControllerDefaultImp) ListBrokers(c *gin.Context) {
@@ -91,13 +92,13 @@ func (ctrl *brokerControllerDefaultImp) ListBrokers(c *gin.Context) {
 		return
 	}
 
-	brokers, err := ctrl.BrokerRepository.ListBroker(param.PageSize, param.PageNumber)
+	paginatedBrokers, err := ctrl.BrokerRepository.ListBroker(param.PageSize, param.PageNumber)
 	if err != nil {
 		log.WithError(err).Error("Error retrieving brokers from repository")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
-	c.JSON(http.StatusOK, brokers)
+	c.JSON(http.StatusOK, paginatedBrokers)
 
 }
 
