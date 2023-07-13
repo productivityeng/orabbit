@@ -32,3 +32,4 @@ jobs:
         uses: codecov/codecov-action@v2
         with:
           file: ./src/services/inventory/coverage.txt
+          flags: --ignore '*_mocks.go'
