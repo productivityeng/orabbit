@@ -146,6 +146,17 @@ func (brs *BrokerRepositorySuite) TestListBroker() {
 	assert.Equal(brs.T(), pageNumber, result.PageNumber)
 }
 
+func (brs *BrokerRepositorySuite) TestListBrokerErrorTryingToRetrieveResult() {
+
+	pageSize := 1
+	pageNumber := 2
+
+	brs.mock.ExpectQuery("").WillReturnError(errors.New("genericerro"))
+	result, err := brs.repo.ListBroker(pageSize, pageNumber)
+	assert.NotNil(brs.T(), err)
+	assert.Nil(brs.T(), result)
+}
+
 func TestBrokerRepositorySuit(t *testing.T) {
 	suite.Run(t, new(BrokerRepositorySuite))
 }
