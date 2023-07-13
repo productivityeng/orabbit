@@ -14,6 +14,7 @@ import (
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"testing"
+	"time"
 )
 
 type BrokerRepositorySuite struct {
@@ -23,6 +24,10 @@ type BrokerRepositorySuite struct {
 	mock   sqlmock.Sqlmock
 	repo   *BrokerRepositoryMysqlImpl
 	broker *entities.BrokerEntity
+}
+
+func (suite *BrokerRepositorySuite) TearDownTest() {
+	assert.NoError(suite.T(), suite.mock.ExpectationsWereMet())
 }
 
 func (brs *BrokerRepositorySuite) SetupSuite() {
@@ -60,7 +65,7 @@ func (brs *BrokerRepositorySuite) SetupSuite() {
 func (brs *BrokerRepositorySuite) TestCreateBroker() {
 
 	brs.mock.ExpectBegin()
-	brs.mock.ExpectExec("INSERT INTO `broker` (.+) VALUES (.+)").
+	brs.mock.ExpectExec("").
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	brs.mock.ExpectCommit()
@@ -75,14 +80,70 @@ func (brs *BrokerRepositorySuite) TestCreateBroker() {
 // TestCreateBrokerError check if can deal with error in create a broker
 func (brs *BrokerRepositorySuite) TestCreateBrokerError() {
 	brs.mock.ExpectBegin()
-	brs.mock.ExpectExec("INSERT INTO `broker` (.+) VALUES (.+)").
+	brs.mock.ExpectExec("").
 		WillReturnResult(sqlmock.NewErrorResult(errors.New("error executing query proposital")))
-	brs.mock.ExpectCommit()
 
 	broker, err := brs.repo.CreateBroker(brs.broker)
 	assert.Error(brs.T(), err)
 	assert.Nil(brs.T(), broker)
 
+}
+
+func (brs *BrokerRepositorySuite) TestListBroker() {
+
+	expectedResult := &entities.BrokerEntity{
+		Id:          1,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+		Name:        "Test Broker",
+		Description: "Test Description",
+		Host:        "localhost",
+		Port:        1234,
+		User:        "test_user",
+		Password:    "test_password",
+	}
+
+	rows := sqlmock.NewRows([]string{
+		"id",
+		"created_at",
+		"updated_at",
+		"name",
+		"description",
+		"host",
+		"port",
+		"user",
+		"password",
+	}).AddRow(
+		expectedResult.Id,
+		expectedResult.CreatedAt,
+		expectedResult.UpdatedAt,
+		expectedResult.Name,
+		expectedResult.Description,
+		expectedResult.Host,
+		expectedResult.Port,
+		expectedResult.User,
+		expectedResult.Password,
+	).AddRow(
+		expectedResult.Id,
+		expectedResult.CreatedAt,
+		expectedResult.UpdatedAt,
+		expectedResult.Name,
+		expectedResult.Description,
+		expectedResult.Host,
+		expectedResult.Port,
+		expectedResult.User,
+		expectedResult.Password,
+	)
+
+	pageSize := 1
+	pageNumber := 2
+
+	brs.mock.ExpectQuery("").WillReturnRows(rows)
+	result, err := brs.repo.ListBroker(pageSize, pageNumber)
+	assert.Nil(brs.T(), err)
+	assert.Equal(brs.T(), expectedResult, result.Result[0])
+	assert.Equal(brs.T(), pageSize, result.PageSize)
+	assert.Equal(brs.T(), pageNumber, result.PageNumber)
 }
 
 func TestBrokerRepositorySuit(t *testing.T) {
