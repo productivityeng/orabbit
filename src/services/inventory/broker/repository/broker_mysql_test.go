@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
@@ -13,6 +14,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	"regexp"
 	"testing"
 	"time"
 )
@@ -22,7 +24,7 @@ type BrokerRepositorySuite struct {
 	conn   *sql.DB
 	DB     *gorm.DB
 	mock   sqlmock.Sqlmock
-	repo   *BrokerRepositoryMysqlImpl
+	SUT    *BrokerRepositoryMysqlImpl
 	broker *entities.BrokerEntity
 }
 
@@ -31,7 +33,7 @@ func (suite *BrokerRepositorySuite) TearDownTest() {
 }
 
 func (brs *BrokerRepositorySuite) SetupSuite() {
-	log.SetLevel(log.FatalLevel)
+	log.SetLevel(log.InfoLevel)
 	var err error
 	brs.conn, brs.mock, err = sqlmock.New()
 	assert.NoError(brs.T(), err)
@@ -48,8 +50,8 @@ func (brs *BrokerRepositorySuite) SetupSuite() {
 
 	assert.NoError(brs.T(), err)
 
-	brs.repo = NewBrokerMysqlImpl(brs.DB)
-	assert.IsType(brs.T(), &BrokerRepositoryMysqlImpl{}, brs.repo)
+	brs.SUT = NewBrokerMysqlImpl(brs.DB)
+	assert.IsType(brs.T(), &BrokerRepositoryMysqlImpl{}, brs.SUT)
 
 	brs.broker = &entities.BrokerEntity{
 		Name:        "TestBroker",
@@ -70,7 +72,7 @@ func (brs *BrokerRepositorySuite) TestCreateBroker() {
 
 	brs.mock.ExpectCommit()
 
-	broker, err := brs.repo.CreateBroker(brs.broker)
+	broker, err := brs.SUT.CreateBroker(brs.broker)
 
 	assert.NoError(brs.T(), err)
 	brokerGTZero := broker.Id >= 1
@@ -83,7 +85,7 @@ func (brs *BrokerRepositorySuite) TestCreateBrokerError() {
 	brs.mock.ExpectExec("").
 		WillReturnResult(sqlmock.NewErrorResult(errors.New("error executing query proposital")))
 
-	broker, err := brs.repo.CreateBroker(brs.broker)
+	broker, err := brs.SUT.CreateBroker(brs.broker)
 	assert.Error(brs.T(), err)
 	assert.Nil(brs.T(), broker)
 
@@ -139,7 +141,7 @@ func (brs *BrokerRepositorySuite) TestListBroker() {
 	pageNumber := 2
 
 	brs.mock.ExpectQuery("").WillReturnRows(rows)
-	result, err := brs.repo.ListBroker(pageSize, pageNumber)
+	result, err := brs.SUT.ListBroker(pageSize, pageNumber)
 	assert.Nil(brs.T(), err)
 	assert.Equal(brs.T(), expectedResult, result.Result[0])
 	assert.Equal(brs.T(), pageSize, result.PageSize)
@@ -152,9 +154,111 @@ func (brs *BrokerRepositorySuite) TestListBrokerErrorTryingToRetrieveResult() {
 	pageNumber := 2
 
 	brs.mock.ExpectQuery("").WillReturnError(errors.New("genericerro"))
-	result, err := brs.repo.ListBroker(pageSize, pageNumber)
+	result, err := brs.SUT.ListBroker(pageSize, pageNumber)
 	assert.NotNil(brs.T(), err)
 	assert.Nil(brs.T(), result)
+}
+
+func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenBrokerNotExists() {
+	brokerid := int32(10)
+	brs.mock.ExpectQuery("SELECT").WillReturnError(errors.New("genericerro"))
+
+	err := brs.SUT.DeleteBroker(brokerid, context.TODO())
+	assert.NotNil(brs.T(), err)
+	assert.Equal(brs.T(), err.Error(), "broker id cound't not be found")
+
+}
+
+func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenFailToDeleteBroker() {
+	expectedResult := &entities.BrokerEntity{
+		Id:          1,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+		Name:        "Test Broker",
+		Description: "Test Description",
+		Host:        "localhost",
+		Port:        1234,
+		User:        "test_user",
+		Password:    "test_password",
+	}
+
+	rows := sqlmock.NewRows([]string{
+		"id",
+		"created_at",
+		"updated_at",
+		"name",
+		"description",
+		"host",
+		"port",
+		"user",
+		"password",
+	}).AddRow(
+		expectedResult.Id,
+		expectedResult.CreatedAt,
+		expectedResult.UpdatedAt,
+		expectedResult.Name,
+		expectedResult.Description,
+		expectedResult.Host,
+		expectedResult.Port,
+		expectedResult.User,
+		expectedResult.Password,
+	)
+
+	brokerid := int32(10)
+
+	brs.mock.ExpectQuery("").WillReturnRows(rows)
+
+	brs.mock.ExpectBegin()
+	brs.mock.ExpectRollback()
+	//brs.mock.ExpectQuery("DELETE").WillReturnError(errors.New("generic delete error"))
+	err := brs.SUT.DeleteBroker(brokerid, context.TODO())
+	assert.NotNil(brs.T(), err)
+	assert.Equal(brs.T(), "fail to delete broker", err.Error())
+}
+
+func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldSuccess() {
+	expectedResult := &entities.BrokerEntity{
+		Id:          1,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+		Name:        "Test Broker",
+		Description: "Test Description",
+		Host:        "localhost",
+		Port:        1234,
+		User:        "test_user",
+		Password:    "test_password",
+	}
+
+	rows := sqlmock.NewRows([]string{
+		"id",
+		"created_at",
+		"updated_at",
+		"name",
+		"description",
+		"host",
+		"port",
+		"user",
+		"password",
+	}).AddRow(
+		expectedResult.Id,
+		expectedResult.CreatedAt,
+		expectedResult.UpdatedAt,
+		expectedResult.Name,
+		expectedResult.Description,
+		expectedResult.Host,
+		expectedResult.Port,
+		expectedResult.User,
+		expectedResult.Password,
+	)
+
+	brokerid := int32(10)
+
+	brs.mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `broker` WHERE `broker`.`deleted_at` IS NULL AND `broker`.`id` = ? ORDER BY `broker`.`id` LIMIT 1")).WillReturnRows(rows)
+	brs.mock.ExpectBegin()
+	brs.mock.ExpectExec(regexp.QuoteMeta("UPDATE `broker` SET `deleted_at`=? WHERE `broker`.`id` = ? AND `broker`.`deleted_at` IS NULL")).WillReturnResult(sqlmock.NewResult(1, 1))
+	brs.mock.ExpectCommit()
+	err := brs.SUT.DeleteBroker(brokerid, context.TODO())
+	assert.Nil(brs.T(), err)
 }
 
 func TestBrokerRepositorySuit(t *testing.T) {

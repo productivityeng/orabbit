@@ -104,4 +104,26 @@ paths:
       summary: Register a new RabbitMQ Broker
       tags:
       - Broker
+  /broker/{brokerId}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a broker will not completly erase from database, but
+        will not show up anymore in the
+      parameters:
+      - description: Id of a broker to be soft deleted
+        in: path
+        name: brokerId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: boolean
+      summary: Soft delete a broker
+      tags:
+      - Broker
 swagger: "2.0"

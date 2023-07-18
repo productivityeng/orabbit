@@ -33,9 +33,9 @@ func main() {
 	brokerController = broker_controller.NewBrokerController(brokerRepository, brokerValidator)
 
 	r.GET("/broker", brokerController.ListBrokers)
-	r.PATCH("/broker/:id", brokerController.UpdateBroker)
+	r.PUT("/broker/:brokerId", brokerController.UpdateBroker)
 	r.POST("/broker", brokerController.CreateBroker)
-	r.DELETE("/broker/:id", brokerController.DeleteBroker)
+	r.DELETE("/broker/:brokerId", brokerController.DeleteBroker)
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
