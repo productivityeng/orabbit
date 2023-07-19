@@ -1,6 +1,7 @@
 package broker
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/broker/entities"
 	"github.com/productivityeng/orabbit/broker/repository"
@@ -8,6 +9,7 @@ import (
 	"github.com/productivityeng/orabbit/core/validators"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 )
 
 type PageParam struct {
@@ -68,8 +70,35 @@ func (ctrl *brokerControllerDefaultImp) CreateBroker(c *gin.Context) {
 	c.JSON(http.StatusCreated, resp)
 }
 
+// PingExample godoc
+// @Summary Soft delete a broker
+// @Schemes
+// @Description Soft delete a broker will not completly erase from database, but will not show up anymore in the
+// system. All queues,bindings,shovels and related artifacts will be soft delete to
+// @Tags Broker
+// @Accept json
+// @Produce json
+// @Success 204 {object} bool
+// @Param brokerId path int true "Id of a broker to be soft deleted"
+// @Router /broker/{brokerId} [delete]
 func (ctrl *brokerControllerDefaultImp) DeleteBroker(c *gin.Context) {
+	brokerIdParam := c.Param("brokerId")
+	brokerId, err := strconv.ParseInt(brokerIdParam, 10, 32)
+	if err != nil {
+		log.WithError(err).WithField("brokerId", brokerIdParam).Error("Fail to parse brokerId Param")
+		c.JSON(http.StatusBadRequest, "Error parsing brokerId from url route")
+		return
+	}
 
+	log.WithField("brokerId", brokerId).Info("Broker will be deleted")
+	err = ctrl.BrokerRepository.DeleteBroker(int32(brokerId), c)
+	if err != nil {
+		errorMsg := "Fail to delete brokerId"
+		log.WithError(err).WithField("brokerId", brokerId).Error(errorMsg)
+		c.JSON(http.StatusInternalServerError, errorMsg)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("broker with id %d successufly deleted", brokerId)})
 }
 
 // PingExample godoc

@@ -84,6 +84,38 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/broker/{brokerId}": {
+            "delete": {
+                "description": "Soft delete a broker will not completly erase from database, but will not show up anymore in the",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Broker"
+                ],
+                "summary": "Soft delete a broker",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id of a broker to be soft deleted",
+                        "name": "brokerId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {

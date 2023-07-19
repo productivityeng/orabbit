@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"context"
+	"errors"
 	"github.com/productivityeng/orabbit/broker/entities"
 	"github.com/productivityeng/orabbit/contracts"
 	log "github.com/sirupsen/logrus"
@@ -54,4 +56,25 @@ func (repo *BrokerRepositoryMysqlImpl) ListBroker(pageSize int, pageNumber int) 
 		log.WithError(tx.Error).WithFields(entryFields).Error("error trying to get count items for brokers")
 	}
 	return &result, nil
+}
+
+func (repo *BrokerRepositoryMysqlImpl) DeleteBroker(brokerId int32, ctx context.Context) error {
+	fields := log.Fields{"brokerId": brokerId}
+	var broker = entities.BrokerEntity{Id: brokerId}
+	err := repo.Db.First(&broker)
+	if err.Error != nil {
+		errorMsg := "broker id cound't not be found"
+		log.WithFields(fields).WithError(err.Error).Error(errorMsg)
+		return errors.New(errorMsg)
+	}
+	log.WithFields(fields).Infof("broker founded, trying delete")
+	err = repo.Db.Delete(&broker)
+	if err.Error != nil {
+		errorMsg := "fail to delete broker"
+		log.WithFields(fields).WithError(err.Error).Error(errorMsg)
+
+		return errors.New(errorMsg)
+	}
+	log.WithFields(fields).Info("broker deleted successfully")
+	return nil
 }
