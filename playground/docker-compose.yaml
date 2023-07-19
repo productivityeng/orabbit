@@ -23,6 +23,7 @@ services:
       - '3306:3306'
     environment:
       - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL=1
     volumes:
       - db:/var/lib/mysql
       - ./initialize_database.sql:/docker-entrypoint-initdb.d/init.sql
@@ -53,6 +54,9 @@ services:
     ports:
       - "5673:5672"
       - "15673:15672"
+networks:
+  orabbit:
+    driver: host
 volumes:
   db:
     driver: local
