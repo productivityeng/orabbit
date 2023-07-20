@@ -1,4 +1,4 @@
-name: Jest Unit Tests and Code Coverage
+name: All Unit Testing
 
 on:
   push:
