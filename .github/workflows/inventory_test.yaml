@@ -29,7 +29,7 @@ jobs:
           go test -v -coverprofile=coverage.txt $(go list ./... | grep -v "_mocks") -json > test-report.out
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           file: ./src/services/inventory/coverage.txt
           flags: --ignore '*_mocks.go'
