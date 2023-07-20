@@ -1,0 +1,7 @@
+{
+  "Sidebar": {
+    "ClusterSelect": "Selecione um cluster",
+    "SearchForCluster": "Busque o cluster",
+    "NoClusterFounded": "Nenhum cluster encontrado"
+  }
+}
