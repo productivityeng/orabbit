@@ -3,8 +3,6 @@ import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import { useRouter } from "next/navigation"; // Mock do useRouter
 import { SelectCluster } from ".";
 import { RabbitMqCluster } from "@/types";
-import { NextIntlClientProvider } from "next-intl";
-import { getClientSideLocale, getClientSideTranslation } from "@/i18n";
 import "@testing-library/jest-dom/extend-expect";
 
 jest.mock("next/navigation", () => ({
@@ -28,7 +26,7 @@ let mockClusters: RabbitMqCluster[] = [
     host: "host1.example.com",
     port: 5672,
     user: "user1",
-    password: "password1",
+    password: "valuejustfortest",
   },
   {
     Id: 2,
@@ -40,7 +38,7 @@ let mockClusters: RabbitMqCluster[] = [
     host: "host2.example.com",
     port: 5672,
     user: "user2",
-    password: "password2",
+    password: "valuejustfortest",
   },
   {
     Id: 3,
@@ -52,7 +50,7 @@ let mockClusters: RabbitMqCluster[] = [
     host: "host3.example.com",
     port: 5672,
     user: "user3",
-    password: "password3",
+    password: "valuejustfortest",
   },
 ];
 

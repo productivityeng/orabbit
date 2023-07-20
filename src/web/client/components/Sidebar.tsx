@@ -1,8 +1,6 @@
 import React from "react";
 import { SelectCluster } from "./SelectCluster";
 import { fetchAllClusters } from "@/services/cluster";
-import { RabbitMqCluster } from "@/types";
-import { Cog8ToothIcon } from "@heroicons/react/24/outline";
 import SidebarMenu from "./SidebarMenu";
 
 async function Sidebar() {
