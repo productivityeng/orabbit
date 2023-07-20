@@ -1,0 +1,56 @@
+name: All Unit Testing
+
+on:
+  push:
+
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  service-inventory-testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.19
+
+      - name: Build and test
+        run: |
+          cd src/services/inventory
+          go build
+          go test -v -coverprofile=coverage.txt $(go list ./... | grep -v "_mocks") -json > test-report.out
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./src/services/inventory/coverage.txt
+          flags: --ignore '*_mocks.go'
+  web-client-testing:
+    name: Test and Code Coverage For Client Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'latest' # Escolha a versão do Node.js adequada para o seu projeto
+
+      - name: Install dependencies
+        run: |
+          cd src/web/client
+          npm install
+
+      - name: Run Jest tests and generate coverage
+        run: |
+          cd src/web/client
+          npm run test -- --coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
