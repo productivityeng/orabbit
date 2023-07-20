@@ -19,9 +19,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '14' # Escolha a versão do Node.js adequada para o seu projeto
+          node-version: 'latest' # Escolha a versão do Node.js adequada para o seu projeto
 
       - name: Install dependencies
         run: |
