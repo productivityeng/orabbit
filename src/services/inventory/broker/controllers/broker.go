@@ -3,6 +3,7 @@ package broker
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-sql-driver/mysql"
 	"github.com/productivityeng/orabbit/broker/entities"
 	"github.com/productivityeng/orabbit/broker/repository"
 	"github.com/productivityeng/orabbit/contracts"
@@ -13,14 +14,21 @@ import (
 )
 
 type PageParam struct {
-	PageSize   int `json:"PageSize" binding:"required,gt=0"`
-	PageNumber int `json:"PageNumber" binding:"required,gt=0"`
+	PageSize   int `json:"PageSize" binding:"required,gt=0" default:"10"`
+	PageNumber int `json:"PageNumber" binding:"required,gt=0" default:"1"`
+}
+
+type FindBrokerByHost struct {
+	Host string `json:"Host" binding:"required"`
+	Port int32  `json:"Port" binding:"required"`
 }
 type BrokerController interface {
+	GetBroker(c *gin.Context)
 	ListBrokers(c *gin.Context)
 	CreateBroker(c *gin.Context)
 	UpdateBroker(c *gin.Context)
 	DeleteBroker(c *gin.Context)
+	FindBroker(c *gin.Context)
 }
 
 type brokerControllerDefaultImp struct {
@@ -45,14 +53,15 @@ func NewBrokerController(BrokerRepository repository.BrokerRepositoryInterface, 
 // @Success 201 {string} Helloworld
 // @Router /broker [post]
 func (ctrl *brokerControllerDefaultImp) CreateBroker(c *gin.Context) {
+
 	var request contracts.CreateBrokerRequest
 	if err := c.BindJSON(&request); err != nil {
 		log.WithError(err).Error("Error parsing request")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := ctrl.BrokerValidator.ValidateCreateRequest(request); err != nil {
+	if err := ctrl.BrokerValidator.ValidateCreateRequest(request, c); err != nil {
 		log.WithError(err).Error("Error validating request")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -62,7 +71,12 @@ func (ctrl *brokerControllerDefaultImp) CreateBroker(c *gin.Context) {
 		Description: request.Description}
 
 	resp, err := ctrl.BrokerRepository.CreateBroker(entityToCreate)
+
 	if err != nil {
+		if _, ok := err.(*mysql.MySQLError); ok {
+			c.JSON(http.StatusNotAcceptable, gin.H{"error": "Host already registred", "field": "host"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -131,6 +145,64 @@ func (ctrl *brokerControllerDefaultImp) ListBrokers(c *gin.Context) {
 
 }
 
+// PingExample godoc
+// @Summary Verify if exists a rabbitmqcluster
+// @Schemes
+// @Description Check if exists an rabbitmq cluster with host es
+// @Tags Broker
+// @Accept json
+// @Produce json
+// @Success 200
+// @Param params query FindBrokerByHost true "Number of items in one page"
+// @Router /broker/exists [get]
+func (ctrl *brokerControllerDefaultImp) FindBroker(c *gin.Context) {
+
+	var param FindBrokerByHost
+	err := c.BindQuery(&param)
+	if err != nil {
+		log.WithError(err).Error("Error trying to parse query params")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	exists := ctrl.BrokerRepository.CheckIfHostIsAlreadyRegisted(param.Host, param.Port, c)
+
+	c.JSON(http.StatusOK, exists)
+
+}
+
 func (ctrl *brokerControllerDefaultImp) UpdateBroker(c *gin.Context) {
 
+}
+
+// PingExample godoc
+// @Summary Retrieve a single rabbitmq cluster
+// @Schemes
+// @Description Retrieve a single rabbitmq cluster
+// @Tags Broker
+// @Accept json
+// @Produce json
+// @Success 200 {object} entities.BrokerEntity
+// @NotFound 404 {object} bool
+// @Param brokerId path int true "Id of a broker to be retrived"
+// @Router /broker/{brokerId} [get]
+func (ctrl *brokerControllerDefaultImp) GetBroker(c *gin.Context) {
+	brokerIdParam := c.Param("brokerId")
+	brokerId, err := strconv.ParseInt(brokerIdParam, 10, 32)
+	if err != nil {
+		log.WithError(err).WithField("brokerId", brokerIdParam).Error("Fail to parse brokerId Param")
+		c.JSON(http.StatusBadRequest, "Error parsing brokerId from url route")
+		return
+	}
+
+	log.WithField("brokerId", brokerId).Info("Broker will be deleted")
+	broker, err := ctrl.BrokerRepository.GetBroker(int32(brokerId), c)
+	if err != nil {
+		errorMsg := "Fail to retrive Broker with brokerId"
+		log.WithError(err).WithField("brokerId", brokerId).Error(errorMsg)
+		c.JSON(http.StatusInternalServerError, errorMsg)
+		return
+	}
+	c.JSON(http.StatusOK, broker)
+	return
 }

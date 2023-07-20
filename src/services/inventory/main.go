@@ -5,6 +5,7 @@ import (
 	"github.com/productivityeng/orabbit/core/validators"
 	database_mysql "github.com/productivityeng/orabbit/database"
 	"github.com/productivityeng/orabbit/docs"
+	"github.com/productivityeng/orabbit/src/packages/rabbitmq"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,6 +20,7 @@ import (
 var brokerController broker_controller.BrokerController
 var brokerRepository repository.BrokerRepositoryInterface
 var brokerValidator validators.BrokerValidator
+var overviewManagement rabbitmq.OverviewManagement
 
 func main() {
 	database_mysql.Db.AutoMigrate(&entities.BrokerEntity{})
@@ -28,11 +30,14 @@ func main() {
 	r := gin.Default()
 	docs.SwaggerInfo.BasePath = "/"
 
+	overviewManagement = rabbitmq.NewOverviewManagementImpl()
 	brokerRepository = repository.NewBrokerMysqlImpl(database_mysql.Db)
-	brokerValidator = validators.NewBrokerValidatorDefault()
+	brokerValidator = validators.NewBrokerValidatorDefault(brokerRepository, overviewManagement)
 	brokerController = broker_controller.NewBrokerController(brokerRepository, brokerValidator)
 
 	r.GET("/broker", brokerController.ListBrokers)
+	r.GET("/broker/exists", brokerController.FindBroker)
+	r.GET("/broker/:brokerId", brokerController.GetBroker)
 	r.PUT("/broker/:brokerId", brokerController.UpdateBroker)
 	r.POST("/broker", brokerController.CreateBroker)
 	r.DELETE("/broker/:brokerId", brokerController.DeleteBroker)

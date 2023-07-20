@@ -261,6 +261,58 @@ func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldSuccess() {
 	assert.Nil(brs.T(), err)
 }
 
+func (brs *BrokerRepositorySuite) TestGetBrokerShouldReturnErrorWhenBrokerNotExists() {
+	brokerid := int32(10)
+	brs.mock.ExpectQuery("SELECT").WillReturnError(errors.New("genericerro"))
+
+	broker, err := brs.SUT.GetBroker(brokerid, context.TODO())
+	assert.NotNil(brs.T(), err)
+	assert.Equal(brs.T(), err.Error(), "broker id cound't not be found")
+	assert.Nil(brs.T(), broker)
+}
+
+func (brs *BrokerRepositorySuite) TestGetBrokerShouldReturnSuccess() {
+	expectedResult := &entities.BrokerEntity{
+		Id:          1,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+		Name:        "Test Broker",
+		Description: "Test Description",
+		Host:        "localhost",
+		Port:        1234,
+		User:        "test_user",
+		Password:    "test_password",
+	}
+
+	rows := sqlmock.NewRows([]string{
+		"id",
+		"created_at",
+		"updated_at",
+		"name",
+		"description",
+		"host",
+		"port",
+		"user",
+		"password",
+	}).AddRow(
+		expectedResult.Id,
+		expectedResult.CreatedAt,
+		expectedResult.UpdatedAt,
+		expectedResult.Name,
+		expectedResult.Description,
+		expectedResult.Host,
+		expectedResult.Port,
+		expectedResult.User,
+		expectedResult.Password,
+	)
+
+	brokerid := int32(10)
+
+	brs.mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `broker` WHERE `broker`.`deleted_at` IS NULL AND `broker`.`id` = ? ORDER BY `broker`.`id` LIMIT 1")).WillReturnRows(rows)
+	broker, err := brs.SUT.GetBroker(brokerid, context.TODO())
+	assert.Nil(brs.T(), err)
+	assert.Equal(brs.T(), expectedResult, broker)
+}
 func TestBrokerRepositorySuit(t *testing.T) {
 	suite.Run(t, new(BrokerRepositorySuite))
 }

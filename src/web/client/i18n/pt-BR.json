@@ -1,0 +1,58 @@
+{
+  "Sidebar": {
+    "ClusterSelect": "Selecione um cluster",
+    "SearchForCluster": "Busque o cluster",
+    "NoClusterFounded": "Nenhum cluster encontrado"
+  },
+  "Errors": {
+    "Unknow": "Erro desconhecido, contact o suporte"
+  },
+  "Commons": {
+    "User": "Usuários",
+    "Exchange": "Exchange",
+    "Queue": "Filas",
+    "Import": "Importar",
+    "Back": "Voltar",
+    "Next": "Proximo",
+    "Description": "Descrição",
+    "Host": "Host",
+    "Name": "Nome",
+    "Password": "Senha",
+    "Port": "Porta",
+    "Cancel": "Cancelar",
+    "Create": "Criar"
+  },
+  "Dashboard": {
+    "ImportClusterButton": {
+      "Title": "Importar um novo cluster",
+      "Body": "Traga um novo cluster para o ecossistema e elimine instantaneamente toda a sobrecarga de administração em menos de 15 minutos."
+    },
+    "ImportCluster": {
+      "Title": "Importar um novo cluster",
+      "Body": "Traga um novo cluster para o ecossistema e elimine instantaneamente toda a sobrecarga de administração em menos de 15 minutos. Todos as alteracões futuras deverão ser relizadas somente atraves do painel Orabbit, caso essa regra seja violada o seu time sera notificado."
+    }
+  },
+  "Validations": {
+    "ImportClustterForm": {
+      "Description": "Description must have at least 1 character",
+      "Host": "Host must have at least 1 character",
+      "Name": "Name must have at least 1 character",
+      "Password": "Password must have at least 8 characters",
+      "Port": "Port must be a positive integer",
+      "User": "User must have at least 1 character"
+    }
+  },
+  "UsersPage": {
+    "TopDescription": "Configure e gerencie todos os usuarios que acessam o seu cluster"
+  },
+  "QueuesPage": {
+    "TopDescription": "Configure e gerencie todos os aspectos relacionados as filas do seu cluster"
+  },
+  "ExchangePage": {
+    "TopDescription": "Configure e gerencia todos os aspectos relacionados as exchanges do seu cluster"
+  },
+  "ImportClusterForm": {
+    "FailToCreate": "Falha ao criar o cluster",
+    "Creating": "Criando cluster..."
+  }
+}

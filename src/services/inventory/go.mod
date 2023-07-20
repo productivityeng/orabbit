@@ -13,6 +13,8 @@ require (
 	gorm.io/gorm v1.25.2
 )
 
+require github.com/michaelklishin/rabbit-hole/v2 v2.15.0 // indirect
+
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
@@ -42,6 +44,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/productivityeng/orabbit/src/packages/rabbitmq v0.0.0
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
@@ -59,3 +62,5 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	golang.org/x/sys v0.10.0 // indirect
 )
+
+replace github.com/productivityeng/orabbit/src/packages/rabbitmq v0.0.0 => ../../packages/rabbitmq
