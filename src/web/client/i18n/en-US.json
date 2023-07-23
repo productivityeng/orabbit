@@ -1,5 +1,10 @@
 {
   "Sidebar": {
     "ClusterSelect": "Selecione um cluster"
+  },
+  "Commons": {
+    "User": "User",
+    "Exchange": "Exchange",
+    "Queue": "Queue"
   }
 }

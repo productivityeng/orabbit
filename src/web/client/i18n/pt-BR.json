@@ -3,5 +3,10 @@
     "ClusterSelect": "Selecione um cluster",
     "SearchForCluster": "Busque o cluster",
     "NoClusterFounded": "Nenhum cluster encontrado"
+  },
+  "Commons": {
+    "User": "User",
+    "Exchange": "Exchange",
+    "Queue": "Filas"
   }
 }
