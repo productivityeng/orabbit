@@ -2,7 +2,7 @@
 import React from "react";
 import { useParams } from "next/navigation";
 
-type dashboardPageParams = {
+export type dashboardPageParams = {
   brokerid: number;
 };
 

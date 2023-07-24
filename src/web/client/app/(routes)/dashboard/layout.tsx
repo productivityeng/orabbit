@@ -1,4 +1,5 @@
 import Sidebar from "@/components/Sidebar";
+import { fetchAllClusters } from "@/services/cluster";
 import { Metadata } from "next";
 import React from "react";
 
@@ -8,10 +9,12 @@ export const metadata: Metadata = {
 };
 
 async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const cluster = await fetchAllClusters();
+
   return (
     <div className="flex flex-row h-screen">
       <div className="w-[25vw] md:w-[13vw] h-screen">
-        <Sidebar />
+        <Sidebar Clusters={cluster.result} />
       </div>
       {children}
     </div>

@@ -1,10 +1,20 @@
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import { SelectCluster } from "./SelectCluster";
-import { fetchAllClusters } from "@/services/cluster";
 import SidebarMenu from "./SidebarMenu";
+import { RabbitMqCluster } from "@/types";
+import { useAppState } from "@/store/appstate";
 
-async function Sidebar() {
-  const cluster = await fetchAllClusters();
+function Sidebar({ Clusters }: { Clusters: RabbitMqCluster[] }) {
+  const {
+    SetAvailableClusters,
+    SetSelectedClusterId,
+    SelectedClusterId,
+    GetSelectedCluster,
+  } = useAppState();
+  useEffect(() => {
+    SetAvailableClusters(Clusters);
+  }, [SelectedClusterId]);
   return (
     <div className="bg-slate-900 text-slate-500 h-full w-full flex flex-col items-center justify-between pb-16 pt-12">
       <div className="w-full">
@@ -16,7 +26,11 @@ async function Sidebar() {
         </div>
       </div>
       <div className="w-full px-5">
-        <SelectCluster Clusters={cluster.result} />
+        <SelectCluster
+          SelectedCluster={GetSelectedCluster()}
+          Clusters={Clusters}
+          SetSelectedClusterId={SetSelectedClusterId}
+        />
       </div>
     </div>
   );
