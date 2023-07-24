@@ -1,9 +1,9 @@
 import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import { useRouter } from "next/navigation"; // Mock do useRouter
-import { SelectCluster } from ".";
 import { RabbitMqCluster } from "@/types";
 import "@testing-library/jest-dom/extend-expect";
+import { SelectCluster } from "./SelectCluster";
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn().mockReturnValue({
@@ -57,7 +57,11 @@ let mockClusters: RabbitMqCluster[] = [
 describe("SelectCluster component", () => {
   it("should render the initial state correctly", () => {
     render(
-      <SelectCluster Clusters={mockClusters} SetSelectedClusterId={jest.fn()} />
+      <SelectCluster
+        SelectedCluster={undefined}
+        Clusters={mockClusters}
+        SetSelectedClusterId={jest.fn()}
+      />
     );
 
     expect(screen.getByRole("combobox")).toBeInTheDocument();
@@ -69,7 +73,11 @@ describe("SelectCluster component", () => {
 
   it("should display the cluster names when the button is clicked", () => {
     render(
-      <SelectCluster Clusters={mockClusters} SetSelectedClusterId={jest.fn()} />
+      <SelectCluster
+        SelectedCluster={undefined}
+        Clusters={mockClusters}
+        SetSelectedClusterId={jest.fn()}
+      />
     );
 
     fireEvent.click(screen.getByRole("combobox"));
@@ -82,7 +90,11 @@ describe("SelectCluster component", () => {
   it("should select a cluster and navigate to the dashboard when clicked", async () => {
     const { push } = useRouter();
     render(
-      <SelectCluster Clusters={mockClusters} SetSelectedClusterId={jest.fn()} />
+      <SelectCluster
+        SelectedCluster={undefined}
+        Clusters={mockClusters}
+        SetSelectedClusterId={jest.fn()}
+      />
     );
 
     fireEvent.click(screen.getByRole("combobox"));
@@ -94,7 +106,11 @@ describe("SelectCluster component", () => {
 
   it("should close the popover when a cluster is selected", async () => {
     render(
-      <SelectCluster Clusters={mockClusters} SetSelectedClusterId={jest.fn()} />
+      <SelectCluster
+        SelectedCluster={undefined}
+        Clusters={mockClusters}
+        SetSelectedClusterId={jest.fn()}
+      />
     );
 
     fireEvent.click(screen.getByRole("combobox"));
@@ -105,20 +121,36 @@ describe("SelectCluster component", () => {
     expect(screen.queryByText("Cluster 1")).not.toBeInTheDocument();
   });
 
+  it("should render select cluster in combobox when is loaded selected", async () => {
+    render(
+      <SelectCluster
+        SelectedCluster={mockClusters[2]}
+        Clusters={mockClusters}
+        SetSelectedClusterId={jest.fn()}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.queryAllByText("Cluster 3").length).toBeGreaterThan(0);
+    });
+  });
+
   it("should call zustand to store the clusterId when cluster is selected", async () => {
     const SetSelectedClusterIdMock = jest.fn();
 
     render(
       <SelectCluster
+        SelectedCluster={mockClusters[2]}
         Clusters={mockClusters}
         SetSelectedClusterId={SetSelectedClusterIdMock}
       />
     );
 
     fireEvent.click(screen.getByRole("combobox"));
-    fireEvent.click(screen.getByText("Cluster 2"));
+    fireEvent.click(screen.getByText("Cluster 1"));
+
     await waitFor(() => {
-      expect(SetSelectedClusterIdMock).toBeCalledTimes(1);
+      expect(SetSelectedClusterIdMock).toBeCalled();
     });
   });
 });

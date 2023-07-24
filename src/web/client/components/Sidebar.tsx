@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import { SelectCluster } from "./SelectCluster";
+import { SelectCluster } from "./SelectCluster/SelectCluster";
 import SidebarMenu from "./SidebarMenu";
 import { RabbitMqCluster } from "@/types";
 import { useAppState } from "@/store/appstate";
