@@ -1,0 +1,24 @@
+{
+  "name": "orabbit-repository",
+  "version": "1.0.0",
+  "description": "[![Test Inventory Service](https://github.com/productivityeng/orabbit/actions/workflows/inventory_test.yaml/badge.svg)](https://github.com/productivityeng/orabbit/actions/workflows/inventory_test.yaml) [![codecov](https://codecov.io/gh/productivityeng/orabbit/branch/main/graph/badge.svg?token=DDBUGyuGSt)](https://codecov.io/gh/productivityeng/orabbit) # ORabbit Organization Rabbit. The objective of this project is promote a platform for managing multiple clusters of  rabbitmq in an organizational/enterprise environment. Our focus in auditability,pattern consistency, low administrative overhead and ease of use. If in your environment some time one of the following question arise, ORabbit will aggregate value to your operation.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "lint": "eslint ./src/web/client",
+    "test": "jest"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "cd ./src/web/client && npm run lint",
+      "pre-push": "cd ./src/web/client && npm test"
+    }
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "husky": "^8.0.3"
+  }
+}

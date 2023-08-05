@@ -8,7 +8,13 @@
     "start": "next start",
     "lint": "next lint",
     "coverage": "jest --coverage && open ./coverage/index.html",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "husky install"
+  },"husky": {
+    "hooks": {
+      "pre-commit": "cd ./src/web/client && npm run lint",
+      "pre-push": "cd ./src/web/client && npm test"
+    }
   },
   "dependencies": {
     "@heroicons/react": "^2.0.18",
@@ -47,6 +53,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^14.0.0",
+    "husky": "^8.0.3",
     "jest": "^29.6.1",
     "jest-environment-jsdom": "^29.6.1"
   }

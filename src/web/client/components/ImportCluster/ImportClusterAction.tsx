@@ -31,7 +31,7 @@ function ImportClusterAction({ ImportRoute }: Props) {
         </p>
 
         <Link className="w-full" href={ImportRoute}>
-          <Button className="bg-rabbit/50 group-hover:bg-rabbit  active:ring-offset-1 active:scale-95 w-[95%]  mt-5 transition duration-300 text-lg">
+          <Button className="bg-rabbit hover:bg-rabbit   active:scale-95  w-full mt-5 transition duration-300 text-lg">
             {t("Commons.Import")}
           </Button>
         </Link>
