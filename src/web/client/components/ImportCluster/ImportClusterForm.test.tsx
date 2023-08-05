@@ -10,7 +10,7 @@ import React from "react";
 import { act } from "react-dom/test-utils";
 import { RabbitMqCluster } from "../../types";
 import { FrontResponse } from "@/services/common/frontresponse";
-
+import { faker } from "@faker-js/faker";
 const refresh = jest.fn();
 const push = jest.fn();
 
@@ -27,12 +27,12 @@ jest.mock("next/navigation", () => ({
 
 describe("ImportClusterForm", () => {
   const mockedValues: CreateRabbitMqClusterRequest = {
-    name: "Test Cluster",
-    description: "Test Cluster Description",
+    name: faker.company.name(),
+    description: faker.commerce.productDescription(),
     host: "testhost",
     port: 15672,
     user: "testuser",
-    password: "testpasswordtestpassword",
+    password: faker.internet.password(),
   };
 
   let mockResult: FrontResponse<RabbitMqCluster | null> = {
