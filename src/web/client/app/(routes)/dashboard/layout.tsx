@@ -1,4 +1,6 @@
-import Sidebar from "@/components/Sidebar";
+import Header from "@/components/Header/Header";
+import Sidebar from "@/components/Sidebar/Sidebar";
+import { fetchAllClusters } from "@/services/cluster";
 import { Metadata } from "next";
 import React from "react";
 
@@ -8,12 +10,19 @@ export const metadata: Metadata = {
 };
 
 async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const cluster = await fetchAllClusters();
+
   return (
     <div className="flex flex-row h-screen">
-      <div className="w-[25vw] md:w-[13vw] h-screen">
-        <Sidebar />
+      <div className="w-[25vw] md:w-[20vw] h-screen">
+        <Sidebar Clusters={cluster.result} />
       </div>
-      {children}
+      <div className="flex flex-col w-full h-full">
+        <div className="w-full h-[7vh]">
+          <Header />
+        </div>
+        <div className="px-10 py-5 h-full"> {children}</div>
+      </div>
     </div>
   );
 }

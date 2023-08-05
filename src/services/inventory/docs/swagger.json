@@ -20,12 +20,14 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "default": 1,
                         "name": "PageNumber",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
+                        "default": 10,
                         "name": "PageSize",
                         "in": "query",
                         "required": true
@@ -73,7 +75,71 @@
                 }
             }
         },
+        "/broker/exists": {
+            "get": {
+                "description": "Check if exists an rabbitmq cluster with host es",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Broker"
+                ],
+                "summary": "Verify if exists a rabbitmqcluster",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "Host",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "Port",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/broker/{brokerId}": {
+            "get": {
+                "description": "Retrieve a single rabbitmq cluster",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Broker"
+                ],
+                "summary": "Retrieve a single rabbitmq cluster",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id of a broker to be retrived",
+                        "name": "brokerId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.BrokerEntity"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "description": "Soft delete a broker will not completly erase from database, but will not show up anymore in the",
                 "consumes": [

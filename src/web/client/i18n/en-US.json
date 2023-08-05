@@ -1,5 +1,52 @@
 {
   "Sidebar": {
     "ClusterSelect": "Selecione um cluster"
+  },
+  "Errors": {
+    "Unknow": "Unknow error, contact the support"
+  },
+  "Commons": {
+    "User": "User",
+    "Exchange": "Exchange",
+    "Queue": "Queues",
+    "Import": "Import",
+    "Back": "Back",
+    "Next": "Next",
+    "Description": "Description",
+    "Host": "Host",
+    "Name": "Name",
+    "Password": "Password",
+    "Port": "Port",
+    "Cancel": "Cancel",
+    "Create": "Create"
+  },
+  "Dashboard": {
+    "ImportClusterButton": {
+      "Title": "Import a new cluster",
+      "Body": "Bring a new cluster to the ecosystem and instantly eliminate all administration overhead in less than 15 minutes."
+    }
+  },
+  "Validations": {
+    "ImportClustterForm": {
+      "Description": "Description must have at least 1 character",
+      "Host": "Host must have at least 1 character",
+      "Name": "Name must have at least 1 character",
+      "Password": "Password must have at least 8 characters",
+      "Port": "Port must be a positive integer",
+      "User": "User must have at least 1 character"
+    }
+  },
+  "UsersPage": {
+    "TopDescription": "Configure e manage all aspects related to access of your cluster"
+  },
+  "QueuesPage": {
+    "TopDescription": "Configure e manage all aspects related to queues of your cluster"
+  },
+  "ExchangePage": {
+    "TopDescription": "Configure e manage all aspects related to exchanges of your cluster"
+  },
+  "ImportClusterForm": {
+    "FailToCreate": "Fail to create cluster with",
+    "Creating": "Creating cluster ..."
   }
 }

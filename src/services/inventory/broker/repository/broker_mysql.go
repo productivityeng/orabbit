@@ -78,3 +78,24 @@ func (repo *BrokerRepositoryMysqlImpl) DeleteBroker(brokerId int32, ctx context.
 	log.WithFields(fields).Info("broker deleted successfully")
 	return nil
 }
+
+func (repo *BrokerRepositoryMysqlImpl) GetBroker(brokerId int32, ctx context.Context) (*entities.BrokerEntity, error) {
+	fields := log.Fields{"brokerId": brokerId}
+	var broker = entities.BrokerEntity{Id: brokerId}
+	err := repo.Db.WithContext(ctx).First(&broker)
+	if err.Error != nil {
+		errorMsg := "broker id cound't not be found"
+		log.WithFields(fields).WithError(err.Error).Error(errorMsg)
+		return nil, errors.New(errorMsg)
+	}
+
+	return &broker, nil
+}
+
+func (repo *BrokerRepositoryMysqlImpl) CheckIfHostIsAlreadyRegisted(host string, port int32, ctx context.Context) bool {
+	fields := log.Fields{"host": host}
+	log.WithFields(fields).Info("Checking if host already registered")
+	count := int64(0)
+	repo.Db.WithContext(ctx).Model(&entities.BrokerEntity{}).Where("Host = ? and Port = ?", host, port).Count(&count).Limit(1)
+	return count > 0
+}

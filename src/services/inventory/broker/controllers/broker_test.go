@@ -22,13 +22,13 @@ import (
 
 type BrokerControllerTestSuit struct {
 	suite.Suite
-	brokerRepository    repository.BrokerRepositoryInterface
-	brokerValidator     validators.BrokerValidator
-	SUT                 *brokerControllerDefaultImp
-	EndpointPath        string
-	DeleteEndpointPath  string
-	CreateBrokerRequest contracts.CreateBrokerRequest
-	TestBrokers         []*entities.BrokerEntity
+	brokerRepository      repository.BrokerRepositoryInterface
+	brokerValidator       validators.BrokerValidator
+	SUT                   *brokerControllerDefaultImp
+	EndpointPath          string
+	ParameterEndpointPath string
+	CreateBrokerRequest   contracts.CreateBrokerRequest
+	TestBrokers           []*entities.BrokerEntity
 }
 
 func (bct *BrokerControllerTestSuit) SetupSuite() {
@@ -39,7 +39,7 @@ func (bct *BrokerControllerTestSuit) SetupSuite() {
 	bct.brokerValidator = brokerValidatorObj
 	bct.SUT = NewBrokerController(bct.brokerRepository, bct.brokerValidator)
 	bct.EndpointPath = "/broker"
-	bct.DeleteEndpointPath = fmt.Sprintf("%s/:brokerId", bct.EndpointPath)
+	bct.ParameterEndpointPath = fmt.Sprintf("%s/:brokerId", bct.EndpointPath)
 	bct.CreateBrokerRequest = contracts.CreateBrokerRequest{
 		Name:        "test",
 		Description: "test",
@@ -136,7 +136,7 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerListBrokerShouldReturnI
 func (bct *BrokerControllerTestSuit) TestBrokerControllerDeleteBrokerShouldReturnBadRequestWhenBrokerIdIsMalformated() {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.DELETE(fmt.Sprintf(bct.DeleteEndpointPath), bct.SUT.DeleteBroker)
+	router.DELETE(fmt.Sprintf(bct.ParameterEndpointPath), bct.SUT.DeleteBroker)
 
 	req, _ := http.NewRequest("DELETE", fmt.Sprintf("%s/banana", bct.EndpointPath), nil)
 	res := httptest.NewRecorder()
@@ -153,7 +153,7 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerDeleteBrokerShouldRetur
 	bct.SUT.BrokerRepository.(*repository.BrokerRepositoryMockedObject).On("DeleteBroker", int32(brokerIdTobeDeleted), mock.Anything).Return(errors.New("generic error to delete broker"))
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.DELETE(bct.DeleteEndpointPath, bct.SUT.DeleteBroker)
+	router.DELETE(bct.ParameterEndpointPath, bct.SUT.DeleteBroker)
 
 	req, _ := http.NewRequest("DELETE", fmt.Sprintf("%s/%d", bct.EndpointPath, brokerIdTobeDeleted), nil)
 	res := httptest.NewRecorder()
@@ -170,7 +170,7 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerDeleteBrokerShouldBeSuc
 	bct.SUT.BrokerRepository.(*repository.BrokerRepositoryMockedObject).On("DeleteBroker", int32(brokerIdTobeDeleted), mock.Anything).Return(nil)
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.DELETE(bct.DeleteEndpointPath, bct.SUT.DeleteBroker)
+	router.DELETE(bct.ParameterEndpointPath, bct.SUT.DeleteBroker)
 
 	req, _ := http.NewRequest("DELETE", fmt.Sprintf("%s/%d", bct.EndpointPath, brokerIdTobeDeleted), nil)
 	res := httptest.NewRecorder()
@@ -247,7 +247,7 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerCreateBrokerShouldRetur
 	brokerRequestPayload, _ := json.Marshal(brokerRequest)
 
 	//Dependencies
-	bct.SUT.BrokerValidator.(*validators.BrokerValidatorMockedObject).On("ValidateCreateRequest").Return(errors.New("invalid broker"))
+	bct.SUT.BrokerValidator.(*validators.BrokerValidatorMockedObject).On("ValidateCreateRequest", mock.Anything, mock.Anything).Return(errors.New("invalid broker"))
 
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
@@ -275,7 +275,7 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerDefaultImpCreateBrokerI
 	expectedBrokerCreated := bct.TestBrokers[0]
 
 	//Dependencies
-	bct.SUT.BrokerValidator.(*validators.BrokerValidatorMockedObject).On("ValidateCreateRequest").Return(nil)
+	bct.SUT.BrokerValidator.(*validators.BrokerValidatorMockedObject).On("ValidateCreateRequest", mock.Anything, mock.Anything).Return(nil)
 	bct.SUT.BrokerRepository.(*repository.BrokerRepositoryMockedObject).On("CreateBroker", mock.Anything).Return(expectedBrokerCreated, nil)
 
 	gin.SetMode(gin.TestMode)
@@ -288,6 +288,20 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerDefaultImpCreateBrokerI
 	router.ServeHTTP(res, req)
 
 	assert.Equal(bct.T(), http.StatusCreated, res.Code)
+}
+
+func (bct *BrokerControllerTestSuit) TestBrokerControllerGetBrokerShouldReturnBadRequestWhenBrokerIdIsMalformated() {
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+	router.GET(fmt.Sprintf(bct.ParameterEndpointPath), bct.SUT.GetBroker)
+
+	req, _ := http.NewRequest("GET", fmt.Sprintf("%s/banana", bct.EndpointPath), nil)
+	res := httptest.NewRecorder()
+	//Execute request
+	router.ServeHTTP(res, req)
+
+	assert.Equal(bct.T(), http.StatusBadRequest, res.Code)
+
 }
 
 func TestBrokerControllerSuit(t *testing.T) {

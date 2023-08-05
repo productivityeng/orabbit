@@ -2,7 +2,8 @@ name: All Unit Testing
 
 on:
   push:
-
+    branchs:
+      - 'feat/*'
   pull_request:
     branches:
       - 'main'
@@ -12,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -35,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -50,7 +51,7 @@ jobs:
       - name: Run Jest tests and generate coverage
         run: |
           cd src/web/client
-          npm run test -- --coverage
+          npm run test -- --coverage 
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

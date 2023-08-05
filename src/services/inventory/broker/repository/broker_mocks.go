@@ -35,3 +35,13 @@ func (brmo *BrokerRepositoryMockedObject) DeleteBroker(brokerId int32, ctx conte
 	args := brmo.Called(brokerId, ctx)
 	return args.Error(0)
 }
+
+func (brmo *BrokerRepositoryMockedObject) GetBroker(brokerId int32, ctx context.Context) (*entities.BrokerEntity, error) {
+	args := brmo.Called(brokerId, ctx)
+	return args.Get(0).(*entities.BrokerEntity), args.Error(1)
+}
+
+func (brmo *BrokerRepositoryMockedObject) CheckIfHostIsAlreadyRegisted(host string, port int32, ctx context.Context) bool {
+	args := brmo.Called(host, port, ctx)
+	return args.Get(0).(bool)
+}
