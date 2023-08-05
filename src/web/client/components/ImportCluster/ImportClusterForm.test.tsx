@@ -1,6 +1,13 @@
 import "@testing-library/jest-dom/extend-expect";
 
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  FireFunction,
+  FireObject,
+} from "@testing-library/react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -59,6 +66,27 @@ describe("ImportClusterForm", () => {
     user: z.string().min(1),
     password: z.string().min(8),
   });
+
+  const populateForm = (fireEvent: FireFunction & FireObject) => {
+    fireEvent.change(screen.getByLabelText("Commons.Name"), {
+      target: { value: mockedValues.name },
+    });
+    fireEvent.change(screen.getByLabelText("Commons.Description"), {
+      target: { value: mockedValues.description },
+    });
+    fireEvent.change(screen.getByLabelText("Commons.Host"), {
+      target: { value: mockedValues.host },
+    });
+    fireEvent.change(screen.getByLabelText("Commons.Port"), {
+      target: { value: mockedValues.port },
+    });
+    fireEvent.change(screen.getByLabelText("Commons.User"), {
+      target: { value: mockedValues.user },
+    });
+    fireEvent.change(screen.getByLabelText("Commons.Password"), {
+      target: { value: mockedValues.password },
+    });
+  };
 
   const onSubmit = jest.fn().mockReturnValue(mockResult);
   const onCancel = jest.fn();
@@ -151,24 +179,7 @@ describe("ImportClusterForm", () => {
     );
 
     act(() => {
-      fireEvent.change(screen.getByLabelText("Commons.Name"), {
-        target: { value: mockedValues.name },
-      });
-      fireEvent.change(screen.getByLabelText("Commons.Description"), {
-        target: { value: mockedValues.description },
-      });
-      fireEvent.change(screen.getByLabelText("Commons.Host"), {
-        target: { value: mockedValues.host },
-      });
-      fireEvent.change(screen.getByLabelText("Commons.Port"), {
-        target: { value: mockedValues.port },
-      });
-      fireEvent.change(screen.getByLabelText("Commons.User"), {
-        target: { value: mockedValues.user },
-      });
-      fireEvent.change(screen.getByLabelText("Commons.Password"), {
-        target: { value: mockedValues.password },
-      });
+      populateForm(fireEvent);
     });
     let createButton: HTMLElement;
     await waitFor(() => {
@@ -203,24 +214,7 @@ describe("ImportClusterForm", () => {
     );
 
     act(() => {
-      fireEvent.change(screen.getByLabelText("Commons.Name"), {
-        target: { value: mockedValues.name },
-      });
-      fireEvent.change(screen.getByLabelText("Commons.Description"), {
-        target: { value: mockedValues.description },
-      });
-      fireEvent.change(screen.getByLabelText("Commons.Host"), {
-        target: { value: mockedValues.host },
-      });
-      fireEvent.change(screen.getByLabelText("Commons.Port"), {
-        target: { value: mockedValues.port },
-      });
-      fireEvent.change(screen.getByLabelText("Commons.User"), {
-        target: { value: mockedValues.user },
-      });
-      fireEvent.change(screen.getByLabelText("Commons.Password"), {
-        target: { value: mockedValues.password },
-      });
+      populateForm(fireEvent);
     });
     let createButton: HTMLElement;
     await waitFor(() => {
