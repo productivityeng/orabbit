@@ -1,4 +1,4 @@
-import { render, act, waitFor } from "@testing-library/react";
+import { render, act } from "@testing-library/react";
 import RedirectEmptySelectedCluster from "./RedirectEmptySelectedCluster";
 import "@testing-library/jest-dom/extend-expect";
 

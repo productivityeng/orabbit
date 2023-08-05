@@ -1,7 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { ClassValue } from "clsx";
-import { LucideIcon, User } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React from "react";
 interface Props {
@@ -16,12 +15,12 @@ function TopPage({
   IconColor,
   Titlei18Label,
   Descriptioni18Label,
-  BgIconColor
+  BgIconColor,
 }: Props) {
   const t = useTranslations();
   return (
     <div className="flex gap-x-4 ">
-      <div className={cn("aspect-square p-2 rounded-sm",BgIconColor)}>
+      <div className={cn("aspect-square p-2 rounded-sm", BgIconColor)}>
         <Icon className={cn("w-10 h-10", IconColor)} />
       </div>
       <div>

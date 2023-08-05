@@ -1,8 +1,7 @@
 import { getClientSideLocale, getClientSideTranslation } from "@/i18n";
 import "./globals.css";
-import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
-import { Roboto, Frank_Ruhl_Libre } from "next/font/google";
+import { Frank_Ruhl_Libre } from "next/font/google";
 import {} from "next/font/local";
 import { cn } from "@/lib/utils";
 import { Toaster } from "react-hot-toast";

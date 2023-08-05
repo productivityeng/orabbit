@@ -9,7 +9,7 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Frown, Loader, Loader2, Smile } from "lucide-react";
+import { Frown, Loader2 } from "lucide-react";
 import { CreateRabbitMqClusterRequest } from "../../models/cluster";
 import { RabbitMqCluster } from "@/types";
 import { FrontResponse } from "@/services/common/frontresponse";

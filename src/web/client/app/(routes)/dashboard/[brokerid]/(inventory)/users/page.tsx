@@ -1,6 +1,6 @@
 "use client";
 import TopPage from "@/components/TopPage/TopPage";
-import { Mail, MessageSquare, User } from "lucide-react";
+import { User } from "lucide-react";
 import React from "react";
 
 function UsersPage() {

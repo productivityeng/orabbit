@@ -1,4 +1,3 @@
-import { fetchAllClusters } from "@/services/cluster";
 import { RabbitMqCluster } from "@/types";
 import { create } from "zustand";
 
