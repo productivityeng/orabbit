@@ -47,6 +47,6 @@ export async function createNewCluster(request: CreateRabbitMqClusterRequest): P
         return {ErrorMessage: JSON.stringify(contenctUnkow),Result: null}
       }
       default:
-        throw "Erro desconhecido => "+ JSON.stringify(response)
+        throw new Error("Erro desconhecido => "+ JSON.stringify(response))
     }   
   }

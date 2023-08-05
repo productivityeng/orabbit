@@ -1,24 +1,15 @@
 "use client";
 import { BoxesIcon } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
 import { Separator } from "../ui/separator";
 import { useTranslations } from "next-intl";
-import { FormSteps } from "./ImportClusterSteps";
 import ImportClusterForm from "./ImportClusterForm";
 import { useRouter } from "next/navigation";
-import Loading from "../Loading/Loading";
 import { createNewCluster } from "@/services/cluster";
 
 function ImportCluster() {
   const t = useTranslations();
-  const [step, setStep] = useState<FormSteps>(FormSteps.INIT);
   const router = useRouter();
-
-  const LoadingComp = (
-    <div className="w-[10%] h-[10%]">
-      <Loading />
-    </div>
-  );
 
   return (
     <div className="flex flex-col h-full w-full group    transition duration-300  text-slate-900 p-5 rounded-lg ">
