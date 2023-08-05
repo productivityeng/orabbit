@@ -1,35 +1,28 @@
-[![Test Inventory Service](https://github.com/productivityeng/orabbit/actions/workflows/inventory_test.yaml/badge.svg)](https://github.com/productivityeng/orabbit/actions/workflows/inventory_test.yaml)
+[![Unit Testing](https://github.com/productivityeng/orabbit/actions/workflows/unit_testing.yaml/badge.svg)](https://github.com/productivityeng/orabbit/actions/workflows/unit_testing.yaml)
 [![codecov](https://codecov.io/gh/productivityeng/orabbit/branch/main/graph/badge.svg?token=DDBUGyuGSt)](https://codecov.io/gh/productivityeng/orabbit)
+
 # ORabbit
-Organization Rabbit. The objective of this project is promote a platform for managing multiple clusters of 
-rabbitmq in an organizational/enterprise environment. Our focus in auditability,pattern consistency, low administrative overhead
-and ease of use.
-If in your environment some time one of the following question arise, ORabbit will
-aggregate value to your operation.
+Organization Rabbit. The objective of this project is to promote a platform for managing multiple clusters of RabbitMQ in an organizational/enterprise environment. Our focus is on auditability, pattern consistency, low administrative overhead, and ease of use. If, at any time in your environment, any of the following questions arise, ORabbit will add value to your operation.
 
-```
-1. When and by who this queue was created ?
-2. When and by who this exchange was created ?
-3. What application and bussiness unit is responsible for consuming this queue?
-4. How we can create a pattern for the name of queues and exchanges ?
-5. How we can approve the changes in our cluster before production ?
-```
+1. When and by whom was this queue created?
+2. When and by whom was this exchange created?
+3. What application and business unit is responsible for consuming this queue?
+4. How can we create a pattern for the names of queues and exchanges?
+5. How can we approve changes in our cluster before production?
 
-# What we need to install ORabbit ?
+## What we need to install ORabbit?
 
-```
-1. A docker environment like a AWS EC2 with docker instaled or Kubernetes
-2. A persistence store provider, actually MySQL.
+1. A docker environment like AWS EC2 with Docker installed or Kubernetes.
+2. A persistence store provider, currently MySQL.
 3. Populate appropriate environment variables.
-```
-## What are the depencies of this project ?
-```
-1. MySQL Database for persistence storage
-2. Keycloack for user and permission management
-```
 
+## What are the dependencies of this project?
+
+1. MySQL Database for persistence storage
+2. Keycloak for user and permission management
 
 ## Quality Gates
+
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=productivityeng_orabbit&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=productivityeng_orabbit)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=productivityeng_orabbit&metric=bugs)](https://sonarcloud.io/summary/new_code?id=productivityeng_orabbit)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=productivityeng_orabbit&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=productivityeng_orabbit)
