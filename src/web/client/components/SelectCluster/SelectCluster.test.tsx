@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"; // Mock do useRouter
 import { RabbitMqCluster } from "@/types";
 import "@testing-library/jest-dom/extend-expect";
 import { SelectCluster } from "./SelectCluster";
+import { faker } from "@faker-js/faker";
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn().mockReturnValue({
@@ -26,7 +27,7 @@ let mockClusters: RabbitMqCluster[] = [
     host: "host1.example.com",
     port: 5672,
     user: "user1",
-    password: "valuejustfortest",
+    password: faker.internet.password(),
   },
   {
     Id: 2,
@@ -38,7 +39,7 @@ let mockClusters: RabbitMqCluster[] = [
     host: "host2.example.com",
     port: 5672,
     user: "user2",
-    password: "valuejustfortest",
+    password: faker.internet.password(),
   },
   {
     Id: 3,
@@ -50,7 +51,7 @@ let mockClusters: RabbitMqCluster[] = [
     host: "host3.example.com",
     port: 5672,
     user: "user3",
-    password: "valuejustfortest",
+    password: faker.internet.password(),
   },
 ];
 
