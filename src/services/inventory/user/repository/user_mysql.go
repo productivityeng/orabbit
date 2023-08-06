@@ -92,3 +92,13 @@ func (repo *UserRepositoryMySql) GetUser(userId int32, ctx context.Context) (*us
 
 	return &user, nil
 }
+
+func (repo *UserRepositoryMySql) CheckIfUserExistsForCluster(brokerId int32, username string, ctx context.Context) (bool, error) {
+	count := int64(0)
+	err := repo.Db.WithContext(ctx).Model(&userEntities.UserEntity{}).Where("broker_id = ? and username = ?", brokerId, username).Count(&count).Limit(1)
+	if err != nil {
+		return false, err.Error
+	}
+	log.WithContext(ctx).Warn(count)
+	return count > 0, nil
+}

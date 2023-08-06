@@ -15,4 +15,6 @@ type UserRepository interface {
 	DeleteUser(userId int32, ctx context.Context) error
 	//GetUser retrieve a broker with a provided brokerId
 	GetUser(userId int32, ctx context.Context) (*userEntities.UserEntity, error)
+
+	CheckIfUserExistsForCluster(brokerId int32, username string, ctx context.Context) (bool, error)
 }
