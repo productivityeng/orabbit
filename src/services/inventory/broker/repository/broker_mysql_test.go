@@ -95,14 +95,16 @@ func (brs *BrokerRepositorySuite) TestListBroker() {
 
 	expectedResult := &entities.BrokerEntity{
 		Id:          1,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
 		Name:        "Test Broker",
 		Description: "Test Description",
 		Host:        "localhost",
 		Port:        1234,
 		User:        "test_user",
 		Password:    "test_password",
+		Model: gorm.Model{
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		},
 	}
 
 	rows := sqlmock.NewRows([]string{
@@ -171,15 +173,17 @@ func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenBrokerNot
 
 func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenFailToDeleteBroker() {
 	expectedResult := &entities.BrokerEntity{
-		Id:          1,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
+		Id: 1,
+
 		Name:        "Test Broker",
 		Description: "Test Description",
 		Host:        "localhost",
 		Port:        1234,
 		User:        "test_user",
-		Password:    "test_password",
+		Password:    "test_password", Model: gorm.Model{
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		},
 	}
 
 	rows := sqlmock.NewRows([]string{
@@ -219,14 +223,15 @@ func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenFailToDel
 func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldSuccess() {
 	expectedResult := &entities.BrokerEntity{
 		Id:          1,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
 		Name:        "Test Broker",
 		Description: "Test Description",
 		Host:        "localhost",
 		Port:        1234,
 		User:        "test_user",
-		Password:    "test_password",
+		Password:    "test_password", Model: gorm.Model{
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		},
 	}
 
 	rows := sqlmock.NewRows([]string{
@@ -273,15 +278,17 @@ func (brs *BrokerRepositorySuite) TestGetBrokerShouldReturnErrorWhenBrokerNotExi
 
 func (brs *BrokerRepositorySuite) TestGetBrokerShouldReturnSuccess() {
 	expectedResult := &entities.BrokerEntity{
-		Id:          1,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
+		Id: 1,
+
 		Name:        "Test Broker",
 		Description: "Test Description",
 		Host:        "localhost",
 		Port:        1234,
 		User:        "test_user",
-		Password:    "test_password",
+		Password:    "test_password", Model: gorm.Model{
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		},
 	}
 
 	rows := sqlmock.NewRows([]string{

@@ -50,26 +50,28 @@ func (bct *BrokerControllerTestSuit) SetupSuite() {
 	}
 	bct.TestBrokers = []*entities.BrokerEntity{{
 		Id:          1,
-		CreatedAt:   time.Time{},
-		UpdatedAt:   time.Time{},
-		DeletedAt:   gorm.DeletedAt{},
 		Name:        bct.CreateBrokerRequest.Name,
 		Description: bct.CreateBrokerRequest.Description,
 		Host:        bct.CreateBrokerRequest.Host,
 		Port:        bct.CreateBrokerRequest.Port,
 		User:        bct.CreateBrokerRequest.User,
-		Password:    bct.CreateBrokerRequest.Password,
+		Password:    bct.CreateBrokerRequest.Password, Model: gorm.Model{
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+			DeletedAt: gorm.DeletedAt{},
+		},
 	}, {
 		Id:          2,
-		CreatedAt:   time.Time{},
-		UpdatedAt:   time.Time{},
-		DeletedAt:   gorm.DeletedAt{},
 		Name:        bct.CreateBrokerRequest.Name,
 		Description: bct.CreateBrokerRequest.Description,
 		Host:        bct.CreateBrokerRequest.Host,
 		Port:        bct.CreateBrokerRequest.Port,
 		User:        bct.CreateBrokerRequest.User,
-		Password:    bct.CreateBrokerRequest.Password,
+		Password:    bct.CreateBrokerRequest.Password, Model: gorm.Model{
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+			DeletedAt: gorm.DeletedAt{},
+		},
 	}}
 
 }
