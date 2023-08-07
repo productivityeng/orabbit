@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	repository2 "github.com/productivityeng/orabbit/broker/repository"
@@ -58,7 +57,7 @@ func (entity *UserControllerImpl) CreateUser(c *gin.Context) {
 	err := c.BindJSON(&importUserReuqest)
 	if err != nil {
 		log.WithContext(c).WithError(err).Error("Fail to parse user request")
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -69,7 +68,7 @@ func (entity *UserControllerImpl) CreateUser(c *gin.Context) {
 
 	if err != nil {
 		log.WithContext(c).WithError(err).Error("Fail to retrieve broker from user")
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	log.WithFields(fields).Info("broker founded")
@@ -83,7 +82,7 @@ func (entity *UserControllerImpl) CreateUser(c *gin.Context) {
 	}, c)
 	if err != nil {
 		log.WithContext(c).WithError(err).Error("Fail to retrieve password hash for user")
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	log.WithFields(fields).WithContext(c).Info("verifying if user already exists for this broker")
@@ -91,13 +90,13 @@ func (entity *UserControllerImpl) CreateUser(c *gin.Context) {
 	exists, err := entity.UserRepository.CheckIfUserExistsForCluster(importUserReuqest.BrokerId, importUserReuqest.Username, c)
 	if err != nil {
 		log.WithError(err).WithContext(c).Error("Fail to verify if username already exists for this cluster")
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	if exists {
 		log.WithContext(c).Warn("User already exists in this cluster")
-		c.JSON(http.StatusBadRequest, errors.New("[USER_ALREADY_EXISTS_IN_THIS_CLUSTERS]"))
+		c.JSON(http.StatusBadRequest, gin.H{"error": "[USER_ALREADY_EXISTS_IN_THIS_CLUSTERS]"})
 		return
 	}
 	log.WithFields(fields).WithField("exists", exists).WithContext(c).Info("user not exists for this broker, creating now")
@@ -110,7 +109,7 @@ func (entity *UserControllerImpl) CreateUser(c *gin.Context) {
 
 	if err != nil {
 		log.WithContext(c).WithError(err).Error("Fail to save user")
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
