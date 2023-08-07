@@ -247,10 +247,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.UserEntity"
-                        }
+                        "description": "OK"
                     },
                     "404": {
                         "description": "Not Found"
@@ -393,35 +390,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.UserEntity": {
-            "type": "object",
-            "properties": {
-                "Broker": {
-                    "$ref": "#/definitions/entities.BrokerEntity"
-                },
-                "BrokerId": {
-                    "type": "integer"
-                },
-                "PasswordHash": {
-                    "type": "string"
-                },
-                "Username": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "updatedAt": {
                     "type": "string"
                 }
             }

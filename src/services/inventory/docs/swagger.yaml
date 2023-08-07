@@ -67,25 +67,6 @@ definitions:
       user:
         type: string
     type: object
-  entities.UserEntity:
-    properties:
-      Broker:
-        $ref: '#/definitions/entities.BrokerEntity'
-      BrokerId:
-        type: integer
-      PasswordHash:
-        type: string
-      Username:
-        type: string
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      id:
-        type: integer
-      updatedAt:
-        type: string
-    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -276,8 +257,6 @@ paths:
       responses:
         "200":
           description: OK
-          schema:
-            $ref: '#/definitions/entities.UserEntity'
         "404":
           description: Not Found
         "500":

@@ -84,8 +84,9 @@ func (repo *UserRepositoryMySql) GetUser(userId int32, ctx context.Context) (*us
 	fields := log.Fields{"brokerId": userId}
 	var user = userEntities.UserEntity{Id: userId}
 	err := repo.Db.WithContext(ctx).First(&user)
+
 	if err.Error != nil {
-		errorMsg := "broker id cound't not be found"
+		errorMsg := "user id cound't not be found"
 		log.WithFields(fields).WithError(err.Error).Error(errorMsg)
 		return nil, errors.New(errorMsg)
 	}
