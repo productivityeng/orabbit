@@ -5,6 +5,8 @@ import { RabbitMqCluster } from "@/types";
 import "@testing-library/jest-dom/extend-expect";
 import { SelectCluster } from "./SelectCluster";
 import { faker } from "@faker-js/faker";
+import ResizeObserver from "resize-observer-polyfill";
+global.ResizeObserver = ResizeObserver;
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn().mockReturnValue({
