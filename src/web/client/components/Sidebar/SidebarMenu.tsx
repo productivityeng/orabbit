@@ -4,7 +4,11 @@ import {
   CompassIcon,
   Mail,
   Router,
+  Settings,
+  Settings2,
+  ShieldCheck,
   ShieldClose,
+  ShieldIcon,
   User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -31,6 +35,30 @@ const menuItems = [
     icon: Router,
     href: "exchanges",
     iconColor: "text-stone-500",
+  },
+];
+
+const complianceItems = [
+  {
+    label: "Commons.Drift",
+    icon: ShieldClose,
+    href: "drift",
+    iconColor: "text-red-500",
+  },
+  {
+    label: "Commons.Trail",
+    icon: CompassIcon,
+    href: "trail",
+    iconColor: "text-green-500",
+  },
+];
+
+const generalItems = [
+  {
+    label: "Commons.Settings",
+    icon: Settings2,
+    href: "settings",
+    iconColor: "text-zinc-500",
   },
 ];
 
@@ -62,14 +90,39 @@ function MenuItems() {
         <p className="px-6 divide-y-8 text-xs text-muted-foreground">
           Compliance
         </p>
-        <div className="flex items-center group justify-start space-x-6 mx-5 px-2 py-1  hover:bg-slate-600/80 rounded-md hover:cursor-pointer hover:scale-105 duration-200 ease-in-out">
-          <ShieldClose className="group-hover:text-rabbit text-red-500 transition duration-200" />
-          <p className="text-white text-xs lg:text-sm"> Drift detection</p>
-        </div>
-        <div className="flex  group items-center justify-start space-x-6 mx-5 px-2 py-1  hover:bg-slate-600/50 rounded-md hover:cursor-pointer hover:scale-105 duration-200 ease-in-out">
-          <CompassIcon className="group-hover:text-rabbit text-emerald-500 transition duration-200" />
-          <p className="text-white text-xs lg:text-sm"> Trail</p>
-        </div>
+        {complianceItems.map((item) => (
+          <Link
+            key={item.href}
+            href={`/dashboard/${SelectedClusterId}/${item.href}`}
+          >
+            <div className="flex group items-center justify-start   space-x-6 mx-5 px-2 py-1  hover:bg-slate-600/80  rounded-md hover:cursor-pointer hover:scale-105 duration-200 ease-in-out">
+              <div>
+                <item.icon
+                  className={cn("transition duration-200", item.iconColor)}
+                />
+              </div>
+              <p className="text-white text-base"> {t(item.label)}</p>
+            </div>
+          </Link>
+        ))}
+      </div>
+      <div className="space-y-2">
+        <p className="px-6 divide-y-8 text-xs text-muted-foreground">General</p>{" "}
+        {generalItems.map((item) => (
+          <Link
+            key={item.href}
+            href={`/dashboard/${SelectedClusterId}/${item.href}`}
+          >
+            <div className="flex group items-center justify-start   space-x-6 mx-5 px-2 py-1  hover:bg-slate-600/80  rounded-md hover:cursor-pointer hover:scale-105 duration-200 ease-in-out">
+              <div>
+                <item.icon
+                  className={cn("transition duration-200", item.iconColor)}
+                />
+              </div>
+              <p className="text-white text-base"> {t(item.label)}</p>
+            </div>
+          </Link>
+        ))}
       </div>
     </>
   );

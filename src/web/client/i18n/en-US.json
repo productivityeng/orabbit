@@ -19,7 +19,10 @@
     "Password": "Password",
     "Port": "Port",
     "Cancel": "Cancel",
-    "Create": "Create"
+    "Create": "Create",
+    "Settings": "Settings",
+    "Drift": "Drift",
+    "Trail": "Trail"
   },
   "Dashboard": {
     "ImportClusterButton": {
@@ -45,6 +48,9 @@
   },
   "ExchangePage": {
     "TopDescription": "Configure e manage all aspects related to exchanges of your cluster"
+  },
+  "SettingsPage": {
+    "TopDescription": "Managament of cluster config on orabbit platform"
   },
   "ImportClusterForm": {
     "FailToCreate": "Fail to create cluster with",
