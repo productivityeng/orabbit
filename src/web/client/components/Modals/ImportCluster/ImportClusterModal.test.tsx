@@ -104,15 +104,9 @@ describe("ImportClusterForm", () => {
   };
 
   it("renders form fields", () => {
-    render(
-      <ImportClusterForm
-        OnCreateClicked={onSubmit}
-        OnCancelClicked={onCancel}
-      />,
-      {
-        wrapper: WrapperComponent,
-      }
-    );
+    render(<ImportClusterForm />, {
+      wrapper: WrapperComponent,
+    });
 
     expect(screen.getByLabelText("Commons.Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Commons.Description")).toBeInTheDocument();
@@ -122,15 +116,9 @@ describe("ImportClusterForm", () => {
   });
 
   it("shows error messages for empty form fields on submit", async () => {
-    render(
-      <ImportClusterForm
-        OnCreateClicked={onSubmit}
-        OnCancelClicked={onCancel}
-      />,
-      {
-        wrapper: WrapperComponent,
-      }
-    );
+    render(<ImportClusterForm />, {
+      wrapper: WrapperComponent,
+    });
     act(() => {
       fireEvent.submit(screen.getByRole("form"));
     });
@@ -168,15 +156,9 @@ describe("ImportClusterForm", () => {
         refresh: refresh,
       }),
     }));
-    render(
-      <ImportClusterForm
-        OnCreateClicked={onSubmit}
-        OnCancelClicked={onCancel}
-      />,
-      {
-        wrapper: WrapperComponent,
-      }
-    );
+    render(<ImportClusterForm />, {
+      wrapper: WrapperComponent,
+    });
 
     act(() => {
       populateForm(fireEvent);
@@ -203,15 +185,9 @@ describe("ImportClusterForm", () => {
         refresh: refresh,
       }),
     }));
-    render(
-      <ImportClusterForm
-        OnCreateClicked={onSubmit}
-        OnCancelClicked={onCancel}
-      />,
-      {
-        wrapper: WrapperComponent,
-      }
-    );
+    render(<ImportClusterForm />, {
+      wrapper: WrapperComponent,
+    });
 
     act(() => {
       populateForm(fireEvent);

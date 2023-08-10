@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import Modal from "../../ui/modal";
 import { useImportCluster } from "@/hooks/import-cluster";
 import { createNewCluster } from "@/services/cluster";
+import { CreateRabbitMqClusterRequestSchema } from "@/schemas/CreateRabbitMqClusterRequestSchema";
 
 function ImportClusterForm() {
   const t = useTranslations();
@@ -28,16 +29,6 @@ function ImportClusterForm() {
   const [creationError, setCreationError] = useState<string>();
   const { closeModal, isModalOpen } = useImportCluster();
 
-  const CreateRabbitMqClusterRequestSchema = z.object({
-    description: z
-      .string()
-      .min(1, t("Validations.ImportClustterForm.Description")),
-    host: z.string().min(1, t("Validations.ImportClustterForm.Host")),
-    name: z.string().min(1, t("Validations.ImportClustterForm.Name")),
-    password: z.string().min(5, t("Validations.ImportClustterForm.Password")),
-    port: z.number().int().positive(t("Validations.ImportClustterForm.Port")),
-    user: z.string().min(1, t("Validations.ImportClustterForm.User")),
-  });
   const form = useForm<z.infer<typeof CreateRabbitMqClusterRequestSchema>>({
     resolver: zodResolver(CreateRabbitMqClusterRequestSchema),
     defaultValues: {
