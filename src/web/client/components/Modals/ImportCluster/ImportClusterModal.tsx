@@ -20,14 +20,13 @@ import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import Modal from "../../ui/modal";
 import { useImportCluster } from "@/hooks/import-cluster";
-import { createNewCluster } from "@/services/cluster";
 import { CreateRabbitMqClusterRequestSchema } from "@/schemas/CreateRabbitMqClusterRequestSchema";
 
 function ImportClusterForm() {
   const t = useTranslations();
   const router = useRouter();
   const [creationError, setCreationError] = useState<string>();
-  const { closeModal, isModalOpen } = useImportCluster();
+  const { closeModal, isModalOpen, importCluster } = useImportCluster();
 
   const form = useForm<z.infer<typeof CreateRabbitMqClusterRequestSchema>>({
     resolver: zodResolver(CreateRabbitMqClusterRequestSchema),
@@ -46,7 +45,7 @@ function ImportClusterForm() {
     try {
       setCreationError(undefined);
       const createCluster = async () => {
-        let creaedCluster = await createNewCluster(values);
+        let creaedCluster = await importCluster(values);
         if (creaedCluster.Result) {
           router.push(`/dashboard/${creaedCluster.Result.Id}`);
           closeModal();

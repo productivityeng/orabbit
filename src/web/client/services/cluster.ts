@@ -2,6 +2,7 @@
 import { RabbitMqCluster } from "@/types";
 import { FrontResponse } from "./common/frontresponse";
 import { CreateRabbitMqClusterRequestSchema } from "@/schemas/CreateRabbitMqClusterRequestSchema";
+import { z } from "zod";
 
 
 export type FetchAllClustersResult =  {
@@ -21,7 +22,7 @@ export async function fetchAllClusters(){
     return finalResult;
 }
 
-export async function createNewCluster(request: typeof CreateRabbitMqClusterRequestSchema): Promise<FrontResponse<RabbitMqCluster | null>> {
+export async function createNewCluster(request: z.infer<typeof CreateRabbitMqClusterRequestSchema>): Promise<FrontResponse<RabbitMqCluster | null>> {
     let response = await fetch(`${process.env.PRIVATE_INVENTORY_ENDPOINT!}/broker`, {
       body: JSON.stringify(request),
       method: "POST",
