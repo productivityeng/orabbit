@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, PlusCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandSeparator,
 } from "@/components/ui/command";
 import {
   Popover,
@@ -21,6 +22,7 @@ import { useTranslations } from "next-intl";
 import { RabbitMqCluster } from "@/types";
 import { useRouter } from "next/navigation";
 import { CommandList } from "cmdk";
+import { useImportCluster } from "@/hooks/import-cluster";
 
 type SelectClusterProps = {
   Clusters: RabbitMqCluster[];
@@ -35,6 +37,7 @@ export function SelectCluster({
 }: SelectClusterProps) {
   const router = useRouter();
   const t = useTranslations("Sidebar");
+  const { openModal } = useImportCluster();
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -82,6 +85,17 @@ export function SelectCluster({
                   {cluster.name}
                 </CommandItem>
               ))}
+            </CommandGroup>
+          </CommandList>
+          <CommandSeparator />
+          <CommandList>
+            <CommandGroup>
+              <CommandItem className=" flex space-x-4" onSelect={openModal}>
+                <div className=" w-full flex space-x-2 hover:cursor-pointer">
+                  <PlusCircle className="mr2 h-5 w-5" />
+                  <span>{t("ImportCluster")}</span>
+                </div>
+              </CommandItem>
             </CommandGroup>
           </CommandList>
         </Command>

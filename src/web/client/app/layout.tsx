@@ -5,6 +5,7 @@ import { Frank_Ruhl_Libre } from "next/font/google";
 import {} from "next/font/local";
 import { cn } from "@/lib/utils";
 import { Toaster } from "react-hot-toast";
+import ImportClusterProvider from "@/providers/import-cluster-provider";
 const inter = Frank_Ruhl_Libre({
   subsets: ["latin"],
 });

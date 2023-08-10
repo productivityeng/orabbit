@@ -10,7 +10,7 @@ import {
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import React from "react";
-import { useAppState } from "@/store/appstate";
+import { useAppState } from "@/hooks/appstate";
 import { cn } from "@/lib/utils";
 
 const menuItems = [

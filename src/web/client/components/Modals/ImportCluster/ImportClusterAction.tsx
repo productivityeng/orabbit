@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { BoxesIcon } from "lucide-react";
-import { Separator } from "../ui/separator";
+import { Separator } from "../../ui/separator";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 

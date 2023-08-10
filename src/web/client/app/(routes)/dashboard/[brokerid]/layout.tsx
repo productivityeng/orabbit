@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { dashboardPageParams } from "./page";
 import { useEffect } from "react";
-import { useAppState } from "@/store/appstate";
+import { useAppState } from "@/hooks/appstate";
 
 export default function RootLayout({
   children,

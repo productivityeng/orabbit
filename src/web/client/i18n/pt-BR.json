@@ -2,7 +2,8 @@
   "Sidebar": {
     "ClusterSelect": "Selecione um cluster",
     "SearchForCluster": "Busque o cluster",
-    "NoClusterFounded": "Nenhum cluster encontrado"
+    "NoClusterFounded": "Nenhum cluster encontrado",
+    "ImportCluster": "Importar Cluster"
   },
   "Errors": {
     "Unknow": "Erro desconhecido, contact o suporte"

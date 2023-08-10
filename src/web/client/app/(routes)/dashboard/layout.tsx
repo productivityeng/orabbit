@@ -1,5 +1,6 @@
 import Header from "@/components/Header/Header";
 import Sidebar from "@/components/Sidebar/Sidebar";
+import ImportClusterProvider from "@/providers/import-cluster-provider";
 import { fetchAllClusters } from "@/services/cluster";
 import { Metadata } from "next";
 import React from "react";
@@ -21,7 +22,11 @@ async function DashboardLayout({ children }: { children: React.ReactNode }) {
         <div className="w-full h-[7vh]">
           <Header />
         </div>
-        <div className="px-10 py-5 h-full"> {children}</div>
+        <div className="px-10 py-5 h-full">
+          {" "}
+          <ImportClusterProvider />
+          {children}
+        </div>
       </div>
     </div>
   );

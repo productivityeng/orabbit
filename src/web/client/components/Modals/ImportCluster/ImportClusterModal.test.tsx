@@ -11,11 +11,11 @@ import {
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import ImportClusterForm from "./ImportClusterForm";
+import ImportClusterForm from "./ImportClusterModal";
 import { CreateRabbitMqClusterRequest } from "@/models/cluster";
 import React from "react";
 import { act } from "react-dom/test-utils";
-import { RabbitMqCluster } from "../../types";
+import { RabbitMqCluster } from "../../../types";
 import { FrontResponse } from "@/services/common/frontresponse";
 import { faker } from "@faker-js/faker";
 const refresh = jest.fn();

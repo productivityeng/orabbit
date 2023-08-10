@@ -1,6 +1,7 @@
 {
   "Sidebar": {
-    "ClusterSelect": "Selecione um cluster"
+    "ClusterSelect": "Selecione um cluster",
+    "ImportCluster": "Import Cluster"
   },
   "Errors": {
     "Unknow": "Unknow error, contact the support"
