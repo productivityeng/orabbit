@@ -2,7 +2,7 @@
 import { RabbitMqCluster } from "@/types";
 import { FrontResponse } from "./common/frontresponse";
 import { CreateRabbitMqClusterRequestSchema } from "@/schemas/CreateRabbitMqClusterRequestSchema";
-import { z } from "zod";
+import { boolean, z } from "zod";
 
 
 export type FetchAllClustersResult =  {
@@ -50,4 +50,10 @@ export async function createNewCluster(request: z.infer<typeof CreateRabbitMqClu
       default:
         throw new Error("Erro desconhecido => "+ JSON.stringify(response))
     }   
+  }
+
+  export const DeleteCluster = async (clusterId: number): Promise<Boolean> => {
+    let response = await fetch(`${process.env.PRIVATE_INVENTORY_ENDPOINT!}/broker/${clusterId}`)
+    if(response.status == 204) return true;
+    return false;
   }
