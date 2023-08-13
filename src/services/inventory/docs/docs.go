@@ -47,10 +47,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/contracts.PaginatedResult-entities_ClusterEntity"
-                        }
+                        "description": "OK"
                     }
                 }
             },
@@ -184,6 +181,53 @@ const docTemplate = `{
             }
         },
         "/{clusterId}/user": {
+            "get": {
+                "description": "Recovery the details of a specific mirror user that is already imported from the cluster",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Retrieve a mirror user from broker",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve users",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "name": "PageNumber",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "name": "PageSize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
             "post": {
                 "description": "Create a new \u003cb\u003eRabbitMQ User mirror\u003c/b\u003e from the broker. The user must exist in the cluster, the login and hashpassword will be imported",
                 "consumes": [
@@ -241,6 +285,13 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "User id registered",
                         "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cluster from where the user is",
+                        "name": "clusterId",
                         "in": "path",
                         "required": true
                     }
@@ -321,26 +372,6 @@ const docTemplate = `{
                 },
                 "user": {
                     "type": "string"
-                }
-            }
-        },
-        "contracts.PaginatedResult-entities_ClusterEntity": {
-            "type": "object",
-            "properties": {
-                "pageNumber": {
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "type": "integer"
-                },
-                "result": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.ClusterEntity"
-                    }
-                },
-                "totalItems": {
-                    "type": "integer"
                 }
             }
         },

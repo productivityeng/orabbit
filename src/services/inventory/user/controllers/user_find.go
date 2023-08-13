@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-// PingExample godoc
+// FindUser godoc
 // @Summary Retrieve a mirror user from broker
 // @Schemes
 // @Description Recovery the details of a specific mirror user that is already imported from the cluster
@@ -16,6 +16,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param userId path int true "User id registered"
+// @Param clusterId path int true "Cluster from where the user is"
 // @Success 200
 // @Failure 404
 // @Failure 500
@@ -29,7 +30,15 @@ func (entity *UserControllerImpl) FindUser(c *gin.Context) {
 		return
 	}
 
-	user, err := entity.UserRepository.GetUser(int32(userId), c)
+	clusterIdParam := c.Param("clusterId")
+	clusterId, err := strconv.ParseInt(userIdParam, 10, 32)
+	if err != nil {
+		log.WithError(err).WithField("brokerId", clusterIdParam).Error("Fail to parse clusterId Param")
+		c.JSON(http.StatusBadRequest, "Error parsing clusterId from url route")
+		return
+	}
+
+	user, err := entity.UserRepository.GetUser(int32(clusterId), int32(userId), c)
 	if err != nil {
 		log.WithError(err).WithContext(c).Error("Fail to retrieve user by id")
 		c.JSON(http.StatusNotFound, gin.H{"error": "[USER_NOT_FOUND]"})

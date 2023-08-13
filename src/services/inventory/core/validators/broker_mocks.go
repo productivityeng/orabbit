@@ -6,11 +6,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type BrokerValidatorMockedObject struct {
+type ClusterValidatorMockedObject struct {
 	mock.Mock
 }
 
-func (blmo *BrokerValidatorMockedObject) ValidateCreateRequest(request contracts.CreateClusterRequest, ctx context.Context) error {
+func (blmo *ClusterValidatorMockedObject) ValidateCreateRequest(request contracts.CreateClusterRequest, ctx context.Context) error {
 	args := blmo.Mock.Called(request, ctx)
 	return args.Error(0)
 }

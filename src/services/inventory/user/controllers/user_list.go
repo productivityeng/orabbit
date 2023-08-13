@@ -8,19 +8,21 @@ import (
 	"strconv"
 )
 
-// PingExample godoc
+// ListUsers
 // @Summary Retrieve a mirror user from broker
 // @Schemes
 // @Description Recovery the details of a specific mirror user that is already imported from the cluster
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param userId path int true "User id registered"
+// @Param clusterId path int true "Cluster id from where retrieve users"
+// @Param params query common.PageParam true "Number of items in one page"
 // @Success 200
 // @Failure 404
 // @Failure 500
-// @Router /{clusterId}/user/{userId} [get]
-func (userCtrl *UserControllerImpl) ListUser(c *gin.Context) {
+// @Router /{clusterId}/user [get]
+func (userCtrl *UserControllerImpl) ListUsers(c *gin.Context) {
+
 	var param common.PageParam
 
 	err := c.BindQuery(&param)
@@ -33,10 +35,20 @@ func (userCtrl *UserControllerImpl) ListUser(c *gin.Context) {
 	clusterIdParam := c.Param("clusterId")
 	clusterId, err := strconv.ParseInt(clusterIdParam, 10, 32)
 	if err != nil {
-		log.WithError(err).WithField("brokerId", clusterIdParam).Error("Fail to parse brokerId Param")
+		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to parse brokerId Param")
 		c.JSON(http.StatusBadRequest, "Error parsing brokerId from url route")
 		return
 	}
+	log.WithField("parameter", clusterIdParam).Info("Looking for list of users")
 
-	userCtrl.UserRepository.ListUsers(int32(clusterId), param.PageNumber, param.PageSize, c)
+	result, err := userCtrl.UserRepository.ListUsers(int32(clusterId), param.PageSize, param.PageNumber, c)
+
+	if err != nil {
+		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to retrieve users for the cluster")
+		c.JSON(http.StatusBadRequest, "Fail to retrieve users for the cluster")
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+	return
 }

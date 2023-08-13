@@ -22,25 +22,25 @@ import (
 
 type BrokerControllerTestSuit struct {
 	suite.Suite
-	brokerRepository      repository.BrokerRepositoryInterface
+	brokerRepository      repository.ClusterRepositoryInterface
 	brokerValidator       validators.ClusterValidator
-	SUT                   *brokerControllerDefaultImp
+	SUT                   *clusterControllerDefaultImp
 	EndpointPath          string
 	ParameterEndpointPath string
-	CreateBrokerRequest   contracts.CreateBrokerRequest
+	CreateClusterRequest  contracts.CreateClusterRequest
 	TestBrokers           []*entities.ClusterEntity
 }
 
 func (bct *BrokerControllerTestSuit) SetupSuite() {
-	brokerValidatorObj := new(validators.BrokerValidatorMockedObject)
-	brokerRepositoryObject := new(repository.BrokerRepositoryMockedObject)
+	brokerValidatorObj := new(validators.ClusterValidatorMockedObject)
+	brokerRepositoryObject := new(repository.ClusterRepositoryMockedObject)
 
 	bct.brokerRepository = brokerRepositoryObject
 	bct.brokerValidator = brokerValidatorObj
-	bct.SUT = NewBrokerController(bct.brokerRepository, bct.brokerValidator)
+	bct.SUT = NewClusterController(bct.brokerRepository, bct.brokerValidator)
 	bct.EndpointPath = "/broker"
 	bct.ParameterEndpointPath = fmt.Sprintf("%s/:brokerId", bct.EndpointPath)
-	bct.CreateBrokerRequest = contracts.CreateBrokerRequest{
+	bct.CreateClusterRequest = contracts.CreateClusterRequest{
 		Name:        "test",
 		Description: "test",
 		Host:        "host", //Missing Host parameter
@@ -50,24 +50,24 @@ func (bct *BrokerControllerTestSuit) SetupSuite() {
 	}
 	bct.TestBrokers = []*entities.ClusterEntity{{
 		Id:          1,
-		Name:        bct.CreateBrokerRequest.Name,
-		Description: bct.CreateBrokerRequest.Description,
-		Host:        bct.CreateBrokerRequest.Host,
-		Port:        bct.CreateBrokerRequest.Port,
-		User:        bct.CreateBrokerRequest.User,
-		Password:    bct.CreateBrokerRequest.Password, Model: gorm.Model{
+		Name:        bct.CreateClusterRequest.Name,
+		Description: bct.CreateClusterRequest.Description,
+		Host:        bct.CreateClusterRequest.Host,
+		Port:        bct.CreateClusterRequest.Port,
+		User:        bct.CreateClusterRequest.User,
+		Password:    bct.CreateClusterRequest.Password, Model: gorm.Model{
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 			DeletedAt: gorm.DeletedAt{},
 		},
 	}, {
 		Id:          2,
-		Name:        bct.CreateBrokerRequest.Name,
-		Description: bct.CreateBrokerRequest.Description,
-		Host:        bct.CreateBrokerRequest.Host,
-		Port:        bct.CreateBrokerRequest.Port,
-		User:        bct.CreateBrokerRequest.User,
-		Password:    bct.CreateBrokerRequest.Password, Model: gorm.Model{
+		Name:        bct.CreateClusterRequest.Name,
+		Description: bct.CreateClusterRequest.Description,
+		Host:        bct.CreateClusterRequest.Host,
+		Port:        bct.CreateClusterRequest.Port,
+		User:        bct.CreateClusterRequest.User,
+		Password:    bct.CreateClusterRequest.Password, Model: gorm.Model{
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 			DeletedAt: gorm.DeletedAt{},
@@ -80,11 +80,11 @@ func (s *BrokerControllerTestSuit) TearDownTest() {
 	s.SetupSuite()
 }
 
-func (bct *BrokerControllerTestSuit) TestBrokerControllerDefaultImpListBrokersShouldReturnBadRequestWhenAtLeastOneQueryParameterIsMissing() {
+func (bct *BrokerControllerTestSuit) TestBrokerControllerDefaultImpListClustersShouldReturnBadRequestWhenAtLeastOneQueryParameterIsMissing() {
 
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.GET(bct.EndpointPath, bct.SUT.ListBrokers)
+	router.GET(bct.EndpointPath, bct.SUT.ListClusters)
 
 	req, _ := http.NewRequest("GET", bct.EndpointPath, nil)
 	res := httptest.NewRecorder()
@@ -103,10 +103,10 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerListBrokerShouldListBro
 		PageNumber: pageNumberParam,
 		Result:     bct.TestBrokers,
 	}
-	bct.SUT.BrokerRepository.(*repository.BrokerRepositoryMockedObject).On("ListCluster", pageSizeParam, pageNumberParam).Return(&listBrokerRepoResult, nil)
+	bct.SUT.ClusterRepository.(*repository.ClusterRepositoryMockedObject).On("ListCluster", pageSizeParam, pageNumberParam).Return(&listBrokerRepoResult, nil)
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.GET(bct.EndpointPath, bct.SUT.ListBrokers)
+	router.GET(bct.EndpointPath, bct.SUT.ListClusters)
 
 	req, _ := http.NewRequest("GET", fmt.Sprintf("%s?PageSize=%d&PageNumber=%d", bct.EndpointPath, pageSizeParam, pageNumberParam), nil)
 	res := httptest.NewRecorder()
@@ -118,13 +118,13 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerListBrokerShouldListBro
 	assert.Equal(bct.T(), listBrokerRepoResult.PageSize, pageSizeParam)
 	assert.Equal(bct.T(), listBrokerRepoResult.PageNumber, pageNumberParam)
 }
-func (bct *BrokerControllerTestSuit) TestBrokerControllerListBrokerShouldReturnInternalErrorWhenFailtToListBrokers() {
+func (bct *BrokerControllerTestSuit) TestBrokerControllerListBrokerShouldReturnInternalErrorWhenFailtToListClusters() {
 	pageSizeParam := 1
 	pageNumberParam := 2
-	bct.SUT.BrokerRepository.(*repository.BrokerRepositoryMockedObject).On("ListCluster", pageSizeParam, pageNumberParam).Return(nil, errors.New("generic error"))
+	bct.SUT.ClusterRepository.(*repository.ClusterRepositoryMockedObject).On("ListCluster", pageSizeParam, pageNumberParam).Return(nil, errors.New("generic error"))
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.GET(bct.EndpointPath, bct.SUT.ListBrokers)
+	router.GET(bct.EndpointPath, bct.SUT.ListClusters)
 
 	req, _ := http.NewRequest("GET", fmt.Sprintf("%s?PageSize=%d&PageNumber=%d", bct.EndpointPath, pageSizeParam, pageNumberParam), nil)
 	res := httptest.NewRecorder()
@@ -138,7 +138,7 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerListBrokerShouldReturnI
 func (bct *BrokerControllerTestSuit) TestBrokerControllerDeleteBrokerShouldReturnBadRequestWhenBrokerIdIsMalformated() {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.DELETE(fmt.Sprintf(bct.ParameterEndpointPath), bct.SUT.DeleteBroker)
+	router.DELETE(fmt.Sprintf(bct.ParameterEndpointPath), bct.SUT.DeleteCluster)
 
 	req, _ := http.NewRequest("DELETE", fmt.Sprintf("%s/banana", bct.EndpointPath), nil)
 	res := httptest.NewRecorder()
@@ -152,10 +152,10 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerDeleteBrokerShouldRetur
 func (bct *BrokerControllerTestSuit) TestBrokerControllerDeleteBrokerShouldReturnInternalServerErorWhenFailToDeleteBroker() {
 	brokerIdTobeDeleted := 2
 
-	bct.SUT.BrokerRepository.(*repository.BrokerRepositoryMockedObject).On("DeleteCluster", int32(brokerIdTobeDeleted), mock.Anything).Return(errors.New("generic error to delete broker"))
+	bct.SUT.ClusterRepository.(*repository.ClusterRepositoryMockedObject).On("DeleteCluster", int32(brokerIdTobeDeleted), mock.Anything).Return(errors.New("generic error to delete broker"))
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.DELETE(bct.ParameterEndpointPath, bct.SUT.DeleteBroker)
+	router.DELETE(bct.ParameterEndpointPath, bct.SUT.DeleteCluster)
 
 	req, _ := http.NewRequest("DELETE", fmt.Sprintf("%s/%d", bct.EndpointPath, brokerIdTobeDeleted), nil)
 	res := httptest.NewRecorder()
@@ -169,10 +169,10 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerDeleteBrokerShouldRetur
 func (bct *BrokerControllerTestSuit) TestBrokerControllerDeleteBrokerShouldBeSuccess() {
 	brokerIdTobeDeleted := 1
 
-	bct.SUT.BrokerRepository.(*repository.BrokerRepositoryMockedObject).On("DeleteCluster", int32(brokerIdTobeDeleted), mock.Anything).Return(nil)
+	bct.SUT.ClusterRepository.(*repository.ClusterRepositoryMockedObject).On("DeleteCluster", int32(brokerIdTobeDeleted), mock.Anything).Return(nil)
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.DELETE(bct.ParameterEndpointPath, bct.SUT.DeleteBroker)
+	router.DELETE(bct.ParameterEndpointPath, bct.SUT.DeleteCluster)
 
 	req, _ := http.NewRequest("DELETE", fmt.Sprintf("%s/%d", bct.EndpointPath, brokerIdTobeDeleted), nil)
 	res := httptest.NewRecorder()
@@ -183,8 +183,8 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerDeleteBrokerShouldBeSuc
 
 }
 
-func (bct *BrokerControllerTestSuit) TestBrokerControllerCreateBrokerShouldReturnbadRequestWhenRequestIsMalformed() {
-	brokerRequest := contracts.CreateBrokerRequest{
+func (bct *BrokerControllerTestSuit) TestBrokerControllerCreateClusterShouldReturnbadRequestWhenRequestIsMalformed() {
+	brokerRequest := contracts.CreateClusterRequest{
 		Name:        "test",
 		Description: "test",
 		Host:        "host", //Missing Host parameter
@@ -197,7 +197,7 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerCreateBrokerShouldRetur
 	//Dependencies
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.POST(bct.EndpointPath, bct.SUT.CreateBroker)
+	router.POST(bct.EndpointPath, bct.SUT.CreateCluster)
 
 	//Create malformed payload
 	brokerRequestPayload[4] = byte(4)
@@ -209,9 +209,9 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerCreateBrokerShouldRetur
 	assert.Equal(bct.T(), http.StatusBadRequest, res.Code)
 }
 
-func (bct *BrokerControllerTestSuit) TestBrokerControllerCreateBrokerShouldReturnInternalServerErrorWhenFailtToCreateBroker() {
+func (bct *BrokerControllerTestSuit) TestBrokerControllerCreateClusterShouldReturnInternalServerErrorWhenFailtToCreateCluster() {
 
-	brokerRequest := contracts.CreateBrokerRequest{
+	brokerRequest := contracts.CreateClusterRequest{
 		Name:        "test",
 		Description: "test",
 		Host:        "host", //Missing Host parameter
@@ -222,12 +222,12 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerCreateBrokerShouldRetur
 	brokerRequestPayload, _ := json.Marshal(brokerRequest)
 
 	//Dependencies
-	bct.SUT.BrokerValidator.(*validators.BrokerValidatorMockedObject).On("ValidateCreateRequest").Return(nil)
-	bct.SUT.BrokerRepository.(*repository.BrokerRepositoryMockedObject).On("CreateCluster", mock.Anything).Return(nil, errors.New("fail to create broker"))
+	bct.SUT.ClusterValidator.(*validators.ClusterValidatorMockedObject).On("ValidateCreateRequest").Return(nil)
+	bct.SUT.ClusterRepository.(*repository.ClusterRepositoryMockedObject).On("CreateCluster", mock.Anything).Return(nil, errors.New("fail to create broker"))
 
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.POST(bct.EndpointPath, bct.SUT.CreateBroker)
+	router.POST(bct.EndpointPath, bct.SUT.CreateCluster)
 
 	req, _ := http.NewRequest("POST", bct.EndpointPath, bytes.NewBuffer(brokerRequestPayload))
 	res := httptest.NewRecorder()
@@ -237,8 +237,8 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerCreateBrokerShouldRetur
 	assert.Equal(bct.T(), http.StatusInternalServerError, res.Code)
 }
 
-func (bct *BrokerControllerTestSuit) TestBrokerControllerCreateBrokerShouldReturnBadRequestWhenValidateBrokerFail() {
-	brokerRequest := contracts.CreateBrokerRequest{
+func (bct *BrokerControllerTestSuit) TestBrokerControllerCreateClusterShouldReturnBadRequestWhenValidateBrokerFail() {
+	brokerRequest := contracts.CreateClusterRequest{
 		Name:        "test",
 		Description: "test",
 		Host:        "host", //Missing Host parameter
@@ -249,11 +249,11 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerCreateBrokerShouldRetur
 	brokerRequestPayload, _ := json.Marshal(brokerRequest)
 
 	//Dependencies
-	bct.SUT.BrokerValidator.(*validators.BrokerValidatorMockedObject).On("ValidateCreateRequest", mock.Anything, mock.Anything).Return(errors.New("invalid broker"))
+	bct.SUT.ClusterValidator.(*validators.ClusterValidatorMockedObject).On("ValidateCreateRequest", mock.Anything, mock.Anything).Return(errors.New("invalid broker"))
 
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.POST(bct.EndpointPath, bct.SUT.CreateBroker)
+	router.POST(bct.EndpointPath, bct.SUT.CreateCluster)
 
 	req, _ := http.NewRequest("POST", bct.EndpointPath, bytes.NewBuffer(brokerRequestPayload))
 	res := httptest.NewRecorder()
@@ -263,9 +263,9 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerCreateBrokerShouldRetur
 	assert.Equal(bct.T(), http.StatusBadRequest, res.Code)
 }
 
-func (bct *BrokerControllerTestSuit) TestBrokerControllerDefaultImpCreateBrokerInternalServerErrorWhenFailToSave() {
+func (bct *BrokerControllerTestSuit) TestBrokerControllerDefaultImpCreateClusterInternalServerErrorWhenFailToSave() {
 
-	brokerRequest := contracts.CreateBrokerRequest{
+	brokerRequest := contracts.CreateClusterRequest{
 		Name:        "test",
 		Description: "test",
 		Host:        "host", //Missing Host parameter
@@ -277,12 +277,12 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerDefaultImpCreateBrokerI
 	expectedBrokerCreated := bct.TestBrokers[0]
 
 	//Dependencies
-	bct.SUT.BrokerValidator.(*validators.BrokerValidatorMockedObject).On("ValidateCreateRequest", mock.Anything, mock.Anything).Return(nil)
-	bct.SUT.BrokerRepository.(*repository.BrokerRepositoryMockedObject).On("CreateCluster", mock.Anything).Return(expectedBrokerCreated, nil)
+	bct.SUT.ClusterValidator.(*validators.ClusterValidatorMockedObject).On("ValidateCreateRequest", mock.Anything, mock.Anything).Return(nil)
+	bct.SUT.ClusterRepository.(*repository.ClusterRepositoryMockedObject).On("CreateCluster", mock.Anything).Return(expectedBrokerCreated, nil)
 
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.POST(bct.EndpointPath, bct.SUT.CreateBroker)
+	router.POST(bct.EndpointPath, bct.SUT.CreateCluster)
 
 	req, _ := http.NewRequest("POST", bct.EndpointPath, bytes.NewBuffer(brokerRequestPayload))
 	res := httptest.NewRecorder()
@@ -295,7 +295,7 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerDefaultImpCreateBrokerI
 func (bct *BrokerControllerTestSuit) TestBrokerControllerGetBrokerShouldReturnBadRequestWhenBrokerIdIsMalformated() {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.GET(fmt.Sprintf(bct.ParameterEndpointPath), bct.SUT.GetBroker)
+	router.GET(fmt.Sprintf(bct.ParameterEndpointPath), bct.SUT.GetCluster)
 
 	req, _ := http.NewRequest("GET", fmt.Sprintf("%s/banana", bct.EndpointPath), nil)
 	res := httptest.NewRecorder()

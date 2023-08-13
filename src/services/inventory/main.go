@@ -20,7 +20,7 @@ func main() {
 	gin.ForceConsoleColor()
 
 	r := gin.Default()
-	docs.SwaggerInfo.BasePath = "/"
+	docs.SwaggerInfo.BasePath = ""
 
 	cluster.Routes(r, database_mysql.Db)
 	user.Routes(r, database_mysql.Db)

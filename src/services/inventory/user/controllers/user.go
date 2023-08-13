@@ -31,7 +31,6 @@ func NewUserController(userRepository repository.UserRepository, BrokerRepositor
 func (entity *UserControllerImpl) GetEntity(c *gin.Context) {
 
 }
-func (entity *UserControllerImpl) ListUsers(c *gin.Context) {}
 
 func (entity *UserControllerImpl) UpdateUser(c *gin.Context) {}
 

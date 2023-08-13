@@ -7,6 +7,6 @@ func GetUserResponseFromUserEntity(user *userEntities.UserEntity) GetUserRespons
 		Id:           user.Id,
 		Username:     user.Username,
 		PasswordHash: user.PasswordHash,
-		BrokerId:     user.BrokerId,
+		BrokerId:     user.ClusterId,
 	}
 }
