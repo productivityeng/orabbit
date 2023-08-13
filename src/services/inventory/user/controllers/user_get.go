@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	dto "github.com/productivityeng/orabbit/user/dto"
+	"github.com/productivityeng/orabbit/src/packages/common"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
@@ -19,24 +19,24 @@ import (
 // @Success 200
 // @Failure 404
 // @Failure 500
-// @Router /user/{userId} [get]
-func (entity *UserControllerImpl) GetUser(c *gin.Context) {
-	userIdParam := c.Param("userId")
-	userId, err := strconv.ParseInt(userIdParam, 10, 32)
+// @Router /{clusterId}/user/{userId} [get]
+func (userCtrl *UserControllerImpl) ListUser(c *gin.Context) {
+	var param common.PageParam
+
+	err := c.BindQuery(&param)
 	if err != nil {
-		log.WithError(err).WithField("brokerId", userIdParam).Error("Fail to parse brokerId Param")
+		log.WithError(err).Error("Error trying to parse query params")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	clusterIdParam := c.Param("clusterId")
+	clusterId, err := strconv.ParseInt(clusterIdParam, 10, 32)
+	if err != nil {
+		log.WithError(err).WithField("brokerId", clusterIdParam).Error("Fail to parse brokerId Param")
 		c.JSON(http.StatusBadRequest, "Error parsing brokerId from url route")
 		return
 	}
 
-	user, err := entity.UserRepository.GetUser(int32(userId), c)
-	if err != nil {
-		log.WithError(err).WithContext(c).Error("Fail to retrieve user by id")
-		c.JSON(http.StatusNotFound, gin.H{"error": "[USER_NOT_FOUND]"})
-		return
-	}
-
-	c.JSON(http.StatusOK, dto.GetUserResponseFromUserEntity(user))
-	return
-
+	userCtrl.UserRepository.ListUsers(int32(clusterId), param.PageNumber, param.PageSize, c)
 }

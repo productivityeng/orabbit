@@ -28,7 +28,6 @@ type SelectClusterProps = {
 export function SelectCluster({ Clusters }: SelectClusterProps) {
   const router = useRouter();
   const t = useTranslations("Sidebar");
-
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
 

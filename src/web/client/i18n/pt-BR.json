@@ -47,7 +47,8 @@
     }
   },
   "UsersPage": {
-    "TopDescription": "Configure e gerencie todos os usuarios que acessam o seu cluster"
+    "TopDescription": "Configure e gerencie todos os usuarios que acessam o seu cluster",
+    "AddUser": "Novo usuario"
   },
   "QueuesPage": {
     "TopDescription": "Configure e gerencie todos os aspectos relacionados as filas do seu cluster"
@@ -61,5 +62,6 @@
   "ImportClusterForm": {
     "FailToCreate": "Falha ao criar o cluster",
     "Creating": "Criando cluster..."
-  }
+  },
+  "[BROKER_ALREADY_EXISTS]": "Esse cluster ja existe na base. Talvez ela tenha sido deletado, mas é possível reativa-lo."
 }

@@ -1,6 +1,6 @@
 "use client";
 import ImportClusterForm from "@/components/Modals/ImportCluster/ImportClusterModal";
-import { useImportCluster } from "@/hooks/import-cluster";
+import { useImportCluster } from "@/hooks/cluster-import";
 import React, { useEffect, useState } from "react";
 
 function ImportClusterProvider() {
@@ -10,7 +10,11 @@ function ImportClusterProvider() {
   }, []);
 
   if (!isMounted) return null;
-  return <><ImportClusterForm /></>
+  return (
+    <>
+      <ImportClusterForm />
+    </>
+  );
 }
 
 export default ImportClusterProvider;

@@ -16,7 +16,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/broker": {
+        "/cluster": {
             "get": {
                 "description": "Retrieve a paginated list of cluster that the user has access",
                 "consumes": [
@@ -26,7 +26,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Broker"
+                    "Cluster"
                 ],
                 "summary": "Retrieve a list of rabbitmq clusters registered",
                 "parameters": [
@@ -49,13 +49,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/contracts.PaginatedResult-entities_BrokerEntity"
+                            "$ref": "#/definitions/contracts.PaginatedResult-entities_ClusterEntity"
                         }
                     }
                 }
             },
             "post": {
-                "description": "Create a new \u003cb\u003eRabbitMQ\u003c/b\u003e broker. The credential provider must be valid and the cluster operational",
+                "description": "Create a new \u003cb\u003eRabbitMQ\u003c/b\u003e cluster. The credential provider must be valid and the cluster operational",
                 "consumes": [
                     "application/json"
                 ],
@@ -63,9 +63,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Broker"
+                    "Cluster"
                 ],
-                "summary": "Register a new RabbitMQ Broker",
+                "summary": "Register a new RabbitMQ Cluster",
                 "parameters": [
                     {
                         "description": "Request",
@@ -73,7 +73,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/contracts.CreateBrokerRequest"
+                            "$ref": "#/definitions/contracts.CreateClusterRequest"
                         }
                     }
                 ],
@@ -87,7 +87,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/broker/exists": {
+        "/cluster/exists": {
             "get": {
                 "description": "Check if exists an rabbitmq cluster with host es",
                 "consumes": [
@@ -97,7 +97,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Broker"
+                    "Cluster"
                 ],
                 "summary": "Verify if exists a rabbitmqcluster",
                 "parameters": [
@@ -121,7 +121,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/broker/{brokerId}": {
+        "/cluster/{clusterId}": {
             "get": {
                 "description": "Retrieve a single rabbitmq cluster",
                 "consumes": [
@@ -131,14 +131,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Broker"
+                    "Cluster"
                 ],
                 "summary": "Retrieve a single rabbitmq cluster",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Id of a broker to be retrived",
-                        "name": "brokerId",
+                        "description": "Id of a cluster to be retrived",
+                        "name": "clusterId",
                         "in": "path",
                         "required": true
                     }
@@ -147,13 +147,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.BrokerEntity"
+                            "$ref": "#/definitions/entities.ClusterEntity"
                         }
                     }
                 }
             },
             "delete": {
-                "description": "Soft delete a broker will not completly erase from database, but will not show up anymore in the",
+                "description": "Soft delete a cluster will not completly erase from database, but will not show up anymore in the",
                 "consumes": [
                     "application/json"
                 ],
@@ -161,14 +161,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Broker"
+                    "Cluster"
                 ],
-                "summary": "Soft delete a broker",
+                "summary": "Soft delete a cluster",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Id of a broker to be soft deleted",
-                        "name": "brokerId",
+                        "description": "Id of a cluster to be soft deleted",
+                        "name": "clusterId",
                         "in": "path",
                         "required": true
                     }
@@ -183,7 +183,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user": {
+        "/{clusterId}/user": {
             "post": {
                 "description": "Create a new \u003cb\u003eRabbitMQ User mirror\u003c/b\u003e from the broker. The user must exist in the cluster, the login and hashpassword will be imported",
                 "consumes": [
@@ -199,11 +199,11 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Request",
-                        "name": "ImportUserRequest",
+                        "name": "ImportOrCreateUserRequest",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.ImportUserRequest"
+                            "$ref": "#/definitions/dto.ImportOrCreateUserRequest"
                         }
                     }
                 ],
@@ -223,7 +223,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/{userId}": {
+        "/{clusterId}/user/{userId}": {
             "get": {
                 "description": "Recovery the details of a specific mirror user that is already imported from the cluster",
                 "consumes": [
@@ -293,7 +293,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "contracts.CreateBrokerRequest": {
+        "contracts.CreateClusterRequest": {
             "type": "object",
             "required": [
                 "description",
@@ -324,7 +324,7 @@ const docTemplate = `{
                 }
             }
         },
-        "contracts.PaginatedResult-entities_BrokerEntity": {
+        "contracts.PaginatedResult-entities_ClusterEntity": {
             "type": "object",
             "properties": {
                 "pageNumber": {
@@ -336,7 +336,7 @@ const docTemplate = `{
                 "result": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/entities.BrokerEntity"
+                        "$ref": "#/definitions/entities.ClusterEntity"
                     }
                 },
                 "totalItems": {
@@ -344,22 +344,28 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.ImportUserRequest": {
+        "dto.ImportOrCreateUserRequest": {
             "type": "object",
             "required": [
-                "BrokerId",
+                "ClusterId",
                 "Username"
             ],
             "properties": {
-                "BrokerId": {
+                "ClusterId": {
                     "type": "integer"
+                },
+                "Create": {
+                    "type": "boolean"
+                },
+                "Password": {
+                    "type": "string"
                 },
                 "Username": {
                     "type": "string"
                 }
             }
         },
-        "entities.BrokerEntity": {
+        "entities.ClusterEntity": {
             "type": "object",
             "properties": {
                 "createdAt": {

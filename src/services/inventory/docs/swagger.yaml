@@ -1,5 +1,5 @@
 definitions:
-  contracts.CreateBrokerRequest:
+  contracts.CreateClusterRequest:
     properties:
       description:
         type: string
@@ -21,7 +21,7 @@ definitions:
     - port
     - user
     type: object
-  contracts.PaginatedResult-entities_BrokerEntity:
+  contracts.PaginatedResult-entities_ClusterEntity:
     properties:
       pageNumber:
         type: integer
@@ -29,22 +29,26 @@ definitions:
         type: integer
       result:
         items:
-          $ref: '#/definitions/entities.BrokerEntity'
+          $ref: '#/definitions/entities.ClusterEntity'
         type: array
       totalItems:
         type: integer
     type: object
-  dto.ImportUserRequest:
+  dto.ImportOrCreateUserRequest:
     properties:
-      BrokerId:
+      ClusterId:
         type: integer
+      Create:
+        type: boolean
+      Password:
+        type: string
       Username:
         type: string
     required:
-    - BrokerId
+    - ClusterId
     - Username
     type: object
-  entities.BrokerEntity:
+  entities.ClusterEntity:
     properties:
       createdAt:
         type: string
@@ -78,119 +82,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /broker:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve a paginated list of cluster that the user has access
-      parameters:
-      - default: 1
-        in: query
-        name: PageNumber
-        required: true
-        type: integer
-      - default: 10
-        in: query
-        name: PageSize
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/contracts.PaginatedResult-entities_BrokerEntity'
-      summary: Retrieve a list of rabbitmq clusters registered
-      tags:
-      - Broker
-    post:
-      consumes:
-      - application/json
-      description: Create a new <b>RabbitMQ</b> broker. The credential provider must
-        be valid and the cluster operational
-      parameters:
-      - description: Request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/contracts.CreateBrokerRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            type: string
-      summary: Register a new RabbitMQ Broker
-      tags:
-      - Broker
-  /broker/{brokerId}:
-    delete:
-      consumes:
-      - application/json
-      description: Soft delete a broker will not completly erase from database, but
-        will not show up anymore in the
-      parameters:
-      - description: Id of a broker to be soft deleted
-        in: path
-        name: brokerId
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-          schema:
-            type: boolean
-      summary: Soft delete a broker
-      tags:
-      - Broker
-    get:
-      consumes:
-      - application/json
-      description: Retrieve a single rabbitmq cluster
-      parameters:
-      - description: Id of a broker to be retrived
-        in: path
-        name: brokerId
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.BrokerEntity'
-      summary: Retrieve a single rabbitmq cluster
-      tags:
-      - Broker
-  /broker/exists:
-    get:
-      consumes:
-      - application/json
-      description: Check if exists an rabbitmq cluster with host es
-      parameters:
-      - in: query
-        name: Host
-        required: true
-        type: string
-      - in: query
-        name: Port
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Verify if exists a rabbitmqcluster
-      tags:
-      - Broker
-  /user:
+  /{clusterId}/user:
     post:
       consumes:
       - application/json
@@ -199,10 +91,10 @@ paths:
       parameters:
       - description: Request
         in: body
-        name: ImportUserRequest
+        name: ImportOrCreateUserRequest
         required: true
         schema:
-          $ref: '#/definitions/dto.ImportUserRequest'
+          $ref: '#/definitions/dto.ImportOrCreateUserRequest'
       produces:
       - application/json
       responses:
@@ -217,7 +109,7 @@ paths:
       summary: Syncronize a existing RabbitMQ user from the broker.
       tags:
       - User
-  /user/{userId}:
+  /{clusterId}/user/{userId}:
     delete:
       consumes:
       - application/json
@@ -264,4 +156,116 @@ paths:
       summary: Retrieve a mirror user from broker
       tags:
       - User
+  /cluster:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a paginated list of cluster that the user has access
+      parameters:
+      - default: 1
+        in: query
+        name: PageNumber
+        required: true
+        type: integer
+      - default: 10
+        in: query
+        name: PageSize
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/contracts.PaginatedResult-entities_ClusterEntity'
+      summary: Retrieve a list of rabbitmq clusters registered
+      tags:
+      - Cluster
+    post:
+      consumes:
+      - application/json
+      description: Create a new <b>RabbitMQ</b> cluster. The credential provider must
+        be valid and the cluster operational
+      parameters:
+      - description: Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/contracts.CreateClusterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+      summary: Register a new RabbitMQ Cluster
+      tags:
+      - Cluster
+  /cluster/{clusterId}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a cluster will not completly erase from database, but
+        will not show up anymore in the
+      parameters:
+      - description: Id of a cluster to be soft deleted
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: boolean
+      summary: Soft delete a cluster
+      tags:
+      - Cluster
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a single rabbitmq cluster
+      parameters:
+      - description: Id of a cluster to be retrived
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ClusterEntity'
+      summary: Retrieve a single rabbitmq cluster
+      tags:
+      - Cluster
+  /cluster/exists:
+    get:
+      consumes:
+      - application/json
+      description: Check if exists an rabbitmq cluster with host es
+      parameters:
+      - in: query
+        name: Host
+        required: true
+        type: string
+      - in: query
+        name: Port
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Verify if exists a rabbitmqcluster
+      tags:
+      - Cluster
 swagger: "2.0"

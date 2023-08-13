@@ -14,7 +14,7 @@ import {
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import React from "react";
-import { useAppState } from "@/hooks/appstate";
+import { useAppState } from "@/hooks/cluster";
 import { cn } from "@/lib/utils";
 
 const menuItems = [

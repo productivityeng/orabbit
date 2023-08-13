@@ -22,7 +22,7 @@ import { useTranslations } from "next-intl";
 import { RabbitMqCluster } from "@/types";
 import { useRouter } from "next/navigation";
 import { CommandList } from "cmdk";
-import { useImportCluster } from "@/hooks/import-cluster";
+import { useImportCluster } from "@/hooks/cluster-import";
 
 type SelectClusterProps = {
   Clusters: RabbitMqCluster[];

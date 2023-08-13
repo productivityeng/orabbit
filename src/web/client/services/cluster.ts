@@ -1,7 +1,7 @@
 "use server"
 import { RabbitMqCluster } from "@/types";
 import { FrontResponse } from "./common/frontresponse";
-import { CreateRabbitMqClusterRequestSchema } from "@/schemas/CreateRabbitMqClusterRequestSchema";
+import { CreateRabbitMqClusterRequestSchema } from "@/schemas/cluster-schemas";
 import { boolean, z } from "zod";
 
 
@@ -12,8 +12,8 @@ export type FetchAllClustersResult =  {
     totalItems: 3
 }
 export async function fetchAllClusters(){
-    //todo: build a better method for retrieve all brokers
-    let result = await fetch(`${process.env.PRIVATE_INVENTORY_ENDPOINT!}/broker?PageNumber=1&PageSize=100`,{
+    //todo: build a better method for retrieve all clusters
+    let result = await fetch(`${process.env.PRIVATE_INVENTORY_ENDPOINT!}/cluster?PageNumber=1&PageSize=100`,{
         method:'GET',
         cache:'no-store'
     })
@@ -23,7 +23,7 @@ export async function fetchAllClusters(){
 }
 
 export async function createNewCluster(request: z.infer<typeof CreateRabbitMqClusterRequestSchema>): Promise<FrontResponse<RabbitMqCluster | null>> {
-    let response = await fetch(`${process.env.PRIVATE_INVENTORY_ENDPOINT!}/broker`, {
+    let response = await fetch(`${process.env.PRIVATE_INVENTORY_ENDPOINT!}/cluster`, {
       body: JSON.stringify(request),
       method: "POST",
     });
@@ -53,7 +53,10 @@ export async function createNewCluster(request: z.infer<typeof CreateRabbitMqClu
   }
 
   export const DeleteCluster = async (clusterId: number): Promise<Boolean> => {
-    let response = await fetch(`${process.env.PRIVATE_INVENTORY_ENDPOINT!}/broker/${clusterId}`)
+    let response = await fetch(`${process.env.PRIVATE_INVENTORY_ENDPOINT!}/cluster/${clusterId}`,{method:'DELETE',cache:'no-store'},)
     if(response.status == 204) return true;
+
+    console.log(await 
+      response.json())
     return false;
   }

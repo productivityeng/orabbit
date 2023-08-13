@@ -41,7 +41,8 @@
     }
   },
   "UsersPage": {
-    "TopDescription": "Configure e manage all aspects related to access of your cluster"
+    "TopDescription": "Configure e manage all aspects related to access of your cluster",
+    "AddUser": "Add new user"
   },
   "QueuesPage": {
     "TopDescription": "Configure e manage all aspects related to queues of your cluster"
@@ -55,5 +56,6 @@
   "ImportClusterForm": {
     "FailToCreate": "Fail to create cluster with",
     "Creating": "Creating cluster ..."
-  }
+  },
+  "[BROKER_ALREADY_EXISTS]": "This cluster already exists in database, maybe there was disabled. You can enable the cluster in the graviardy page"
 }

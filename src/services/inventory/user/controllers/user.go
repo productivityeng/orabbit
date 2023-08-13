@@ -2,13 +2,12 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	repository2 "github.com/productivityeng/orabbit/broker/repository"
+	repository2 "github.com/productivityeng/orabbit/cluster/repository"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/user"
 	repository "github.com/productivityeng/orabbit/user/repository"
 )
 
 type UserController interface {
-	GetUser(c *gin.Context)
 	ListUsers(c *gin.Context)
 	CreateUser(c *gin.Context)
 	UpdateUser(c *gin.Context)
@@ -17,16 +16,16 @@ type UserController interface {
 }
 
 type UserControllerImpl struct {
-	UserRepository   repository.UserRepository
-	BrokerRepository repository2.BrokerRepositoryInterface
-	UserManagement   user.UserManagement
+	UserRepository    repository.UserRepository
+	ClusterRepository repository2.ClusterRepositoryInterface
+	UserManagement    user.UserManagement
 }
 
-func NewUserController(userRepository repository.UserRepository, BrokerRepository repository2.BrokerRepositoryInterface,
+func NewUserController(userRepository repository.UserRepository, BrokerRepository repository2.ClusterRepositoryInterface,
 	userManagement user.UserManagement) *UserControllerImpl {
 	return &UserControllerImpl{UserRepository: userRepository,
-		BrokerRepository: BrokerRepository,
-		UserManagement:   userManagement}
+		ClusterRepository: BrokerRepository,
+		UserManagement:    userManagement}
 }
 
 func (entity *UserControllerImpl) GetEntity(c *gin.Context) {
@@ -47,6 +46,5 @@ func (entity *UserControllerImpl) UpdateUser(c *gin.Context) {}
 // @Success 204
 // @Failure 404
 // @Failure 500
-// @Router /user/{userId} [delete]
+// @Router /{clusterId}/user/{userId} [delete]
 func (entity *UserControllerImpl) DeleteUser(c *gin.Context) {}
-func (entity *UserControllerImpl) FindUser(c *gin.Context)   {}

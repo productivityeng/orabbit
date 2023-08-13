@@ -10,7 +10,7 @@ type BrokerValidatorMockedObject struct {
 	mock.Mock
 }
 
-func (blmo *BrokerValidatorMockedObject) ValidateCreateRequest(request contracts.CreateBrokerRequest, ctx context.Context) error {
+func (blmo *BrokerValidatorMockedObject) ValidateCreateRequest(request contracts.CreateClusterRequest, ctx context.Context) error {
 	args := blmo.Mock.Called(request, ctx)
 	return args.Error(0)
 }

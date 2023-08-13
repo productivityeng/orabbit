@@ -35,7 +35,7 @@ func (repo *UserRepositoryMySql) CreateUser(userToCreate *userEntities.UserEntit
 }
 
 // ListUsers retrieve a lista of broker with paginated options
-func (repo *UserRepositoryMySql) ListUsers(pageSize int, pageNumber int) (*contracts.PaginatedResult[userEntities.UserEntity], error) {
+func (repo *UserRepositoryMySql) ListUsers(brokerId int32, pageSize int, pageNumber int, ctx context.Context) (*contracts.PaginatedResult[userEntities.UserEntity], error) {
 	entryFields := log.Fields{"pageSize": pageSize, "pageNumber": pageNumber}
 	var result contracts.PaginatedResult[userEntities.UserEntity]
 	result.PageSize = pageSize
@@ -43,14 +43,14 @@ func (repo *UserRepositoryMySql) ListUsers(pageSize int, pageNumber int) (*contr
 
 	offset := (pageNumber - 1) * pageSize
 
-	err := repo.Db.Offset(offset).Limit(pageSize).Find(&result.Result).Error
+	err := repo.Db.WithContext(ctx).Where(userEntities.UserEntity{BrokerId: brokerId}).Offset(offset).Limit(pageSize).Find(&result.Result).Error
 
 	if err != nil {
 		log.WithError(err).WithFields(entryFields).Error("error trying to query items for users")
 		return nil, err
 	}
 
-	tx := repo.Db.Model(&userEntities.UserEntity{}).Count(&result.TotalItems)
+	tx := repo.Db.WithContext(ctx).Model(&userEntities.UserEntity{}).Count(&result.TotalItems)
 	if tx.Error != nil {
 		log.WithError(tx.Error).WithFields(entryFields).Error("error trying to get count items for users")
 	}
@@ -61,7 +61,7 @@ func (repo *UserRepositoryMySql) ListUsers(pageSize int, pageNumber int) (*contr
 func (repo *UserRepositoryMySql) DeleteUser(userId int32, ctx context.Context) error {
 	fields := log.Fields{"userId": userId}
 	var broker = userEntities.UserEntity{Id: userId}
-	err := repo.Db.First(&broker)
+	err := repo.Db.WithContext(ctx).First(&broker)
 	if err.Error != nil {
 		errorMsg := "broker id cound't not be found"
 		log.WithFields(fields).WithError(err.Error).Error(errorMsg)

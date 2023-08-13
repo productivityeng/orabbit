@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { SelectCluster } from "../SelectCluster/SelectCluster";
 import SidebarMenu from "./SidebarMenu";
 import { RabbitMqCluster } from "@/types";
-import { useAppState } from "@/hooks/appstate";
+import { useAppState } from "@/hooks/cluster";
 import Link from "next/link";
 import Image from "next/image";
 import RabbitLogo from "../../public/svg/rabbitmq-logo.svg";

@@ -19,8 +19,8 @@ import { Frown, Loader2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import Modal from "../../ui/modal";
-import { useImportCluster } from "@/hooks/import-cluster";
-import { CreateRabbitMqClusterRequestSchema } from "@/schemas/CreateRabbitMqClusterRequestSchema";
+import { useImportCluster } from "@/hooks/cluster-import";
+import { CreateRabbitMqClusterRequestSchema } from "@/schemas/cluster-schemas";
 
 function ImportClusterForm() {
   const t = useTranslations();
@@ -44,6 +44,33 @@ function ImportClusterForm() {
   ) => {
     try {
       setCreationError(undefined);
+
+      let toastId = toast.loading(t("ImportClusterForm.Creating"));
+
+      try {
+        let creaedCluster = await importCluster(values);
+        if (creaedCluster.Result) {
+          router.push(`/dashboard/${creaedCluster.Result.Id}`);
+          toast.success("Cluster created!", { id: toastId });
+          closeModal();
+          router.refresh();
+        } else {
+          console.error(creaedCluster.ErrorMessage);
+          setCreationError(creaedCluster.ErrorMessage!);
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error(
+          <>
+            {t("ImportClusterForm.FailToCreate")}{" "}
+            <Frown className="fill-yellow-500" />
+          </>,
+          {
+            id: toastId,
+          }
+        );
+      }
+
       const createCluster = async () => {
         let creaedCluster = await importCluster(values);
         if (creaedCluster.Result) {
@@ -82,18 +109,18 @@ function ImportClusterForm() {
         <form
           role="form"
           onSubmit={form.handleSubmit(submit)}
-          className="border-neutral-50 border-2  rounded-sm  p-5 grid"
+          className=" rounded-sm  p-5 grid"
         >
           <div className=" w-full">
             <p
               className={cn(
-                "bg-red-100/50 text-center  rounded-sm text-red-500",
+                "bg-red-100/50 text-center text-sm  rounded-sm text-red-500",
                 {
                   "p-2": creationError,
                 }
               )}
             >
-              {creationError}
+              {t(creationError)}
             </p>
 
             <FormField
@@ -230,6 +257,7 @@ function ImportClusterForm() {
             <Button
               variant="ghost"
               size="sm"
+              type="reset"
               disabled={form.formState.isSubmitting}
               onClick={() => closeModal()}
               className="rounded-sm  active:scale-95 active:ring-slate-900 active:ring-2 active:ring-offset-1 transition duration-200"

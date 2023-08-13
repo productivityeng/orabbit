@@ -12,3 +12,9 @@ export type RabbitMqCluster = {
     password: string
 }
 
+export type RabbitMqUser = {
+    Id: number
+    BrokerId: number
+    Username: string
+    PasswordHash: string
+}

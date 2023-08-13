@@ -1,6 +1,6 @@
 package contracts
 
-type CreateBrokerRequest struct {
+type CreateClusterRequest struct {
 	Name        string `json:"name" binding:"required"`
 	Description string `json:"description" binding:"required" `
 	Host        string `json:"host" binding:"required"`
