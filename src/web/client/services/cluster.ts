@@ -1,6 +1,6 @@
 "use server"
 import { RabbitMqCluster } from "@/types";
-import { FrontResponse } from "./common/frontresponse";
+import { FrontResponse, PaginatedResponse } from "./common/frontresponse";
 import { CreateRabbitMqClusterRequestSchema } from "@/schemas/cluster-schemas";
 import { boolean, z } from "zod";
 
@@ -18,12 +18,12 @@ export async function fetchAllClusters(){
         cache:'no-store'
     })
     let payloadResult = await result.json();
-    let finalResult =  payloadResult as FetchAllClustersResult
+    let finalResult =  payloadResult as PaginatedResponse<RabbitMqCluster>
     return finalResult;
 }
 
 export async function createNewCluster(request: z.infer<typeof CreateRabbitMqClusterRequestSchema>): Promise<FrontResponse<RabbitMqCluster | null>> {
-    let response = await fetch(`${process.env.PRIVATE_INVENTORY_ENDPOINT!}/cluster`, {
+    let response = await fetch(`${process.env.PRIVATE_INVENTORY_ENDPOINT!}/cluster  `, {
       body: JSON.stringify(request),
       method: "POST",
     });

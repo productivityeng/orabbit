@@ -27,6 +27,7 @@ function UsersLayout({ children }: { children: React.ReactNode }) {
           </Button>
         </Link>
       </Heading>
+      <Separator className="my-2" />
       {children}
     </>
   );

@@ -5,13 +5,20 @@ import { fetchUser } from "@/services/users";
 async function UserPage({
   params,
 }: {
-  params: { userId: number; clusterId: number };
+  params: { userId: string; clusterId: number };
 }) {
-  let existingUserResponse = await fetchUser(params.userId, params.clusterId);
+  let existingUserResponse = null;
+
+  if (params.userId != "new") {
+    existingUserResponse = await fetchUser(
+      parseInt(params.userId),
+      params.clusterId
+    );
+  }
 
   return (
     <div>
-      <UserForm initialData={existingUserResponse.Result} />
+      <UserForm initialData={existingUserResponse?.Result ?? null} />
     </div>
   );
 }

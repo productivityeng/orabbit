@@ -1,11 +1,21 @@
-"use client";
-import Heading from "@/components/Heading/Heading";
-import { Button } from "@/components/ui/button";
-import { User, Plus } from "lucide-react";
+import { fetchUsersFromCluster } from "@/services/users";
 import React from "react";
+import UsersClient from "./components/client";
+import { UserColumn } from "./components/columns";
 
-function UsersPage() {
-  return <div>User Page</div>;
+async function UsersPage({ params }: { params: { clusterId: number } }) {
+  const users = await fetchUsersFromCluster(params.clusterId);
+  const formattedUser: UserColumn[] = users.result.map((user) => ({
+    id: user.Id.toString(),
+    username: user.Username,
+    passwordHash: user.PasswordHash,
+  }));
+
+  return (
+    <div className="grid grid-cols-2">
+      <UsersClient data={formattedUser} />
+    </div>
+  );
 }
 
 export default UsersPage;

@@ -47,7 +47,7 @@ function UserForm({ initialData }: UserFormProps) {
   const onSubmit = async (data: z.infer<typeof CreateRabbitmqUserSchema>) => {
     let toastId = toast.loading("Criando usuario");
     try {
-      const response = await createUser(data);
+      const response = await createUser(params.clusterId, data);
       if (response.Result) {
         router.push(
           `/dashboard/${params.clusterId}/users/${response.Result.Id}`
@@ -180,7 +180,7 @@ function UserForm({ initialData }: UserFormProps) {
             variant="outline"
             type="button"
             size="sm"
-            onClick={() => router.back()}
+            onClick={() => router.push("./")}
           >
             Cancelar
           </Button>

@@ -53,7 +53,6 @@ function ImportClusterForm() {
           router.push(`/dashboard/${creaedCluster.Result.Id}`);
           toast.success("Cluster created!", { id: toastId });
           closeModal();
-          router.refresh();
         } else {
           console.error(creaedCluster.ErrorMessage);
           setCreationError(creaedCluster.ErrorMessage!);
