@@ -21,9 +21,9 @@ function Sidebar({ Clusters }: { Clusters: RabbitMqCluster[] }) {
     <div className="bg-slate-900 text-slate-500 h-full w-full flex flex-col items-center justify-between pb-16 space-y-12">
       <div className="w-full flex flex-col space-y-8">
         <Link href="/dashboard">
-          <div className="flex justify-center py-5 text-white items-center space-x-2 font-semibold text-2xl">
+          <div className="flex justify-center py-5 text-white items-center space-x-2 font-semibold text-2xl truncate">
             <Image alt="" className="w-8 h-8" src={RabbitLogo} />
-            <div>ORabbit</div>
+            <p className="truncate">Ostern</p>
           </div>
         </Link>
         <div>

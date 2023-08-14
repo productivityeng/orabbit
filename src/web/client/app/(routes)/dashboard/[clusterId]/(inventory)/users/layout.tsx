@@ -22,7 +22,7 @@ function UsersLayout({ children }: { children: React.ReactNode }) {
       >
         <Separator />
         <Link hidden={!pathname.endsWith(homeUserSlice)} href={"users/new"}>
-          <Button>
+          <Button size="sm">
             <Plus className="w-4 h-4 mr-2" /> New User
           </Button>
         </Link>

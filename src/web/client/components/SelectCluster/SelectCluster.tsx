@@ -47,13 +47,15 @@ export function SelectCluster({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[300px] justify-between text-center text-slate-400 bg-slate-700 border-0 hover:bg-rabbit hover:text-slate-100 duration-200 ease-in-out"
+          className="w-full justify-between text-center text-slate-400 bg-slate-700 border-0 hover:bg-rabbit hover:text-slate-100 duration-200 ease-in-out"
         >
-          {SelectedCluster?.name ?? t("ClusterSelect") + "..."}
+          <p className="truncate">
+            {SelectedCluster?.name ?? t("ClusterSelect") + "..."}
+          </p>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0">
+      <PopoverContent className="w-full p-0">
         <Command className="w-full">
           <CommandList>
             <CommandInput
@@ -82,7 +84,7 @@ export function SelectCluster({
                         SelectedCluster && SelectedCluster.Id === cluster.Id,
                     })}
                   />
-                  {cluster.name}
+                  <p className="truncate"> {cluster.name}</p>
                 </CommandItem>
               ))}
             </CommandGroup>

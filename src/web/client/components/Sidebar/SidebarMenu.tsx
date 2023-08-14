@@ -68,7 +68,7 @@ function MenuItems() {
 
   return (
     <>
-      <p className="px-6 divide-y-8 text-sm text-muted-foreground">
+      <p className="px-6 divide-y-8 text-sm text-muted-foreground truncate">
         Clusters items
       </p>
       {menuItems.map((item) => (
@@ -82,12 +82,15 @@ function MenuItems() {
                 className={cn("transition duration-200", item.iconColor)}
               />
             </div>
-            <p className="text-white text-base"> {t(item.label)}</p>
+            <p className="text-white text-base truncate hidden lg:block">
+              {" "}
+              {t(item.label)}
+            </p>
           </div>
         </Link>
       ))}
       <div className="space-y-2">
-        <p className="px-6 divide-y-8 text-xs text-muted-foreground">
+        <p className="px-6 divide-y-8 text-xs text-muted-foreground truncate">
           Compliance
         </p>
         {complianceItems.map((item) => (
@@ -101,13 +104,18 @@ function MenuItems() {
                   className={cn("transition duration-200", item.iconColor)}
                 />
               </div>
-              <p className="text-white text-base"> {t(item.label)}</p>
+              <p className="text-white text-base truncate  hidden lg:block">
+                {" "}
+                {t(item.label)}
+              </p>
             </div>
           </Link>
         ))}
       </div>
       <div className="space-y-2">
-        <p className="px-6 divide-y-8 text-xs text-muted-foreground">General</p>{" "}
+        <p className="px-6 divide-y-8 text-xs text-muted-foreground truncate">
+          General
+        </p>{" "}
         {generalItems.map((item) => (
           <Link
             key={item.href}
@@ -119,7 +127,10 @@ function MenuItems() {
                   className={cn("transition duration-200", item.iconColor)}
                 />
               </div>
-              <p className="text-white text-base"> {t(item.label)}</p>
+              <p className="text-white text-base truncat hidden lg:block ">
+                {" "}
+                {t(item.label)}
+              </p>
             </div>
           </Link>
         ))}
