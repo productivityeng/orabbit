@@ -9,7 +9,8 @@
     "Unknow": "Erro desconhecido, contact o suporte"
   },
   "Commons": {
-    "User": "Usuários",
+    "Users": "Usuários",
+    "User": "Usuário",
     "Exchange": "Exchange",
     "Queue": "Filas",
     "Import": "Importar",

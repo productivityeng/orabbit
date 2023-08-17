@@ -12,8 +12,7 @@ async function UsersPage({ params }: { params: { clusterId: number } }) {
   }));
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-7">
-      <UsersClient data={formattedUser} />
+    <div className="">
       <UsersClient data={formattedUser} />
     </div>
   );

@@ -26,7 +26,6 @@ async function DashboardLayout({ children }: { children: React.ReactNode }) {
         <div className="px-10 py-5 h-full">
           {" "}
           <ImportClusterProvider />
-          <DeleteCluseter />
           {children}
         </div>
       </div>

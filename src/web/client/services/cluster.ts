@@ -22,6 +22,20 @@ export async function fetchAllClusters(){
     return finalResult;
 }
 
+export async function fetchCluster(clusterId:number) {
+  let response = await fetch(`${process.env.PRIVATE_INVENTORY_ENDPOINT}/cluster/${clusterId}`,{
+    cache:'no-store'
+  })
+
+  switch(response.status){
+    case 200:
+      let contentResponse = await response.json() as RabbitMqCluster;
+      return contentResponse;
+  }
+
+  throw new Error("Fail to find cluster")
+}
+
 export async function createNewCluster(request: z.infer<typeof CreateRabbitMqClusterRequestSchema>): Promise<FrontResponse<RabbitMqCluster | null>> {
     let response = await fetch(`${process.env.PRIVATE_INVENTORY_ENDPOINT!}/cluster  `, {
       body: JSON.stringify(request),
