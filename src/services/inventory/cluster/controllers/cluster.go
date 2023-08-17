@@ -37,7 +37,7 @@ func NewClusterController(ClusterRepository repository.ClusterRepositoryInterfac
 
 // @BasePath /
 
-// PingExample godoc
+// CreateCluster
 // @Summary Register a new RabbitMQ Cluster
 // @Schemes
 // @Description Create a new <b>RabbitMQ</b> cluster. The credential provider must be valid and the cluster operational
@@ -79,7 +79,7 @@ func (ctrl *clusterControllerDefaultImp) CreateCluster(c *gin.Context) {
 	c.JSON(http.StatusCreated, resp)
 }
 
-// PingExample godoc
+// DeleteCluster
 // @Summary Soft delete a cluster
 // @Schemes
 // @Description Soft delete a cluster will not completly erase from database, but will not show up anymore in the
@@ -110,7 +110,7 @@ func (ctrl *clusterControllerDefaultImp) DeleteCluster(c *gin.Context) {
 	c.JSON(http.StatusNoContent, gin.H{"message": fmt.Sprintf("cluster with id %d successufly deleted", clusterId)})
 }
 
-// PingExample godoc
+// FindCluster
 // @Summary Verify if exists a rabbitmqcluster
 // @Schemes
 // @Description Check if exists an rabbitmq cluster with host es
@@ -140,7 +140,7 @@ func (ctrl *clusterControllerDefaultImp) UpdateCluster(c *gin.Context) {
 
 }
 
-// PingExample godoc
+// GetCluster
 // @Summary Retrieve a single rabbitmq cluster
 // @Schemes
 // @Description Retrieve a single rabbitmq cluster

@@ -267,6 +267,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/{clusterId}/user/usersfromcluster": {
+            "get": {
+                "description": "Retrieve all users that exist on rabbit cluster. Event if it its registered in ostern",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Retrieve all users from rabbitmq cluster",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve users",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/{clusterId}/user/{userId}": {
             "get": {
                 "description": "Recovery the details of a specific mirror user that is already imported from the cluster",

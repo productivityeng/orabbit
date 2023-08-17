@@ -30,9 +30,19 @@ type CreateNewUserResult struct {
 	PasswordHash string
 }
 
+type ListUserResult struct {
+	PasswordHash string
+	Name         string
+}
+
+type ListAllUsersRequest struct {
+	RabbitAccess
+}
+
 type UserManagement interface {
 	GetUserHash(request GetUserHashRequest, ctx context.Context) (string, error)
 	CreateNewUser(request CreateNewUserRequest, ctx context.Context) (*CreateNewUserResult, error)
+	ListAllUser(request ListAllUsersRequest) ([]ListUserResult, error)
 }
 type UserManagementImpl struct {
 }
@@ -40,6 +50,24 @@ type UserManagementImpl struct {
 func NewUserManagement() *UserManagementImpl {
 
 	return &UserManagementImpl{}
+}
+
+func (management *UserManagementImpl) ListAllUser(request ListAllUsersRequest) ([]ListUserResult, error) {
+	rmqc, err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.Username, request.Password)
+	if err != nil {
+		logrus.WithError(err).Error("Error trying to connect to cluster")
+		return nil, errors.New("[CLUSTER_CONNECT_FAIL]")
+	}
+
+	users, err := rmqc.ListUsers()
+	var result []ListUserResult
+	for _, user := range users {
+		result = append(result, ListUserResult{
+			PasswordHash: user.PasswordHash,
+			Name:         user.Name,
+		})
+	}
+	return result, nil
 }
 
 func (management *UserManagementImpl) GetUserHash(request GetUserHashRequest, ctx context.Context) (string, error) {

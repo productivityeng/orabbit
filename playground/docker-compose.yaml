@@ -60,3 +60,5 @@ networks:
 volumes:
   db:
     driver: local
+  rabbit:
+    driver: local

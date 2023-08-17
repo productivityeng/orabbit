@@ -9,6 +9,7 @@ import (
 
 type UserController interface {
 	ListUsers(c *gin.Context)
+	ListUsersFromCluster(c *gin.Context)
 	CreateUser(c *gin.Context)
 	UpdateUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
