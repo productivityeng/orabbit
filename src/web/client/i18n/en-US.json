@@ -42,7 +42,9 @@
   },
   "UsersPage": {
     "TopDescription": "Configure e manage all aspects related to access of your cluster",
-    "AddUser": "Add new user"
+    "AddUser": "Add new user",
+    "TrackedUsers": "Tracked users",
+    "TrackedUsersDescription": "Users who are registered with ostern. There may be users registered in the rabbit cluster that do not appear in this list."
   },
   "QueuesPage": {
     "TopDescription": "Configure e manage all aspects related to queues of your cluster"

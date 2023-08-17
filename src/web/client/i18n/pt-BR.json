@@ -49,7 +49,9 @@
   },
   "UsersPage": {
     "TopDescription": "Configure e gerencie todos os usuarios que acessam o seu cluster",
-    "AddUser": "Novo usuario"
+    "AddUser": "Novo usuario",
+    "TrackedUsers": "Usuarios rastreados",
+    "TrackedUsersDescription": "Usuarios que estao registrados no ostern. Podem haver usuarios cadastrados no cluster de rabbit que nao aparecem nesse lista"
   },
   "QueuesPage": {
     "TopDescription": "Configure e gerencie todos os aspectos relacionados as filas do seu cluster"
