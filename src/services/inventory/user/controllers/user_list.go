@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/contracts"
 	"github.com/productivityeng/orabbit/src/packages/common"
+	common_rabbit "github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/user"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -90,7 +91,7 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 	}
 	log.WithFields(fields).Info("Looking for rabbitmq users from cluster")
 
-	usersFromCluster, err := userCtrl.UserManagement.ListAllUser(user.ListAllUsersRequest{RabbitAccess: user.RabbitAccess{
+	usersFromCluster, err := userCtrl.UserManagement.ListAllUser(user.ListAllUsersRequest{RabbitAccess: common_rabbit.RabbitAccess{
 		Host:     cluster.Host,
 		Port:     cluster.Port,
 		Username: cluster.User,
@@ -118,14 +119,14 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 
 	for _, userFromCluster := range usersFromCluster {
 		userResponse := contracts.GetUserResponse{
-			Name:         userFromCluster.Name,
+			Username:     userFromCluster.Name,
 			PasswordHash: userFromCluster.PasswordHash,
 			Id:           -1,
 		}
 
 	loopUsersFromdb:
 		for _, userFromDb := range usersFromDb {
-			if userFromDb.Username == userResponse.Name {
+			if userFromDb.Username == userResponse.Username {
 				userResponse.Id = userFromDb.Id
 				userResponse.IsRegistered = true
 				break loopUsersFromdb

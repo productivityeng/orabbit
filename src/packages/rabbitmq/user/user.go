@@ -5,23 +5,18 @@ import (
 	"errors"
 	"fmt"
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
+	"github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
 	"github.com/sirupsen/logrus"
 )
 
-type RabbitAccess struct {
-	Host     string
-	Port     int32
-	Username string
-	Password string
-}
-
 type GetUserHashRequest struct {
-	RabbitAccess
+	common.RabbitAccess
+
 	UserToRetrieveHash string
 }
 
 type CreateNewUserRequest struct {
-	RabbitAccess
+	common.RabbitAccess
 	UserToCreate            string
 	PasswordOfUsertToCreate string
 }
@@ -36,7 +31,7 @@ type ListUserResult struct {
 }
 
 type ListAllUsersRequest struct {
-	RabbitAccess
+	common.RabbitAccess
 }
 
 type UserManagement interface {

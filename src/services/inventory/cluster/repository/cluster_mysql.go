@@ -13,7 +13,7 @@ type ClusterRepositoryMysqlImpl struct {
 	Db *gorm.DB
 }
 
-func NewBrokerMysqlImpl(Db *gorm.DB) *ClusterRepositoryMysqlImpl {
+func NewClusterMysqlRepositoryImpl(Db *gorm.DB) *ClusterRepositoryMysqlImpl {
 	Db.AutoMigrate(&entities.ClusterEntity{})
 	/* if err != nil {
 		log.WithError(err).Fatal("erro migrating entity broker")

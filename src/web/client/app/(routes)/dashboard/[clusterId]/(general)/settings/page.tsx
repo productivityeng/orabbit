@@ -2,7 +2,7 @@ import React from "react";
 
 import { Separator } from "@/components/ui/separator";
 import SettingsHeader from "./components/settings-header";
-import { fetchCluster } from "@/services/cluster";
+import { fetchCluster } from "@/actions/cluster";
 import InfoCluster from "./components/info-cluster";
 
 async function SettingsPage({ params }: { params: { clusterId: number } }) {

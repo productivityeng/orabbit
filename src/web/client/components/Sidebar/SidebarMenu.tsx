@@ -16,6 +16,7 @@ import Link from "next/link";
 import React from "react";
 import { useAppState } from "@/hooks/cluster";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 const menuItems = [
   {
@@ -27,7 +28,7 @@ const menuItems = [
   {
     label: "Commons.Queue",
     icon: Mail,
-    href: "queues",
+    href: "queuesandstreams",
     iconColor: "text-orange-500",
   },
   {
@@ -65,6 +66,7 @@ const generalItems = [
 function MenuItems() {
   const t = useTranslations();
   const SelectedClusterId = useAppState((state) => state.SelectedClusterId);
+  const pathname = usePathname();
 
   return (
     <>
@@ -76,7 +78,14 @@ function MenuItems() {
           key={item.href}
           href={`/dashboard/${SelectedClusterId}/${item.href}`}
         >
-          <div className="flex group items-center justify-start   space-x-6 mx-5 px-2 py-1  hover:bg-slate-600/80  rounded-md hover:cursor-pointer hover:scale-105 duration-200 ease-in-out">
+          <div
+            className={cn(
+              "flex group items-center justify-start   space-x-6 mx-5 p-2  hover:bg-slate-600/80  rounded-md hover:cursor-pointer hover:scale-105 duration-200 ease-in-out",
+              {
+                "bg-slate-600": pathname.includes(item.href),
+              }
+            )}
+          >
             <div>
               <item.icon
                 className={cn("transition duration-200", item.iconColor)}
@@ -98,7 +107,14 @@ function MenuItems() {
             key={item.href}
             href={`/dashboard/${SelectedClusterId}/${item.href}`}
           >
-            <div className="flex group items-center justify-start   space-x-6 mx-5 px-2 py-1  hover:bg-slate-600/80  rounded-md hover:cursor-pointer hover:scale-105 duration-200 ease-in-out">
+            <div
+              className={cn(
+                "flex group items-center justify-start   space-x-6 mx-5 p-2  hover:bg-slate-600/80  rounded-md hover:cursor-pointer hover:scale-105 duration-200 ease-in-out",
+                {
+                  "bg-slate-600": pathname.includes(item.href),
+                }
+              )}
+            >
               <div>
                 <item.icon
                   className={cn("transition duration-200", item.iconColor)}
@@ -121,7 +137,14 @@ function MenuItems() {
             key={item.href}
             href={`/dashboard/${SelectedClusterId}/${item.href}`}
           >
-            <div className="flex group items-center justify-start   space-x-6 mx-5 px-2 py-1  hover:bg-slate-600/80  rounded-md hover:cursor-pointer hover:scale-105 duration-200 ease-in-out">
+            <div
+              className={cn(
+                "flex group items-center justify-start   space-x-6 mx-5 p-2  hover:bg-slate-600/80  rounded-md hover:cursor-pointer hover:scale-105 duration-200 ease-in-out",
+                {
+                  "bg-slate-600": pathname.includes(item.href),
+                }
+              )}
+            >
               <div>
                 <item.icon
                   className={cn("transition duration-200", item.iconColor)}

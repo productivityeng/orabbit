@@ -2,21 +2,22 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import CellAction from "./cell-action";
+import CellMaintening from "./cell-maintening";
+import { RabbitMqUser } from "@/types";
 
-export type UserColumn = {
-  id: string;
-  username: string;
-  passwordHash: string;
-};
-
-export const columns: ColumnDef<UserColumn>[] = [
+export const columns: ColumnDef<RabbitMqUser>[] = [
   {
-    accessorKey: "username",
+    accessorKey: "Username",
     header: "Username",
   },
   {
-    accessorKey: "passwordHash",
+    accessorKey: "PasswordHash",
     header: "PasswordHash",
+  },
+  {
+    accessorKey: "isRegistered",
+    header: () => <b>Is Registered</b>,
+    cell: ({ row }) => <CellMaintening User={row.original} />,
   },
   {
     id: "actions",

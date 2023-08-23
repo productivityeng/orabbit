@@ -20,7 +20,7 @@ export default async function RootLayout({
         locale={getClientSideLocale()}
         messages={await getClientSideTranslation()}
       >
-        <body className={cn(inter.className, "bg-white")}>
+        <body className={cn(inter.className, "bg-white", "h-screen")}>
           <Toaster position="top-center" />
           {children}
         </body>

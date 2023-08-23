@@ -21,6 +21,7 @@ import {
 import { Button } from "./button";
 import { Input } from "./input";
 import { useState } from "react";
+import { FileStack } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -45,11 +46,17 @@ export function DataTable<TData, TValue>({
     state: {
       columnFilters,
     },
+    initialState: {
+      pagination: {
+        pageIndex: 0,
+        pageSize: 7,
+      },
+    },
   });
 
   return (
-    <div>
-      <div className="flex items-center py-4">
+    <div className="max-h-screen ">
+      <div className="flex items-center py-4 space-x-4">
         <Input
           placeholder="Search"
           value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
@@ -58,6 +65,10 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
+        <Button className="bg-rabbit">
+          {" "}
+          <FileStack className="w-4 h-4 mr-2" /> Mass import
+        </Button>
       </div>
       <div className="rounded-md border">
         <Table>

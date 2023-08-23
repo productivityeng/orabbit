@@ -1,6 +1,6 @@
 import React from "react";
 import UserForm from "./components/user-form";
-import { fetchUser } from "@/services/users";
+import { fetchUser } from "@/actions/users";
 
 async function UserPage({
   params,

@@ -1,4 +1,4 @@
-import { DeleteCluster } from "@/services/cluster"
+import { DeleteCluster } from "@/actions/cluster"
 import { create } from "zustand"
 
 

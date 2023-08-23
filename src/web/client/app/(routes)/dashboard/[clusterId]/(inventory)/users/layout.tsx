@@ -12,7 +12,7 @@ function UsersLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const homeUserSlice = "/users";
   return (
-    <>
+    <div className="max-h-screen">
       <Heading
         Icon={UserIcon}
         IconColor="text-purple-500 "
@@ -29,7 +29,7 @@ function UsersLayout({ children }: { children: React.ReactNode }) {
       </Heading>
       <Separator className="my-2" />
       {children}
-    </>
+    </div>
   );
 }
 

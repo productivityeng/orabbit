@@ -16,7 +16,7 @@ var overviewManagement rabbitmq.OverviewManagement
 
 func Routes(routes *gin.Engine, db *gorm.DB) {
 	overviewManagement = rabbitmq.NewOverviewManagementImpl()
-	brokerRepository = repository.NewBrokerMysqlImpl(db)
+	brokerRepository = repository.NewClusterMysqlRepositoryImpl(db)
 	clusterValidator = validators.NewClusterValidatorDefault(brokerRepository, overviewManagement)
 	clusterController = broker_controller.NewClusterController(brokerRepository, clusterValidator)
 

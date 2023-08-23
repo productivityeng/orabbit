@@ -1,17 +1,13 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Plus } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
 import React from "react";
-import { UserColumn, columns } from "./columns";
+import { columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
-import Heading from "@/components/Heading/Heading";
 import SimpleHeading from "@/components/Heading/SimpleHeading";
 import { useTranslations } from "next-intl";
+import { RabbitMqUser } from "@/types";
 
 interface UsersClientProps {
-  data: UserColumn[];
+  data: RabbitMqUser[];
 }
 
 function UsersClient({ data }: UsersClientProps) {
@@ -22,7 +18,7 @@ function UsersClient({ data }: UsersClientProps) {
         title={t("UsersPage.TrackedUsers")}
         description={t("UsersPage.TrackedUsersDescription")}
       />
-      <DataTable searchKey="username" columns={columns} data={data} />
+      <DataTable searchKey="Username" columns={columns} data={data} />
     </div>
   );
 }

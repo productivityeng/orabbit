@@ -69,6 +69,30 @@ definitions:
 info:
   contact: {}
 paths:
+  /{clusterId}/queue/queuesfromcluster:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all users that exist on rabbit cluster. Event if it its
+        registered in ostern
+      parameters:
+      - description: Cluster id from where retrieve users
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Retrieve all users from rabbitmq cluster
+      tags:
+      - Queue
   /{clusterId}/user:
     get:
       consumes:

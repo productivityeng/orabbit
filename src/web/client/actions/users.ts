@@ -2,7 +2,7 @@
 
 import { CreateRabbitmqUserSchema } from "@/schemas/user-schemas";
 import { FrontResponse, PaginatedResponse } from "./common/frontresponse";
-import { RabbitMqCluster, RabbitMqUser } from "@/types";
+import { ImportRabbitMqUser, RabbitMqCluster, RabbitMqUser } from "@/types";
 import { z } from "zod";
 
 
@@ -13,7 +13,7 @@ import { z } from "zod";
  * @param pagesize length of each page
  * @returns 
  */
-export async function fetchUsersFromCluster(clusterId: number,page:number = 1,pagesize:number = 10){
+export async function fetchRegisteredUsers(clusterId: number,page:number = 1,pagesize:number = 10){
   let result = await fetch(`${process.env.PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/user?PageNumber=${page}&PageSize=${pagesize}`,{
       method:'GET',
       cache:'no-store'
@@ -23,7 +23,32 @@ export async function fetchUsersFromCluster(clusterId: number,page:number = 1,pa
   return finalResult;
 }
 
-export async function fetchUser(userId: number,clusterId: number) : Promise<FrontResponse<RabbitMqUser| null>> {
+export async function importUserFromCluster(request:ImportRabbitMqUser): Promise<RabbitMqUser>{
+  let result = await fetch(`${process.env.PRIVATE_INVENTORY_ENDPOINT!}/${request.ClusterId}/user`,{
+    method:'POST',
+    cache:'no-store',
+    body: JSON.stringify(request)
+  })
+
+let payloadResult = await result.json();
+return payloadResult
+}
+
+/**
+ * 
+ * @param clusterId id of a broker where from the user will be searched
+ * @returns 
+ */
+export async function fetchUsersFromCluster(clusterId: number): Promise<RabbitMqUser[]>{
+  let result = await fetch(`${process.env.PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/user/usersfromcluster`,{
+      method:'GET',
+      cache:'no-store'
+  })
+  let payloadResult = await result.json();
+  return payloadResult
+}
+
+export async function fetchUser(userId: number,clusterId: number) : Promise<FrontResponse<RabbitMqUser|null>> {
   const fetchUserEndpoint = `${process.env.PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/user/${userId}`
   let response = await fetch(fetchUserEndpoint,{
     method: "GET",

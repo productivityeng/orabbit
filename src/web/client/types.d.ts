@@ -17,4 +17,11 @@ export type RabbitMqUser = {
     BrokerId: number
     Username: string
     PasswordHash: string
+    IsRegistered: boolean
+}
+
+export type ImportRabbitMqUser = {
+    ClusterId: number
+    Username: string
+    Create: boolean = false
 }

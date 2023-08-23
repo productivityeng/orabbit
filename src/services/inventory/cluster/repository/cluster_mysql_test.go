@@ -50,7 +50,7 @@ func (brs *BrokerRepositorySuite) SetupSuite() {
 
 	assert.NoError(brs.T(), err)
 
-	brs.SUT = NewBrokerMysqlImpl(brs.DB)
+	brs.SUT = NewClusterMysqlRepositoryImpl(brs.DB)
 	assert.IsType(brs.T(), &ClusterRepositoryMysqlImpl{}, brs.SUT)
 
 	brs.broker = &entities.ClusterEntity{

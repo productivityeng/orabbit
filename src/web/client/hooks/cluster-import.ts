@@ -1,6 +1,6 @@
 import { CreateRabbitMqClusterRequestSchema } from "@/schemas/cluster-schemas";
-import { createNewCluster } from "@/services/cluster";
-import { FrontResponse } from "@/services/common/frontresponse";
+import { createNewCluster } from "@/actions/cluster";
+import { FrontResponse } from "@/actions/common/frontresponse";
 import { RabbitMqCluster } from "@/types";
 import { z } from "zod";
 import { create } from "zustand";

@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/user"
 	"github.com/productivityeng/orabbit/user/dto"
 	"github.com/productivityeng/orabbit/user/entities"
@@ -62,7 +63,7 @@ func (entity *UserControllerImpl) CreateUser(c *gin.Context) {
 	if importUserReuqest.Create {
 		log.WithFields(fields).Info("User want to create a new user")
 		result, err := entity.UserManagement.CreateNewUser(user.CreateNewUserRequest{
-			RabbitAccess: user.RabbitAccess{
+			RabbitAccess: common.RabbitAccess{
 				Host:     broker.Host,
 				Port:     broker.Port,
 				Username: broker.User,
@@ -82,7 +83,7 @@ func (entity *UserControllerImpl) CreateUser(c *gin.Context) {
 		log.WithFields(fields).Info("broker founded")
 		log.WithFields(fields).Info("looking for passwordhash")
 		passwordHash, err = entity.UserManagement.GetUserHash(user.GetUserHashRequest{
-			RabbitAccess: user.RabbitAccess{
+			RabbitAccess: common.RabbitAccess{
 				Host:     broker.Host,
 				Port:     broker.Port,
 				Username: broker.User,

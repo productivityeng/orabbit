@@ -15,7 +15,7 @@ var brokerRepository repository2.ClusterRepositoryInterface
 var userManagement user.UserManagement
 
 func Routes(routes *gin.Engine, db *gorm.DB) *gin.RouterGroup {
-	brokerRepository = repository2.NewBrokerMysqlImpl(db)
+	brokerRepository = repository2.NewClusterMysqlRepositoryImpl(db)
 	userRepository = repository.NewUserRepositoryMySql(db)
 	userManagement = user.NewUserManagement()
 

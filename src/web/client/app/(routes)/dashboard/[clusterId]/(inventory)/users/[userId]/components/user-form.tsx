@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { CreateRabbitmqUserSchema } from "@/schemas/user-schemas";
-import { createUser } from "@/services/users";
+import { createUser } from "@/actions/users";
 import { RabbitMqUser } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Frown, Loader2 } from "lucide-react";
