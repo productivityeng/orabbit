@@ -14,7 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { CreateRabbitmqUserSchema } from "@/schemas/user-schemas";
 import { createUser } from "@/actions/users";
-import { RabbitMqUser } from "@/types";
+import { RabbitMqQueue, RabbitMqUser } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Frown, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -23,9 +23,10 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { z } from "zod";
+import { CreateRabbitMqQeueueRequestSchema } from "@/schemas/queue-schemas";
 
 interface UserFormProps {
-  initialData: RabbitMqUser | null;
+  initialData: RabbitMqQueue | null;
 }
 
 function UserForm({ initialData }: UserFormProps) {
@@ -34,25 +35,26 @@ function UserForm({ initialData }: UserFormProps) {
   const [creationError, setCreationError] = useState<string>();
   const t = useTranslations();
 
-  const form = useForm<z.infer<typeof CreateRabbitmqUserSchema>>({
-    resolver: zodResolver(CreateRabbitmqUserSchema),
+  const form = useForm<z.infer<typeof CreateRabbitMqQeueueRequestSchema>>({
+    resolver: zodResolver(CreateRabbitMqQeueueRequestSchema),
     defaultValues: {
-      clusterId: parseInt(params.clusterId.toString()),
-      password: "",
-      username: initialData?.Username,
-      create: false,
+      ClusterId: parseInt(params.clusterId.toString()),
+      QueueName: "",
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof CreateRabbitmqUserSchema>) => {
-    let toastId = toast.loading("Criando usuario");
+  const onSubmit = async (
+    data: z.infer<typeof CreateRabbitMqQeueueRequestSchema>
+  ) => {
+    let toastId = toast.loading("Importing a queue from cluster");
     try {
       const response = await createUser(params.clusterId, data);
+
       if (response.Result) {
         router.push(
-          `/dashboard/${params.clusterId}/users/${response.Result.Id}`
+          `/dashboard/${params.clusterId}/queuesandstreams/${response.Result.Id}`
         );
-        toast.success("Cluster created!", { id: toastId });
+        toast.success("Queue created!", { id: toastId });
         router.refresh();
       } else {
         console.error(response.ErrorMessage);
@@ -83,7 +85,7 @@ function UserForm({ initialData }: UserFormProps) {
 
   const action = initialData
     ? "Salvar"
-    : form.getValues().create
+    : form.getValues().Create
     ? "Criar"
     : "Importar";
 
@@ -109,16 +111,15 @@ function UserForm({ initialData }: UserFormProps) {
           <div className="w-1/2 py-2">
             <FormField
               control={form.control}
-              name="create"
+              name="Import"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center space-x-4 justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <FormLabel className="text-base">Criar</FormLabel>
                     <FormDescription className="text-justify">
-                      Ao criar um novo usuario ele sera adicionado ao cluster de
-                      rabbitMQ. Caso o usuario ja existe o mesmo não será
-                      sobrescrito, use a opcao de importar o usuario caso ele ja
-                      exista, não é necessário fornecer a senha para esta opção.
+                      Ao criar uma nova fila ela sera adicionada ao cluster de
+                      rabbitMQ. Caso a fila ja exista ela não será sobrescrita,
+                      use a opcao de importar fila caso ela ja exista.
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -135,16 +136,16 @@ function UserForm({ initialData }: UserFormProps) {
         <div className="w-1/2">
           <FormField
             control={form.control}
-            name="username"
+            name="QueueName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>Queue Name</FormLabel>
                 <FormControl>
                   <Input
                     className="col-span-3"
                     {...field}
                     type="text"
-                    placeholder="username"
+                    placeholder="queue name"
                   />
                 </FormControl>
                 <FormMessage />
@@ -153,28 +154,6 @@ function UserForm({ initialData }: UserFormProps) {
           />
         </div>
 
-        {(form.getValues().create || initialData) && (
-          <div className="w-1/2 py-2 transition-all duration-200">
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="col-span-3"
-                      {...field}
-                      type="password"
-                      placeholder="password"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        )}
         <div className="flex justify-end w-1/2 space-x-4 py-2">
           <Button
             variant="outline"

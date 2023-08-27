@@ -20,6 +20,16 @@ export type RabbitMqUser = {
     IsRegistered: boolean
 }
 
+export type RabbitMqQueue = {
+    Id: number
+    ClusterId: number
+    type: string
+    vhost: string
+    durable: boolean
+    auto_delete: false
+    arguments: {}
+}
+
 export type ImportRabbitMqUser = {
     ClusterId: number
     Username: string

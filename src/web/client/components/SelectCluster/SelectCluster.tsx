@@ -68,13 +68,8 @@ export function SelectCluster({
                 <CommandItem
                   key={"idx" + cluster.ID}
                   onSelect={(currentValue) => {
-                    if (SelectedCluster?.ID == cluster.ID) {
-                      router.push(`/dashboard`);
-                      SetSelectedClusterId(undefined);
-                    } else {
-                      SetSelectedClusterId(cluster.ID);
-                      router.push(`/dashboard/${cluster.ID}`);
-                    }
+                    SetSelectedClusterId(cluster.ID);
+                    router.push(`/dashboard/${cluster.ID}`);
                     setOpen(false);
                   }}
                 >

@@ -7,7 +7,11 @@ async function UsersPage({ params }: { params: { clusterId: number } }) {
 
   return (
     <div className="">
-      <UsersClient data={users} />
+      <UsersClient
+        data={users.sort((user1, user2) =>
+          user1.Username > user2.Username ? 1 : -1
+        )}
+      />
     </div>
   );
 }
