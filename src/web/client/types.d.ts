@@ -1,6 +1,6 @@
 
 export type RabbitMqCluster = {
-    Id: number
+    ID: number
     CreatedAt: Date
     updatedAt:Date
     deletedAt: Date | null

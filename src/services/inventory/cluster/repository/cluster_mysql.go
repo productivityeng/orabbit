@@ -58,9 +58,9 @@ func (repo *ClusterRepositoryMysqlImpl) ListCluster(pageSize int, pageNumber int
 	return &result, nil
 }
 
-func (repo *ClusterRepositoryMysqlImpl) DeleteCluster(brokerId int32, ctx context.Context) error {
-	fields := log.Fields{"brokerId": brokerId}
-	var broker = entities.ClusterEntity{Id: brokerId}
+func (repo *ClusterRepositoryMysqlImpl) DeleteCluster(clusterId uint, ctx context.Context) error {
+	fields := log.Fields{"clusterId": clusterId}
+	var broker = entities.ClusterEntity{Model: gorm.Model{ID: clusterId}}
 	err := repo.Db.First(&broker)
 	if err.Error != nil {
 		errorMsg := "broker id cound't not be found"
@@ -79,9 +79,9 @@ func (repo *ClusterRepositoryMysqlImpl) DeleteCluster(brokerId int32, ctx contex
 	return nil
 }
 
-func (repo *ClusterRepositoryMysqlImpl) GetCluster(brokerId int32, ctx context.Context) (*entities.ClusterEntity, error) {
-	fields := log.Fields{"brokerId": brokerId}
-	var broker = entities.ClusterEntity{Id: brokerId}
+func (repo *ClusterRepositoryMysqlImpl) GetCluster(clusterId uint, ctx context.Context) (*entities.ClusterEntity, error) {
+	fields := log.Fields{"clusterId": clusterId}
+	var broker = entities.ClusterEntity{Model: gorm.Model{ID: clusterId}}
 	err := repo.Db.WithContext(ctx).Unscoped().First(&broker)
 	if err.Error != nil {
 		errorMsg := "broker id cound't not be found"

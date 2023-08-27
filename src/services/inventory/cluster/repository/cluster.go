@@ -12,8 +12,8 @@ type ClusterRepositoryInterface interface {
 	//ListCluster retrieve a lista of broker with paginated options
 	ListCluster(pageSize int, pageNumber int) (*contracts.PaginatedResult[entities.ClusterEntity], error)
 	//DeleteCluster soft delete a broker with a provided brokerId
-	DeleteCluster(brokerId int32, ctx context.Context) error
+	DeleteCluster(clusterId uint, ctx context.Context) error
 	//GetCluster retrieve a broker with a provided brokerId
-	GetCluster(brokerId int32, ctx context.Context) (*entities.ClusterEntity, error)
+	GetCluster(clusterId uint, ctx context.Context) (*entities.ClusterEntity, error)
 	CheckIfHostIsAlreadyRegisted(host string, port int32, ctx context.Context) bool
 }

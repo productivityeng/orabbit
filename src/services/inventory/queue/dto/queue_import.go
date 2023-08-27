@@ -1,6 +1,6 @@
 package dto
 
 type QueueImportRequest struct {
-	ClusterId int32  `json:"ClusterId"`
+	ClusterId uint   `json:"ClusterId"`
 	QueueName string `json:"QueueName"`
 }

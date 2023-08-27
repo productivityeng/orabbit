@@ -33,7 +33,7 @@ func (q QueueControllerImpl) ListQueuesFromCluster(c *gin.Context) {
 	fields := log.Fields{"clusterId": clusterId}
 
 	log.WithFields(fields).Info("Looking for rabbitmq cluster")
-	cluster, err := q.ClusterRepository.GetCluster(int32(clusterId), c)
+	cluster, err := q.ClusterRepository.GetCluster(uint(clusterId), c)
 
 	if err != nil {
 		log.WithError(err).WithFields(fields).Error("Fail to retrieve cluster")

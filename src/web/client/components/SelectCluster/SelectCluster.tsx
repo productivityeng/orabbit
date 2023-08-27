@@ -66,14 +66,14 @@ export function SelectCluster({
             <CommandGroup className="w-full ">
               {Clusters.map((cluster) => (
                 <CommandItem
-                  key={"idx" + cluster.Id}
+                  key={"idx" + cluster.ID}
                   onSelect={(currentValue) => {
-                    if (SelectedCluster?.Id == cluster.Id) {
+                    if (SelectedCluster?.ID == cluster.ID) {
                       router.push(`/dashboard`);
                       SetSelectedClusterId(undefined);
                     } else {
-                      SetSelectedClusterId(cluster.Id);
-                      router.push(`/dashboard/${cluster.Id}`);
+                      SetSelectedClusterId(cluster.ID);
+                      router.push(`/dashboard/${cluster.ID}`);
                     }
                     setOpen(false);
                   }}
@@ -81,7 +81,7 @@ export function SelectCluster({
                   <Check
                     className={cn("mr-2 h-4 w-4 opacity-0 ", {
                       "opacity-100":
-                        SelectedCluster && SelectedCluster.Id === cluster.Id,
+                        SelectedCluster && SelectedCluster.ID === cluster.ID,
                     })}
                   />
                   <p className="truncate"> {cluster.name}</p>

@@ -24,7 +24,7 @@ func NewUserRepositoryMySql(Db *gorm.DB) *UserRepositoryMySql {
 	}
 }
 
-// /CreateUser store a new broker in storage with provided parameter
+// CreateUser store a new broker in storage with provided parameter
 func (repo *UserRepositoryMySql) CreateUser(userToCreate *userEntities.UserEntity) (*userEntities.UserEntity, error) {
 	tx := repo.Db.Save(userToCreate)
 	if tx.Error != nil {
@@ -36,7 +36,7 @@ func (repo *UserRepositoryMySql) CreateUser(userToCreate *userEntities.UserEntit
 }
 
 // ListUsers retrieve a lista of broker with paginated options
-func (repo *UserRepositoryMySql) ListUsers(brokerId int32, pageSize int, pageNumber int, ctx context.Context) (*contracts.PaginatedResult[dto.GetUserResponse], error) {
+func (repo *UserRepositoryMySql) ListUsers(clusterId uint, pageSize int, pageNumber int, ctx context.Context) (*contracts.PaginatedResult[dto.GetUserResponse], error) {
 	entryFields := log.Fields{"pageSize": pageSize, "pageNumber": pageNumber}
 	var result contracts.PaginatedResult[dto.GetUserResponse]
 	result.PageSize = pageSize
@@ -46,7 +46,7 @@ func (repo *UserRepositoryMySql) ListUsers(brokerId int32, pageSize int, pageNum
 
 	var resultsFromDb []*userEntities.UserEntity
 
-	err := repo.Db.WithContext(ctx).Where(userEntities.UserEntity{ClusterId: brokerId}).Offset(offset).Limit(pageSize).Find(&resultsFromDb).Error
+	err := repo.Db.WithContext(ctx).Where(userEntities.UserEntity{ClusterId: clusterId}).Offset(offset).Limit(pageSize).Find(&resultsFromDb).Error
 
 	if err != nil {
 		log.WithError(err).WithFields(entryFields).Error("error trying to query items for users")
@@ -67,9 +67,9 @@ func (repo *UserRepositoryMySql) ListUsers(brokerId int32, pageSize int, pageNum
 }
 
 // DeleteUser soft delete a broker with a provided brokerId
-func (repo *UserRepositoryMySql) DeleteUser(userId int32, ctx context.Context) error {
+func (repo *UserRepositoryMySql) DeleteUser(userId uint, ctx context.Context) error {
 	fields := log.Fields{"userId": userId}
-	var broker = userEntities.UserEntity{Id: userId}
+	var broker = userEntities.UserEntity{Model: gorm.Model{ID: userId}}
 	err := repo.Db.WithContext(ctx).First(&broker)
 	if err.Error != nil {
 		errorMsg := "broker id cound't not be found"
@@ -89,10 +89,10 @@ func (repo *UserRepositoryMySql) DeleteUser(userId int32, ctx context.Context) e
 }
 
 // GetUser retrieve a broker with a provided brokerId
-func (repo *UserRepositoryMySql) GetUser(clusterId int32, userId int32, ctx context.Context) (*userEntities.UserEntity, error) {
+func (repo *UserRepositoryMySql) GetUser(clusterId uint, userId uint, ctx context.Context) (*userEntities.UserEntity, error) {
 	fields := log.Fields{"brokerId": userId}
 	var user = userEntities.UserEntity{}
-	err := repo.Db.WithContext(ctx).Where(&userEntities.UserEntity{Id: userId, ClusterId: clusterId}).First(&user)
+	err := repo.Db.WithContext(ctx).Where(&userEntities.UserEntity{Model: gorm.Model{ID: userId}, ClusterId: clusterId}).First(&user)
 
 	if err.Error != nil {
 		errorMsg := "user id cound't not be found"
@@ -103,7 +103,7 @@ func (repo *UserRepositoryMySql) GetUser(clusterId int32, userId int32, ctx cont
 	return &user, nil
 }
 
-func (repo *UserRepositoryMySql) CheckIfUserExistsForCluster(cluster int32, username string, ctx context.Context) (bool, error) {
+func (repo *UserRepositoryMySql) CheckIfUserExistsForCluster(cluster uint, username string, ctx context.Context) (bool, error) {
 	count := int64(0)
 	err := repo.Db.WithContext(ctx).Model(&userEntities.UserEntity{}).Where("cluster_id = ? and username = ?", cluster, username).Count(&count).Limit(1)
 	if err.Error != nil {
@@ -113,7 +113,7 @@ func (repo *UserRepositoryMySql) CheckIfUserExistsForCluster(cluster int32, user
 	return count > 0, nil
 }
 
-func (repo *UserRepositoryMySql) ListAllRegisteredUsers(clusterId int32, ctx context.Context) ([]userEntities.UserEntity, error) {
+func (repo *UserRepositoryMySql) ListAllRegisteredUsers(clusterId uint, ctx context.Context) ([]userEntities.UserEntity, error) {
 	var users []userEntities.UserEntity
 	result := repo.Db.WithContext(ctx).Where(&userEntities.UserEntity{ClusterId: clusterId}).Find(&users)
 	if result.Error != nil {

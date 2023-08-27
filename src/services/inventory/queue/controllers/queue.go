@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/cluster/repository"
+	queue_repository "github.com/productivityeng/orabbit/queue/repository"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/queue"
 )
 
@@ -18,4 +19,5 @@ type QueueController interface {
 type QueueControllerImpl struct {
 	ClusterRepository repository.ClusterRepositoryInterface
 	QueueManagement   queue.QueueManagement
+	QueueRepository   queue_repository.QueueRepository
 }

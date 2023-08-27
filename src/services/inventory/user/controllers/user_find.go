@@ -38,7 +38,7 @@ func (entity *UserControllerImpl) FindUser(c *gin.Context) {
 		return
 	}
 
-	user, err := entity.UserRepository.GetUser(int32(clusterId), int32(userId), c)
+	user, err := entity.UserRepository.GetUser(uint(clusterId), uint(userId), c)
 	if err != nil {
 		log.WithError(err).WithContext(c).Error("Fail to retrieve user by id")
 		c.JSON(http.StatusNotFound, gin.H{"error": "[USER_NOT_FOUND]"})

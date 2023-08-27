@@ -14,7 +14,7 @@ export const useAppState = create<AppState>((set,get)=> ({
     AvailableClusters: undefined,
     SelectedClusterId: undefined,
     GetSelectedCluster: () => {
-        return get().AvailableClusters?.find(x => x.Id == get().SelectedClusterId)
+        return get().AvailableClusters?.find(x => x.ID == get().SelectedClusterId)
     },
     SetSelectedClusterId : (clusterId:number| undefined) =>{
         set({SelectedClusterId: clusterId})

@@ -45,7 +45,7 @@ func (userCtrl *UserControllerImpl) ListUsers(c *gin.Context) {
 	}
 	log.WithField("parameter", clusterIdParam).Info("Looking for list of users")
 
-	result, err := userCtrl.UserRepository.ListUsers(int32(clusterId), param.PageSize, param.PageNumber, c)
+	result, err := userCtrl.UserRepository.ListUsers(uint(clusterId), param.PageSize, param.PageNumber, c)
 
 	if err != nil {
 		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to retrieve users for the cluster")
@@ -82,7 +82,7 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 	fields := log.Fields{"clusterId": clusterId}
 
 	log.WithFields(fields).Info("Looking for rabbitmq cluster")
-	cluster, err := userCtrl.ClusterRepository.GetCluster(int32(clusterId), c)
+	cluster, err := userCtrl.ClusterRepository.GetCluster(uint(clusterId), c)
 
 	if err != nil {
 		log.WithError(err).WithFields(fields).Error("Fail to retrieve cluster")
@@ -105,7 +105,7 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 	}
 	log.WithFields(fields).Info("Looking for rabbitmq users from ostern")
 
-	usersFromDb, err := userCtrl.UserRepository.ListAllRegisteredUsers(cluster.Id, c)
+	usersFromDb, err := userCtrl.UserRepository.ListAllRegisteredUsers(cluster.ID, c)
 
 	if err != nil {
 		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to retrieve users for the cluster")
@@ -121,13 +121,13 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 		userResponse := contracts.GetUserResponse{
 			Username:     userFromCluster.Name,
 			PasswordHash: userFromCluster.PasswordHash,
-			Id:           -1,
+			Id:           0,
 		}
 
 	loopUsersFromdb:
 		for _, userFromDb := range usersFromDb {
 			if userFromDb.Username == userResponse.Username {
-				userResponse.Id = userFromDb.Id
+				userResponse.Id = userFromDb.ID
 				userResponse.IsRegistered = true
 				break loopUsersFromdb
 			}

@@ -14,6 +14,7 @@ function Sidebar({ Clusters }: { Clusters: RabbitMqCluster[] }) {
     SelectedClusterId,
     GetSelectedCluster,
   } = useAppState();
+  
   useEffect(() => {
     SetAvailableClusters(Clusters);
   }, [SelectedClusterId]);

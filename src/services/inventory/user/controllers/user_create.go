@@ -104,7 +104,7 @@ func (entity *UserControllerImpl) CreateUser(c *gin.Context) {
 	userCreated, err := entity.UserRepository.CreateUser(&entities.UserEntity{
 		Username:     importUserReuqest.Username,
 		PasswordHash: passwordHash,
-		ClusterId:    broker.Id,
+		ClusterId:    broker.ID,
 	})
 
 	if err != nil {
@@ -114,10 +114,10 @@ func (entity *UserControllerImpl) CreateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, dto.GetUserResponse{
-		Id:           userCreated.Id,
+		Id:           userCreated.ID,
 		Username:     userCreated.Username,
 		PasswordHash: userCreated.PasswordHash,
-		BrokerId:     userCreated.ClusterId,
+		ClusterId:    userCreated.ClusterId,
 	})
 
 }

@@ -8,15 +8,15 @@ import (
 )
 
 type UserRepository interface {
-	///CreateUser store a new broker in storage with provided parameter
+	// CreateUser store a new broker in storage with provided parameter
 	CreateUser(broker *userEntities.UserEntity) (*userEntities.UserEntity, error)
 	//ListUsers retrieve a lista of broker with paginated options
-	ListUsers(brokerId int32, pageSize int, pageNumber int, ctx context.Context) (*contracts.PaginatedResult[dto.GetUserResponse], error)
+	ListUsers(clusterId uint, pageSize int, pageNumber int, ctx context.Context) (*contracts.PaginatedResult[dto.GetUserResponse], error)
 	//DeleteUser soft delete a broker with a provided brokerId
-	DeleteUser(userId int32, ctx context.Context) error
+	DeleteUser(userId uint, ctx context.Context) error
 	//GetUser retrieve a broker with a provided brokerId
-	GetUser(clusterId int32, userId int32, ctx context.Context) (*userEntities.UserEntity, error)
+	GetUser(clusterId uint, userId uint, ctx context.Context) (*userEntities.UserEntity, error)
 
-	CheckIfUserExistsForCluster(brokerId int32, username string, ctx context.Context) (bool, error)
-	ListAllRegisteredUsers(clusterId int32, ctx context.Context) ([]userEntities.UserEntity, error)
+	CheckIfUserExistsForCluster(brokerId uint, username string, ctx context.Context) (bool, error)
+	ListAllRegisteredUsers(clusterId uint, ctx context.Context) ([]userEntities.UserEntity, error)
 }

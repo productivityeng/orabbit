@@ -4,7 +4,6 @@ import "gorm.io/gorm"
 
 type ClusterEntity struct {
 	gorm.Model
-	Id          int32  `gorm:"primaryKey"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Host        string `json:"host" gorm:"index:idx_unique_host,unique"`
@@ -14,5 +13,5 @@ type ClusterEntity struct {
 }
 
 func (ClusterEntity) TableName() string {
-	return "broker"
+	return "Cluster"
 }

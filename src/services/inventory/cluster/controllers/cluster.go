@@ -100,7 +100,7 @@ func (ctrl *clusterControllerDefaultImp) DeleteCluster(c *gin.Context) {
 	}
 
 	log.WithField("clusterId", clusterId).Info("Cluster will be deleted")
-	err = ctrl.ClusterRepository.DeleteCluster(int32(clusterId), c)
+	err = ctrl.ClusterRepository.DeleteCluster(uint(clusterId), c)
 	if err != nil {
 		errorMsg := "Fail to delete clusterId"
 		log.WithError(err).WithField("clusterId", clusterId).Error(errorMsg)
@@ -161,7 +161,7 @@ func (ctrl *clusterControllerDefaultImp) GetCluster(c *gin.Context) {
 	}
 
 	log.WithField("clusterId", clusterId).Info("Cluster will be deleted")
-	cluster, err := ctrl.ClusterRepository.GetCluster(int32(clusterId), c)
+	cluster, err := ctrl.ClusterRepository.GetCluster(uint(clusterId), c)
 	if err != nil {
 		errorMsg := "Fail to retrive Cluster with clusterId"
 		log.WithError(err).WithField("clusterId", clusterId).Error(errorMsg)
