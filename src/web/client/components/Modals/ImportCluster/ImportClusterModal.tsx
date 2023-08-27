@@ -42,59 +42,31 @@ function ImportClusterForm() {
   const submit = async (
     values: z.infer<typeof CreateRabbitMqClusterRequestSchema>
   ) => {
+    setCreationError(undefined);
+
+    let toastId = toast.loading(t("ImportClusterForm.Creating"));
+
     try {
-      setCreationError(undefined);
-
-      let toastId = toast.loading(t("ImportClusterForm.Creating"));
-
-      try {
-        let creaedCluster = await importCluster(values);
-        if (creaedCluster.Result) {
-          router.push(`/dashboard/${creaedCluster.Result.Id}`);
-          toast.success("Cluster created!", { id: toastId });
-          closeModal();
-        } else {
-          console.error(creaedCluster.ErrorMessage);
-          setCreationError(creaedCluster.ErrorMessage!);
-        }
-      } catch (error) {
-        console.error(error);
-        toast.error(
-          <>
-            {t("ImportClusterForm.FailToCreate")}{" "}
-            <Frown className="fill-yellow-500" />
-          </>,
-          {
-            id: toastId,
-          }
-        );
+      let creaedCluster = await importCluster(values);
+      if (creaedCluster.Result) {
+        router.push(`/dashboard/${creaedCluster.Result.ID}`);
+        toast.success("Cluster created!", { id: toastId });
+        closeModal();
+      } else {
+        console.error(creaedCluster.ErrorMessage);
+        setCreationError(creaedCluster.ErrorMessage!);
       }
-
-      const createCluster = async () => {
-        let creaedCluster = await importCluster(values);
-        if (creaedCluster.Result) {
-          router.push(`/dashboard/${creaedCluster.Result.Id}`);
-          closeModal();
-          router.refresh();
-        } else {
-          console.error(creaedCluster.ErrorMessage);
-          setCreationError(creaedCluster.ErrorMessage!);
-          return Promise.reject(creaedCluster);
-        }
-      };
-
-      await toast.promise(createCluster(), {
-        loading: <b>{t("ImportClusterForm.Creating")}</b>,
-        success: "Cluster created!",
-        error: (
-          <b className="flex flex-row gap-x-3">
-            {t("ImportClusterForm.FailToCreate")}{" "}
-            <Frown className="fill-yellow-500" />
-          </b>
-        ),
-      });
     } catch (error) {
       console.error(error);
+      toast.error(
+        <>
+          {t("ImportClusterForm.FailToCreate")}{" "}
+          <Frown className="fill-yellow-500" />
+        </>,
+        {
+          id: toastId,
+        }
+      );
     }
   };
   return (
