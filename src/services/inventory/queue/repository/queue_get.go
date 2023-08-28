@@ -10,7 +10,7 @@ import (
 func (repo QueueRepositoryMysql) Get(clusterId uint, queueId uint, ctx context.Context) (*entities.QueueEntity, error) {
 
 	foundedQueue := &entities.QueueEntity{}
-	result := repo.Db.Where(&entities.QueueEntity{ClusterID: clusterId, Model: gorm.Model{ID: queueId}}).Find(foundedQueue)
+	result := repo.Db.Where(&entities.QueueEntity{ClusterId: clusterId, Model: gorm.Model{ID: queueId}}).Find(foundedQueue)
 	if result.Error != nil {
 		log.WithError(result.Error).WithFields(log.Fields{"clusterId": clusterId,
 			"queueId": queueId}).Error("Fail to find queue")

@@ -59,5 +59,7 @@
     "FailToCreate": "Fail to create cluster with",
     "Creating": "Creating cluster ..."
   },
-  "[BROKER_ALREADY_EXISTS]": "This cluster already exists in database, maybe there was disabled. You can enable the cluster in the graviardy page"
+  "[BROKER_ALREADY_EXISTS]": "This cluster already exists in database, maybe there was disabled. You can enable the cluster in the graviardy page",
+  "[QUEUE_NOTFOUND_INCLUSTER]": "The name of the queue cound'nt not be found on rabbitmq cluster",
+  "[QUEUE_ALREADY_TRACKED]": "This queue already is imported"
 }

@@ -4,6 +4,7 @@ import Heading from "@/components/Heading/Heading";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Mail, Plus, User, UserIcon } from "lucide-react";
+import { Metadata } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";

@@ -1,24 +1,29 @@
 import React from "react";
 import UserForm from "./components/queue-form";
 import { fetchUser } from "@/actions/users";
+import { fetchQueue } from "@/actions/queue";
+import { FrontResponse } from "@/actions/common/frontresponse";
+import { RabbitMqQueue } from "@/types";
+import { Translation } from "next-i18next";
 
 async function UserPage({
   params,
 }: {
   params: { queueId: string; clusterId: number };
 }) {
-  let existingUserResponse = null;
+  let fetchedQueue: FrontResponse<RabbitMqQueue | null> | null = null;
 
   if (params.queueId != "new") {
-    existingUserResponse = await fetchUser(
-      parseInt(params.queueId),
-      params.clusterId
-    );
+    fetchedQueue = await fetchQueue(parseInt(params.queueId), params.clusterId);
   }
 
   return (
     <div>
-      <UserForm initialData={existingUserResponse?.Result ?? null} />
+      {fetchedQueue?.ErrorMessage != null ? (
+        <p>Queue not found</p>
+      ) : (
+        <UserForm initialData={fetchedQueue?.Result ?? null} />
+      )}
     </div>
   );
 }

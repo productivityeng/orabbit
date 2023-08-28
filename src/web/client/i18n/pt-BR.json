@@ -66,5 +66,7 @@
     "FailToCreate": "Falha ao criar o cluster",
     "Creating": "Criando cluster..."
   },
-  "[BROKER_ALREADY_EXISTS]": "Esse cluster ja existe na base. Talvez ela tenha sido deletado, mas é possível reativa-lo."
+  "[BROKER_ALREADY_EXISTS]": "Esse cluster ja existe na base. Talvez ela tenha sido deletado, mas é possível reativa-lo.",
+  "[QUEUE_NOTFOUND_INCLUSTER]": "O nome da fila fornecido não foi encontrado no cluster",
+  "[QUEUE_ALREADY_TRACKED]": "Esta fila ja foi importada"
 }

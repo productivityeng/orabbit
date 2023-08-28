@@ -21,8 +21,8 @@ export type RabbitMqUser = {
 }
 
 export type RabbitMqQueue = {
-    Id: number
-    ClusterId: number
+    ID: number
+    ClusterID: number
     type: string
     vhost: string
     durable: boolean

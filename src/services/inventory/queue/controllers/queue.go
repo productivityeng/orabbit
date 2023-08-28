@@ -7,8 +7,10 @@ import (
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/queue"
 )
 
-func NewQueueController(repositoryInterface repository.ClusterRepositoryInterface, management queue.QueueManagement) QueueControllerImpl {
-	return QueueControllerImpl{ClusterRepository: repositoryInterface, QueueManagement: management}
+func NewQueueController(repositoryInterface repository.ClusterRepositoryInterface, management queue.QueueManagement,
+	queueRepository queue_repository.QueueRepository) QueueControllerImpl {
+	return QueueControllerImpl{ClusterRepository: repositoryInterface, QueueManagement: management,
+		QueueRepository: queueRepository}
 }
 
 type QueueController interface {

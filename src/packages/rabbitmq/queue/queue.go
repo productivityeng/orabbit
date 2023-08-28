@@ -54,6 +54,10 @@ func (q QueueManagementImpl) GetQueueFromCluster(request GetQueueRequest) (*rabb
 
 	queue, err := rmqc.GetQueue("/", request.Queue)
 	if err != nil {
+		if (err.(rabbithole.ErrorResponse)).StatusCode == 404 {
+			logrus.WithError(err).Warn("Queue not found")
+			return nil, nil
+		}
 		logrus.WithError(err).Error("Error trying to get queue from cluster")
 		return nil, errors.New("[CLUSTER_GETQUEUE_FAIL]")
 	}

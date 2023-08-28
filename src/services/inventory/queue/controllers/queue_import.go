@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-sql-driver/mysql"
 	"github.com/productivityeng/orabbit/queue/dto"
 	"github.com/productivityeng/orabbit/queue/entities"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
@@ -40,20 +41,37 @@ func (q QueueControllerImpl) ImportQueueFromCluster(c *gin.Context) {
 		return
 	}
 
-	entityToSave := &entities.QueueEntity{
-		ClusterID: queueImportRequest.ClusterId,
+	if queueFromCluster == nil {
+		log.WithFields(fields).Warn("Queue not found in cluster")
+		c.JSON(http.StatusNotFound, gin.H{"error": "[QUEUE_NOTFOUND_INCLUSTER]"})
+		return
+	}
+
+	queueToSave := &entities.QueueEntity{
+		ClusterId: queueImportRequest.ClusterId,
 		Name:      queueFromCluster.Name,
 		Type:      queueFromCluster.Type,
 		Durable:   queueFromCluster.Durable,
 		Arguments: queueFromCluster.Arguments,
 	}
+	err = q.QueueRepository.Save(queueToSave)
 
-	err = q.QueueRepository.Save(entityToSave)
 	if err != nil {
+		if err.(*mysql.MySQLError).Number == 1062 {
+			log.WithError(err).Warn(err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{"error": "[QUEUE_ALREADY_TRACKED]"})
+			return
+		}
 		log.WithError(err).Error("Fail to save item")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, entityToSave)
+	c.JSON(http.StatusCreated, dto.GetQueueResponse{
+		ID:          queueToSave.ID,
+		ClusterID:   queueToSave.ClusterId,
+		Name:        queueToSave.Name,
+		VirtualHost: "/",
+		Type:        queueToSave.Type,
+	})
 }

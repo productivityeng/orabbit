@@ -12,9 +12,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { CreateRabbitmqUserSchema } from "@/schemas/user-schemas";
-import { createUser } from "@/actions/users";
-import { RabbitMqQueue, RabbitMqUser } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Frown, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -24,6 +21,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { z } from "zod";
 import { CreateRabbitMqQeueueRequestSchema } from "@/schemas/queue-schemas";
+import { createQueue } from "@/actions/queue";
+import { RabbitMqQueue } from "@/types";
 
 interface UserFormProps {
   initialData: RabbitMqQueue | null;
@@ -40,19 +39,21 @@ function UserForm({ initialData }: UserFormProps) {
     defaultValues: {
       ClusterId: parseInt(params.clusterId.toString()),
       QueueName: "",
+      Create: false,
     },
   });
 
   const onSubmit = async (
     data: z.infer<typeof CreateRabbitMqQeueueRequestSchema>
   ) => {
+    setCreationError("");
     let toastId = toast.loading("Importing a queue from cluster");
     try {
-      const response = await createUser(params.clusterId, data);
+      const response = await createQueue(params.clusterId, data);
 
       if (response.Result) {
         router.push(
-          `/dashboard/${params.clusterId}/queuesandstreams/${response.Result.Id}`
+          `/dashboard/${params.clusterId}/queuesandstreams/${response.Result.ID}`
         );
         toast.success("Queue created!", { id: toastId });
         router.refresh();
@@ -111,7 +112,7 @@ function UserForm({ initialData }: UserFormProps) {
           <div className="w-1/2 py-2">
             <FormField
               control={form.control}
-              name="Import"
+              name="Create"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center space-x-4 justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
