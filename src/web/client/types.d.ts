@@ -28,6 +28,9 @@ export type RabbitMqQueue = {
     durable: boolean
     auto_delete: false
     arguments: {}
+    name: string
+    vhost: ""
+    isRegistered: boolean
 }
 
 export type ImportRabbitMqUser = {

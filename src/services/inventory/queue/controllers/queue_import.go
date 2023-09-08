@@ -12,6 +12,18 @@ import (
 	"net/http"
 )
 
+// ImportQueueFromCluster
+// @Summary Import or create queue
+// @Schemes
+// @Description Import existing queue from cluster or creater another one
+// @Tags Queue
+// @Accept json
+// @Produce json
+// @Param clusterId path int true "Cluster id from where retrieve users"
+// @Success 200
+// @Failure 404
+// @Failure 500
+// @Router /{clusterId}/queue [post]
 func (q QueueControllerImpl) ImportQueueFromCluster(c *gin.Context) {
 	var queueImportRequest dto.QueueImportRequest
 

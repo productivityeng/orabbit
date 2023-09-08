@@ -3,12 +3,12 @@
 import { ColumnDef } from "@tanstack/react-table";
 import CellAction from "./cell-action";
 import CellMaintening from "./cell-maintening";
-import { RabbitMqUser } from "@/types";
+import { RabbitMqQueue } from "@/types";
 
-export const columns: ColumnDef<RabbitMqUser>[] = [
+export const columns: ColumnDef<RabbitMqQueue>[] = [
   {
-    accessorKey: "Username",
-    header: "Username",
+    accessorKey: "name",
+    header: "Name",
   },
   {
     accessorKey: "type",
@@ -17,7 +17,7 @@ export const columns: ColumnDef<RabbitMqUser>[] = [
   {
     accessorKey: "isRegistered",
     header: () => <b>Is Registered</b>,
-    cell: ({ row }) => <CellMaintening User={row.original} />,
+    cell: ({ row }) => <CellMaintening Queue={row.original} />,
   },
   {
     id: "actions",

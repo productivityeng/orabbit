@@ -69,6 +69,29 @@ definitions:
 info:
   contact: {}
 paths:
+  /{clusterId}/queue:
+    post:
+      consumes:
+      - application/json
+      description: Import existing queue from cluster or creater another one
+      parameters:
+      - description: Cluster id from where retrieve users
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Import or create queue
+      tags:
+      - Queue
   /{clusterId}/queue/queuesfromcluster:
     get:
       consumes:

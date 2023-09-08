@@ -180,6 +180,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/{clusterId}/queue": {
+            "post": {
+                "description": "Import existing queue from cluster or creater another one",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Queue"
+                ],
+                "summary": "Import or create queue",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve users",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/{clusterId}/queue/queuesfromcluster": {
             "get": {
                 "description": "Retrieve all users that exist on rabbit cluster. Event if it its registered in ostern",
