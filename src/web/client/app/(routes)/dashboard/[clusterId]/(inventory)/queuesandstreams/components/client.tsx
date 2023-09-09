@@ -1,10 +1,10 @@
 "use client";
 import React from "react";
-import { columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import SimpleHeading from "@/components/Heading/SimpleHeading";
 import { useTranslations } from "next-intl";
 import { RabbitMqQueue } from "@/types";
+import { RabbitMqQueueColumn } from "./columns";
 
 interface QueueClientProps {
   data: RabbitMqQueue[];
@@ -18,7 +18,7 @@ function QueueClient({ data }: QueueClientProps) {
         title={t("QueuePage.TrackedQueues")}
         description={t("QueuePage.rackedQueuesDescription")}
       />
-      <DataTable searchKey="Username" columns={columns} data={data} />
+      <DataTable searchKey="name" columns={RabbitMqQueueColumn} data={data} />
     </div>
   );
 }

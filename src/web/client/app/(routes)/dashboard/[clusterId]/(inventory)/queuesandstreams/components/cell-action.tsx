@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { UserColumn } from "./columns";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,9 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
 import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
+import { RabbitMqQueue } from "@/types";
 
 interface CellActionProps {
-  data: UserColumn;
+  data: RabbitMqQueue;
 }
 
 function CellAction({ data }: CellActionProps) {
@@ -60,12 +60,12 @@ function CellAction({ data }: CellActionProps) {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem
             onClick={() =>
-              router.push(`/${params.storeId}/billboards/${data.id}`)
+              router.push(`/${params.storeId}/billboards/${data.ID}`)
             }
           >
             <Edit className="mr-2 h-4 w-4" /> Update
           </DropdownMenuItem>{" "}
-          <DropdownMenuItem onClick={() => onCopy(data.id)}>
+          <DropdownMenuItem onClick={() => onCopy(data.ID.toString())}>
             <Copy className="mr-2 h-4 w-4" /> Copy Id
           </DropdownMenuItem>{" "}
           <DropdownMenuItem onClick={() => setDeleteModalOpen(true)}>

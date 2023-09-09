@@ -5,7 +5,7 @@ import CellAction from "./cell-action";
 import CellMaintening from "./cell-maintening";
 import { RabbitMqQueue } from "@/types";
 
-export const columns: ColumnDef<RabbitMqQueue>[] = [
+export const RabbitMqQueueColumn: ColumnDef<RabbitMqQueue>[] = [
   {
     accessorKey: "name",
     header: "Name",
