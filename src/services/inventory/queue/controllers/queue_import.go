@@ -80,10 +80,11 @@ func (q QueueControllerImpl) ImportQueueFromCluster(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, dto.GetQueueResponse{
-		ID:          queueToSave.ID,
-		ClusterID:   queueToSave.ClusterId,
-		Name:        queueToSave.Name,
-		VirtualHost: "/",
-		Type:        queueToSave.Type,
+		ID:           queueToSave.ID,
+		ClusterID:    queueToSave.ClusterId,
+		Name:         queueToSave.Name,
+		VHost:        queueToSave.Name,
+		Type:         queueToSave.Type,
+		IsRegistered: true,
 	})
 }

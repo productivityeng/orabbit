@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/productivityeng/orabbit/queue/dto"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/queue"
 	log "github.com/sirupsen/logrus"
@@ -55,5 +56,17 @@ func (q QueueControllerImpl) ListQueuesFromCluster(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, queues)
+	var getQueueResponse []dto.GetQueueResponse
+	for _, queueItem := range queues {
+		getQueueResponse = append(getQueueResponse, dto.GetQueueResponse{
+			ID:           0,
+			ClusterID:    uint(clusterId),
+			Name:         queueItem.Name,
+			VHost:        queueItem.Vhost,
+			Type:         queueItem.Type,
+			IsRegistered: false,
+		})
+	}
+
+	c.JSON(http.StatusOK, getQueueResponse)
 }
