@@ -7,15 +7,15 @@ import { RabbitMqQueue } from "@/types";
 
 export const RabbitMqQueueColumn: ColumnDef<RabbitMqQueue>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "Name",
     header: "Name",
   },
   {
-    accessorKey: "type",
+    accessorKey: "Type",
     header: "Type",
   },
   {
-    accessorKey: "isRegistered",
+    accessorKey: "IsRegistered",
     header: () => <b>Is Registered</b>,
     cell: ({ row }) => <CellMaintening Queue={row.original} />,
   },
