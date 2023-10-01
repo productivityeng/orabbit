@@ -1,6 +1,6 @@
 "use client";
 
-import { importUserFromCluster } from "@/actions/users";
+import { deleteUserFromTracking, importUserFromCluster } from "@/actions/users";
 import { Button } from "@/components/ui/button";
 import { RabbitMqUser } from "@/types";
 import { BadgeCheck, Frown, Hammer } from "lucide-react";
@@ -23,9 +23,15 @@ function CellMaintening({ User }: CellMainteningProps) {
         Username: User.Username,
         Create: false,
       });
-      toast.success("User imported!", {
-        id: toastId,
-      });
+      toast.success(
+        <p>
+          Usuario {<b className="text-rabbit">{User.Username}</b>} importado com
+          sucesso
+        </p>,
+        {
+          id: toastId,
+        }
+      );
       route.refresh();
     } catch (error) {
       toast.error(
@@ -39,15 +45,51 @@ function CellMaintening({ User }: CellMainteningProps) {
     }
   };
 
+  const handleDetachUser = async () => {
+    const toastId = toast.loading("Removendo usuario do ostern...");
+    try {
+      await deleteUserFromTracking(Number(params["clusterId"]), User.Id);
+      toast.success(
+        <p>
+          Usuario {<b className="text-rabbit">{User.Username}</b>} removido do
+          ostern com sucesso
+        </p>,
+        {
+          id: toastId,
+        }
+      );
+      route.refresh();
+    } catch (error) {
+      toast.error(
+        <p>
+          Something wen't wrong <Frown />
+        </p>,
+        {
+          id: toastId,
+        }
+      );
+    }
+  };
+
   return (
     <>
       {!User.IsRegistered ? (
-        <Button onClick={handleImportUser} size="sm" variant="destructive">
+        <Button
+          onClick={handleImportUser}
+          size="sm"
+          variant="destructive"
+          className="hover:bg-green-500"
+        >
           {<Hammer className="w-4 h-4 fill-white mx-1" />}
           {"Import"}
         </Button>
       ) : (
-        <Button size="sm" variant="success">
+        <Button
+          onClick={handleDetachUser}
+          size="sm"
+          variant="success"
+          className="hover:bg-red-500"
+        >
           {<BadgeCheck className="w-4 h-4  mx-1" />}
           {"Tracked"}
         </Button>

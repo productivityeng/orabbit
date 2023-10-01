@@ -34,17 +34,3 @@ func (entity *UserControllerImpl) GetEntity(c *gin.Context) {
 }
 
 func (entity *UserControllerImpl) UpdateUser(c *gin.Context) {}
-
-// PingExample godoc
-// @Summary Delete a mirror user
-// @Schemes
-// @Description Delete a mirrored user from the registry, the user will not be deleted from the cluster
-// @Tags User
-// @Accept json
-// @Produce json
-// @Param userId path int true "User id registered"
-// @Success 204
-// @Failure 404
-// @Failure 500
-// @Router /{clusterId}/user/{userId} [delete]
-func (entity *UserControllerImpl) DeleteUser(c *gin.Context) {}

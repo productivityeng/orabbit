@@ -26,7 +26,23 @@ func NewUserRepositoryMySql(Db *gorm.DB) *UserRepositoryMySql {
 
 // CreateUser store a new broker in storage with provided parameter
 func (repo *UserRepositoryMySql) CreateUser(userToCreate *userEntities.UserEntity) (*userEntities.UserEntity, error) {
-	tx := repo.Db.Save(userToCreate)
+
+	var existedUser *userEntities.UserEntity
+	tx := repo.Db.Unscoped().Where(userEntities.UserEntity{ClusterId: userToCreate.ClusterId, Username: userToCreate.Username}).Find(&existedUser)
+	if tx.Error != nil {
+		log.WithError(tx.Error).WithField("request", userToCreate).Error("Erro verifying if user already existed")
+		return nil, tx.Error
+	}
+
+	if existedUser.ID > 0 {
+		tx = repo.Db.Model(&existedUser).Update("deleted_at", nil)
+		if tx.Error != nil {
+			log.WithError(tx.Error).Error("Fail to enable a deleted user")
+			return existedUser, nil
+		}
+	}
+
+	tx = repo.Db.Save(userToCreate)
 	if tx.Error != nil {
 		log.WithError(tx.Error).WithField("request", userToCreate).Error("Erro when trying save")
 		tx.Rollback()
@@ -67,17 +83,17 @@ func (repo *UserRepositoryMySql) ListUsers(clusterId uint, pageSize int, pageNum
 }
 
 // DeleteUser soft delete a broker with a provided brokerId
-func (repo *UserRepositoryMySql) DeleteUser(userId uint, ctx context.Context) error {
+func (repo *UserRepositoryMySql) DeleteUser(clusterId uint, userId uint, ctx context.Context) error {
 	fields := log.Fields{"userId": userId}
-	var broker = userEntities.UserEntity{Model: gorm.Model{ID: userId}}
-	err := repo.Db.WithContext(ctx).First(&broker)
+	var user = userEntities.UserEntity{Model: gorm.Model{ID: userId}}
+	err := repo.Db.WithContext(ctx).First(&user)
 	if err.Error != nil {
-		errorMsg := "broker id cound't not be found"
+		errorMsg := "user id cound't not be found"
 		log.WithFields(fields).WithError(err.Error).Error(errorMsg)
 		return errors.New(errorMsg)
 	}
 	log.WithFields(fields).Infof("user founded, trying delete")
-	err = repo.Db.Delete(&broker)
+	err = repo.Db.Unscoped().Delete(&user)
 	if err.Error != nil {
 		errorMsg := "fail to delete user"
 		log.WithFields(fields).WithError(err.Error).Error(errorMsg)

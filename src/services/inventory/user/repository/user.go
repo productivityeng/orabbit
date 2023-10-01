@@ -13,7 +13,7 @@ type UserRepository interface {
 	//ListUsers retrieve a lista of broker with paginated options
 	ListUsers(clusterId uint, pageSize int, pageNumber int, ctx context.Context) (*contracts.PaginatedResult[dto.GetUserResponse], error)
 	//DeleteUser soft delete a broker with a provided brokerId
-	DeleteUser(userId uint, ctx context.Context) error
+	DeleteUser(clusterId uint, userId uint, ctx context.Context) error
 	//GetUser retrieve a broker with a provided brokerId
 	GetUser(clusterId uint, userId uint, ctx context.Context) (*userEntities.UserEntity, error)
 
