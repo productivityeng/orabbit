@@ -13,6 +13,7 @@ type UserController interface {
 	CreateUser(c *gin.Context)
 	UpdateUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
+	DeleteRabbitUser(c *gin.Context)
 	FindUser(c *gin.Context)
 }
 

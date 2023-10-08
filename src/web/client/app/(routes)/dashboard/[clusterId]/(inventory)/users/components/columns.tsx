@@ -5,15 +5,16 @@ import CellAction from "./cell-action";
 import CellMaintening from "./cell-maintening";
 import { RabbitMqUser } from "@/types";
 
-export const columns: ColumnDef<RabbitMqUser>[] = [
+export const UserColumn: ColumnDef<RabbitMqUser>[] = [
+  {
+    accessorKey: "Id",
+    header: "Id",
+  },
   {
     accessorKey: "Username",
     header: "Username",
   },
-  {
-    accessorKey: "type",
-    header: "Type",
-  },
+
   {
     accessorKey: "isRegistered",
     header: () => <b>Is Registered</b>,
@@ -21,7 +22,7 @@ export const columns: ColumnDef<RabbitMqUser>[] = [
   },
   {
     id: "actions",
-    header: () => <b>Actions</b>,
+    header: () => <b></b>,
     cell: ({ row }) => <CellAction data={row.original} />,
   },
 ];

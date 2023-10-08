@@ -124,6 +124,53 @@ export async function createUser(
 }
 
 /**
+ * Remove o usuario da base do ostern e tambem do rabbitmq.
+ * @param clusterId Identificação do Cluster do usuario
+ * @param userId Identificação Global do usuário
+ * @returns
+ */
+export async function deleteUserFromRabbit(
+  clusterId: number,
+  userId: number
+): Promise<FrontResponse<string | null>> {
+  const createUserEndpoint = `${process.env
+    .PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/user/rabbitmq/${userId}`;
+
+  let response = await fetch(createUserEndpoint, {
+    method: "DELETE",
+  });
+
+  switch (response.status) {
+    case 204: {
+      return { ErrorMessage: null, Result: "Deleted" };
+    }
+
+    case 400: {
+      let contentBadRequest = (await response.json()) as { error: string };
+      return { ErrorMessage: contentBadRequest.error, Result: null };
+    }
+
+    case 406: {
+      let contentInaceptable = (await response.json()) as {
+        error: string;
+        field: string;
+      };
+      return {
+        ErrorMessage: `field ${contentInaceptable.field} with error => ${contentInaceptable.error}`,
+        Result: null,
+      };
+    }
+
+    case 500: {
+      let contenctUnkow = await response.json();
+      return { ErrorMessage: JSON.stringify(contenctUnkow), Result: null };
+    }
+    default:
+      throw new Error("Erro desconhecido => " + JSON.stringify(response));
+  }
+}
+
+/**
  * Remove o usuario da base do ostern, nao do rabbitmq.
  * @param clusterId Identificação do Cluster do usuario
  * @param userId Identificação Global do usuário

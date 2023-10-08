@@ -35,6 +35,11 @@ definitions:
     - ClusterId
     - Username
     type: object
+  dto.QueueImportRequest:
+    properties:
+      QueueName:
+        type: string
+    type: object
   entities.ClusterEntity:
     properties:
       createdAt:
@@ -69,7 +74,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /{clusterId}/queue:
+  /{clusterId}/queue/import:
     post:
       consumes:
       - application/json
@@ -80,6 +85,12 @@ paths:
         name: clusterId
         required: true
         type: integer
+      - description: Request
+        in: body
+        name: QueueImportRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.QueueImportRequest'
       produces:
       - application/json
       responses:
@@ -226,6 +237,29 @@ paths:
         "500":
           description: Internal Server Error
       summary: Retrieve a mirror user from broker
+      tags:
+      - User
+  /{clusterId}/user/rabbitmq/{userId}:
+    delete:
+      consumes:
+      - application/json
+      description: Completely delete a rabbitmq user
+      parameters:
+      - description: User id registered
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete a user from rabbitmq cluster and ostern database
       tags:
       - User
   /{clusterId}/user/usersfromcluster:

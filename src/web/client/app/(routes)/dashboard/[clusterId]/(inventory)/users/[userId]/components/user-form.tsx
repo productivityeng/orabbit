@@ -49,10 +49,8 @@ function UserForm({ initialData }: UserFormProps) {
     try {
       const response = await createUser(params.clusterId, data);
       if (response.Result) {
-        router.push(
-          `/dashboard/${params.clusterId}/users/${response.Result.Id}`
-        );
         toast.success("Cluster created!", { id: toastId });
+        router.push(`/dashboard/${params.clusterId}/users/`);
         router.refresh();
       } else {
         console.error(response.ErrorMessage);

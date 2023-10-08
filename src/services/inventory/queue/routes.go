@@ -21,7 +21,7 @@ func Routes(routes *gin.Engine, db *gorm.DB) *gin.RouterGroup {
 
 	userRouter := routes.Group("/:clusterId/queue")
 	userRouter.GET("/queuesfromcluster", queueController.ListQueuesFromCluster)
-	userRouter.POST("/", queueController.ImportQueueFromCluster)
+	userRouter.POST("/import", queueController.ImportQueueFromCluster)
 
 	return userRouter
 }

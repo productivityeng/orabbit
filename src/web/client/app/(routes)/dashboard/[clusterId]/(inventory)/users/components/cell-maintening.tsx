@@ -78,7 +78,7 @@ function CellMaintening({ User }: CellMainteningProps) {
           onClick={handleImportUser}
           size="sm"
           variant="destructive"
-          className="hover:bg-green-500"
+          className="hover:bg-green-500 "
         >
           {<Hammer className="w-4 h-4 fill-white mx-1" />}
           {"Import"}

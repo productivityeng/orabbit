@@ -5,39 +5,14 @@ import (
 	"errors"
 	"fmt"
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
 	"github.com/sirupsen/logrus"
 )
-
-type GetUserHashRequest struct {
-	common.RabbitAccess
-
-	UserToRetrieveHash string
-}
-
-type CreateNewUserRequest struct {
-	common.RabbitAccess
-	UserToCreate            string
-	PasswordOfUsertToCreate string
-}
-
-type CreateNewUserResult struct {
-	PasswordHash string
-}
-
-type ListUserResult struct {
-	PasswordHash string
-	Name         string
-}
-
-type ListAllUsersRequest struct {
-	common.RabbitAccess
-}
 
 type UserManagement interface {
 	GetUserHash(request GetUserHashRequest, ctx context.Context) (string, error)
 	CreateNewUser(request CreateNewUserRequest, ctx context.Context) (*CreateNewUserResult, error)
 	ListAllUser(request ListAllUsersRequest) ([]ListUserResult, error)
+	DeleteUser(request DeleteUserRequest, ctx context.Context) error
 }
 type UserManagementImpl struct {
 }
@@ -45,6 +20,16 @@ type UserManagementImpl struct {
 func NewUserManagement() *UserManagementImpl {
 
 	return &UserManagementImpl{}
+}
+
+func (management *UserManagementImpl) DeleteUser(request DeleteUserRequest, ctx context.Context) error {
+	rmqc, err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.RabbitAccess.Username, request.RabbitAccess.Password)
+	_, err = rmqc.DeleteUser(request.Username)
+	if err != nil {
+		logrus.WithError(err).Error(fmt.Sprintf("Erro ao remover usuario %s do cluster %s", request.Username, request.Host))
+		return err
+	}
+	return nil
 }
 
 func (management *UserManagementImpl) ListAllUser(request ListAllUsersRequest) ([]ListUserResult, error) {

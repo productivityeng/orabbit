@@ -1,19 +1,14 @@
 import React, { useState } from "react";
-import { UserColumn } from "./columns";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
 import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
+import AlertModal from "@/components/Modals/alert-danger-modal";
+import { Trash } from "lucide-react";
+import { UserColumn } from "./columns";
+import { RabbitMqUser } from "@/types";
+import { deleteUserFromRabbit } from "@/actions/users";
 
 interface CellActionProps {
-  data: UserColumn;
+  data: RabbitMqUser;
 }
 
 function CellAction({ data }: CellActionProps) {
@@ -23,23 +18,15 @@ function CellAction({ data }: CellActionProps) {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const onCopy = (id: string) => {
-    navigator.clipboard.writeText(id);
-    toast.success("Copied to clipboard");
-  };
-
-  const onDeleteStore = async () => {
-    const toastId = toast.loading("Deleting Billboard...");
+  const onDeleteUserHandler = async () => {
+    const toastId = toast.loading("Deletando usuario...");
     try {
-      setDeleteLoading(true);
-      //await axios.delete(`/api/${params.storeId}/billboards/${data.id}`);
-      toast.success("Billboard deleted!", { id: toastId });
+      await deleteUserFromRabbit(Number(params.clusterId), data.Id);
+
+      toast.success("Usuario removido do cluster!", { id: toastId });
       router.refresh();
     } catch (error) {
-      toast.error(
-        "Make sure you removed all categories using this billboard first",
-        { id: toastId }
-      );
+      toast.error("Erro ao deletar usuario", { id: toastId });
       console.log(error);
     } finally {
       setDeleteLoading(false);
@@ -49,30 +36,16 @@ function CellAction({ data }: CellActionProps) {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant={"ghost"} className="w-8 h-8 p-0">
-            <span className="sr-only">Open Menu</span>
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem
-            onClick={() =>
-              router.push(`/${params.storeId}/billboards/${data.id}`)
-            }
-          >
-            <Edit className="mr-2 h-4 w-4" /> Update
-          </DropdownMenuItem>{" "}
-          <DropdownMenuItem onClick={() => onCopy(data.id)}>
-            <Copy className="mr-2 h-4 w-4" /> Copy Id
-          </DropdownMenuItem>{" "}
-          <DropdownMenuItem onClick={() => setDeleteModalOpen(true)}>
-            <Trash className="mr-2 h-4 w-4" /> Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <AlertModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={onDeleteUserHandler}
+        loading={deleteLoading}
+      />
+      <Trash
+        onClick={() => setDeleteModalOpen(true)}
+        className="hover:cursor-pointer hover:text-red-500 duration-200 ease-in-out"
+      />
     </>
   );
 }

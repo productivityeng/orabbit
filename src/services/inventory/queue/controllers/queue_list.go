@@ -42,7 +42,7 @@ func (q QueueControllerImpl) ListQueuesFromCluster(c *gin.Context) {
 		return
 	}
 
-	queues, err := q.QueueManagement.GetAllQueuesFromCluster(queue.ListQueuesRequest{
+	queuesFromCluster, err := q.QueueManagement.GetAllQueuesFromCluster(queue.ListQueuesRequest{
 		RabbitAccess: common.RabbitAccess{
 			Host:     cluster.Host,
 			Port:     cluster.Port,
@@ -51,21 +51,43 @@ func (q QueueControllerImpl) ListQueuesFromCluster(c *gin.Context) {
 		},
 	})
 	if err != nil {
-		log.WithError(err).WithFields(fields).Error("Fail to retrieve all queues from cluster")
+		log.WithError(err).WithFields(fields).Error("Fail to retrieve all queuesFromCluster from cluster")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	var getQueueResponse []dto.GetQueueResponse
-	for _, queueItem := range queues {
-		getQueueResponse = append(getQueueResponse, dto.GetQueueResponse{
-			ID:           0,
-			ClusterID:    uint(clusterId),
-			Name:         queueItem.Name,
-			VHost:        queueItem.Vhost,
-			Type:         queueItem.Type,
-			IsRegistered: false,
-		})
+	queuesFromDatabase, err := q.QueueRepository.List(uint(clusterId), c)
+
+	var getQueueResponse dto.GetQueueResponseList
+
+	for _, queueItem := range queuesFromCluster {
+		if queueFromBd := queuesFromDatabase.GetQueueFromListByName(queueItem.Name); queueFromBd != nil {
+			getQueueResponse = append(getQueueResponse, dto.GetQueueResponse{
+				ID:           queueFromBd.ID,
+				ClusterID:    uint(clusterId),
+				Name:         queueItem.Name,
+				VHost:        queueItem.Vhost,
+				Type:         queueItem.Type,
+				IsInCluster:  true,
+				IsInDatabase: true,
+				Arguments:    queueItem.Arguments,
+			})
+		}
+	}
+
+	for _, queueFromDb := range queuesFromDatabase {
+		if queueFromResponse := getQueueResponse.GetByName(queueFromDb.Name); queueFromResponse == nil {
+			getQueueResponse = append(getQueueResponse, dto.GetQueueResponse{
+				ID:           queueFromDb.ID,
+				ClusterID:    uint(clusterId),
+				Name:         queueFromDb.Name,
+				VHost:        "/",
+				Type:         queueFromDb.Type,
+				IsInCluster:  false,
+				IsInDatabase: true,
+				Arguments:    queueFromDb.Arguments,
+			})
+		}
 	}
 
 	c.JSON(http.StatusOK, getQueueResponse)

@@ -1,6 +1,6 @@
 "use server";
 
-import { RabbitMqQueue } from "@/types";
+import { RabbitMqQueue } from "@/models/queues";
 import { FrontResponse } from "./common/frontresponse";
 import { CreateRabbitMqQeueueRequestSchema } from "@/schemas/queue-schemas";
 import { z } from "zod";

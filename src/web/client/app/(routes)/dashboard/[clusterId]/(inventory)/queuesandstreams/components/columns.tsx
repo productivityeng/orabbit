@@ -3,7 +3,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import CellAction from "./cell-action";
 import CellMaintening from "./cell-maintening";
-import { RabbitMqQueue } from "@/types";
+import CellArguments from "./cell-arguments";
+import { RabbitMqQueue } from "@/models/queues";
 
 export const RabbitMqQueueColumn: ColumnDef<RabbitMqQueue>[] = [
   {
@@ -18,6 +19,12 @@ export const RabbitMqQueueColumn: ColumnDef<RabbitMqQueue>[] = [
     accessorKey: "IsRegistered",
     header: () => <b>Is Registered</b>,
     cell: ({ row }) => <CellMaintening Queue={row.original} />,
+  },
+
+  {
+    accessorKey: "Arguments",
+    header: () => <b>Arguments</b>,
+    cell: ({ row }) => <CellArguments Queue={row.original} />,
   },
   {
     id: "actions",

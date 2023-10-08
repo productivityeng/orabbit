@@ -18,3 +18,14 @@ type QueueEntity struct {
 func (QueueEntity) TableName() string {
 	return "Queue"
 }
+
+type QueueEntityList []QueueEntity
+
+func (queueList QueueEntityList) GetQueueFromListByName(queueName string) *QueueEntity {
+	for _, queueFromList := range queueList {
+		if queueFromList.Name == queueName {
+			return &queueFromList
+		}
+	}
+	return nil
+}

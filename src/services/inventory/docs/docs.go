@@ -180,7 +180,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/{clusterId}/queue": {
+        "/{clusterId}/queue/import": {
             "post": {
                 "description": "Import existing queue from cluster or creater another one",
                 "consumes": [
@@ -200,6 +200,15 @@ const docTemplate = `{
                         "name": "clusterId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Request",
+                        "name": "QueueImportRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.QueueImportRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -330,6 +339,41 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/{clusterId}/user/rabbitmq/{userId}": {
+            "delete": {
+                "description": "Completely delete a rabbitmq user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Delete a user from rabbitmq cluster and ostern database",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User id registered",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -497,6 +541,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "Username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.QueueImportRequest": {
+            "type": "object",
+            "properties": {
+                "QueueName": {
                     "type": "string"
                 }
             }

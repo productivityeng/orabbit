@@ -10,6 +10,7 @@ import (
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/queue"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 )
 
 // ImportQueueFromCluster
@@ -23,11 +24,20 @@ import (
 // @Success 200
 // @Failure 404
 // @Failure 500
-// @Router /{clusterId}/queue [post]
+// @Param QueueImportRequest body dto.QueueImportRequest true "Request"
+// @Router /{clusterId}/queue/import [post]
 func (q QueueControllerImpl) ImportQueueFromCluster(c *gin.Context) {
+	clusterIdParam := c.Param("clusterId")
+	clusterId, err := strconv.ParseInt(clusterIdParam, 10, 32)
+	if err != nil {
+		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to parse brokerId Param")
+		c.JSON(http.StatusBadRequest, "Error parsing brokerId from url route")
+		return
+	}
+
 	var queueImportRequest dto.QueueImportRequest
 
-	err := c.BindJSON(&queueImportRequest)
+	err = c.BindJSON(&queueImportRequest)
 	if err != nil {
 		log.WithContext(c).WithError(err).Error("Fail to parse user request")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -37,7 +47,7 @@ func (q QueueControllerImpl) ImportQueueFromCluster(c *gin.Context) {
 	fields := log.Fields{"request": fmt.Sprintf("%+v", queueImportRequest)}
 
 	log.WithFields(fields).Info("looking for broker")
-	broker, err := q.ClusterRepository.GetCluster(queueImportRequest.ClusterId, c)
+	broker, err := q.ClusterRepository.GetCluster(uint(clusterId), c)
 
 	queueFromCluster, err := q.QueueManagement.GetQueueFromCluster(queue.GetQueueRequest{
 		RabbitAccess: common.RabbitAccess{
@@ -60,7 +70,7 @@ func (q QueueControllerImpl) ImportQueueFromCluster(c *gin.Context) {
 	}
 
 	queueToSave := &entities.QueueEntity{
-		ClusterId: queueImportRequest.ClusterId,
+		ClusterId: uint(clusterId),
 		Name:      queueFromCluster.Name,
 		Type:      queueFromCluster.Type,
 		Durable:   queueFromCluster.Durable,
@@ -80,11 +90,12 @@ func (q QueueControllerImpl) ImportQueueFromCluster(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, dto.GetQueueResponse{
-		ID:           queueToSave.ID,
-		ClusterID:    queueToSave.ClusterId,
-		Name:         queueToSave.Name,
-		VHost:        queueToSave.Name,
-		Type:         queueToSave.Type,
-		IsRegistered: true,
+		ID:          queueToSave.ID,
+		ClusterID:   queueToSave.ClusterId,
+		Name:        queueToSave.Name,
+		VHost:       queueToSave.Name,
+		Type:        queueToSave.Type,
+		Arguments:   queueToSave.Arguments,
+		IsInCluster: true,
 	})
 }

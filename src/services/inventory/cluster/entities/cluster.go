@@ -1,6 +1,9 @@
 package entities
 
-import "gorm.io/gorm"
+import (
+	"github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
+	"gorm.io/gorm"
+)
 
 type ClusterEntity struct {
 	gorm.Model
@@ -14,4 +17,13 @@ type ClusterEntity struct {
 
 func (ClusterEntity) TableName() string {
 	return "Cluster"
+}
+
+func (cluster ClusterEntity) GetRabbitMqAccess() common.RabbitAccess {
+	return common.RabbitAccess{
+		Host:     cluster.Host,
+		Port:     cluster.Port,
+		Username: cluster.User,
+		Password: cluster.Password,
+	}
 }

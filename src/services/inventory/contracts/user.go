@@ -4,5 +4,5 @@ type GetUserResponse struct {
 	Id           uint   `json:"Id"`
 	Username     string `json:"Username"`
 	PasswordHash string `json:"PasswordHash"`
-	IsRegistered bool   `json:"IsRegistered"`
+	IsRegistered bool   `json:"IsInCluster"`
 }

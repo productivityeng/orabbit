@@ -26,6 +26,7 @@ func Routes(routes *gin.Engine, db *gorm.DB) *gin.RouterGroup {
 	userRouter.GET("", userController.ListUsers)
 	userRouter.POST("/", userController.CreateUser)
 	userRouter.DELETE("/:userId", userController.DeleteUser)
+	userRouter.DELETE("/rabbitmq/:userId", userController.DeleteRabbitUser)
 	userRouter.GET("/:userId", userController.FindUser)
 	userRouter.GET("/find", userController.FindUser)
 
