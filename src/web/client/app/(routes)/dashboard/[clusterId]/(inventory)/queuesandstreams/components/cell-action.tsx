@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import {
   Copy,
   Edit,
+  Files,
   MoreHorizontal,
   RefreshCcw,
   RefreshCw,
@@ -20,6 +21,10 @@ import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import { RabbitMqQueue } from "@/models/queues";
 import { cn } from "@/lib/utils";
+import {
+  removeQueueFromClusterAction,
+  syncronizeQueueAction,
+} from "@/actions/queue";
 
 interface CellActionProps {
   data: RabbitMqQueue;
@@ -29,31 +34,96 @@ function CellAction({ data }: CellActionProps) {
   const router = useRouter();
   const params = useParams();
 
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const onCopy = (id: string) => {
-    navigator.clipboard.writeText(id);
-    toast.success("Copied to clipboard");
-  };
-
-  const onDeleteStore = async () => {
-    const toastId = toast.loading("Deleting Billboard...");
+  const syncronizeQueue = async () => {
+    const toastId = toast.loading(
+      <p>
+        Sincronizando fila <p className="text-rabbit">{data.Name}</p> ...
+      </p>
+    );
     try {
-      setDeleteLoading(true);
-      //await axios.delete(`/api/${params.storeId}/billboards/${data.id}`);
-      toast.success("Billboard deleted!", { id: toastId });
+      let response = await syncronizeQueueAction({
+        ClusterId: Number(params.clusterId),
+        QueueId: data.ID,
+      });
+      if (response.ErrorMessage) {
+        toast.error(
+          <p>
+            Erro {response.ErrorMessage} ao sincronizar fila{" "}
+            <p className="text-rabbit">{data.Name}</p>{" "}
+          </p>,
+          {
+            id: toastId,
+          }
+        );
+        return;
+      }
+
+      toast.success(
+        <p>
+          Fila <p className="text-rabbit">{data.Name}</p> sincronizada com
+          sucesso{" "}
+        </p>,
+        {
+          id: toastId,
+        }
+      );
       router.refresh();
     } catch (error) {
       toast.error(
-        "Make sure you removed all categories using this billboard first",
-        { id: toastId }
+        <p>
+          Erro ao sincronizar fila <p className="text-rabbit">{data.Name}</p>{" "}
+        </p>,
+        {
+          id: toastId,
+        }
       );
-      console.log(error);
-    } finally {
-      setDeleteLoading(false);
-      setDeleteModalOpen(false);
+    }
+  };
+
+  const removeQueueFromCluster = async () => {
+    const toastId = toast.loading(
+      <p>
+        Removendo fila <p className="text-rabbit">{data.Name}</p> ...
+      </p>
+    );
+    try {
+      let response = await removeQueueFromClusterAction({
+        ClusterId: Number(params.clusterId),
+        QueueId: data.ID,
+      });
+      if (response.ErrorMessage) {
+        toast.error(
+          <p>
+            Erro {response.ErrorMessage} ao remover fila{" "}
+            <p className="text-rabbit">{data.Name}</p>{" "}
+          </p>,
+          {
+            id: toastId,
+          }
+        );
+        return;
+      }
+
+      toast.success(
+        <p>
+          Fila <p className="text-rabbit">{data.Name}</p> removida com sucesso
+        </p>,
+        {
+          id: toastId,
+        }
+      );
+      router.refresh();
+    } catch (error) {
+      toast.error(
+        <p>
+          Erro ao remover fila <p className="text-rabbit">{data.Name}</p>{" "}
+        </p>,
+        {
+          id: toastId,
+        }
+      );
     }
   };
 
@@ -74,22 +144,18 @@ function CellAction({ data }: CellActionProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          {data.IsInDatabase && (
-            <DropdownMenuItem
-              onClick={() =>
-                router.push(`/${params.storeId}/billboards/${data.ID}`)
-              }
-            >
-              <Edit className="mr-2 h-4 w-4" /> Remove From Track
+          {data.IsInDatabase && data.IsInCluster && (
+            <DropdownMenuItem onClick={removeQueueFromCluster}>
+              <Edit className="mr-2 h-4 w-4" /> Remove From Cluster
             </DropdownMenuItem>
           )}
-          {data.IsInCluster && (
-            <DropdownMenuItem onClick={() => onCopy(data.ID.toString())}>
-              <Copy className="mr-2 h-4 w-4" /> Remove From Cluster
+          {data.IsInCluster && !data.IsInDatabase && (
+            <DropdownMenuItem>
+              <Files className="mr-2 h-4 w-4" /> Importar
             </DropdownMenuItem>
           )}
           {data.IsInDatabase && !data.IsInCluster && (
-            <DropdownMenuItem onClick={() => setDeleteModalOpen(true)}>
+            <DropdownMenuItem onClick={syncronizeQueue}>
               <RefreshCw className="mr-2 h-4 w-4" /> Syncronize
             </DropdownMenuItem>
           )}

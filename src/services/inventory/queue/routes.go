@@ -22,6 +22,8 @@ func Routes(routes *gin.Engine, db *gorm.DB) *gin.RouterGroup {
 	userRouter := routes.Group("/:clusterId/queue")
 	userRouter.GET("/queuesfromcluster", queueController.ListQueuesFromCluster)
 	userRouter.POST("/import", queueController.ImportQueueFromCluster)
+	userRouter.POST("/syncronize", queueController.SyncronizeQueue)
+	userRouter.DELETE("/remove", queueController.RemoveQueueFromCluster)
 
 	return userRouter
 }

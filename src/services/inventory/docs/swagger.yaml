@@ -40,6 +40,16 @@ definitions:
       QueueName:
         type: string
     type: object
+  dto.QueueRemoveRequest:
+    properties:
+      QueueId:
+        type: integer
+    type: object
+  dto.QueueSycronizeRequest:
+    properties:
+      QueueId:
+        type: integer
+    type: object
   entities.ClusterEntity:
     properties:
       createdAt:
@@ -125,6 +135,65 @@ paths:
         "500":
           description: Internal Server Error
       summary: Retrieve all users from rabbitmq cluster
+      tags:
+      - Queue
+  /{clusterId}/queue/remove:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a fila do cluster mas nao altera o cadastro no ostern
+      parameters:
+      - description: Cluster id
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      - description: Request
+        in: body
+        name: QueueImportRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.QueueRemoveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Remove a fila do cluster
+      tags:
+      - Queue
+  /{clusterId}/queue/syncronize:
+    post:
+      consumes:
+      - application/json
+      description: Create a queue in a cluster that not exist in cluster but is registered
+        in ostern
+      parameters:
+      - description: Cluster id
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      - description: Request
+        in: body
+        name: QueueImportRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.QueueSycronizeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Syncronize a queue between cluster and ostern
       tags:
       - Queue
   /{clusterId}/user:

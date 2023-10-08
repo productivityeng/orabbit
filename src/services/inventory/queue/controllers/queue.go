@@ -16,6 +16,8 @@ func NewQueueController(repositoryInterface repository.ClusterRepositoryInterfac
 type QueueController interface {
 	ListQueuesFromCluster(c *gin.Context)
 	ImportQueueFromCluster(c *gin.Context)
+	SyncronizeQueue(c *gin.Context)
+	RemoveQueueFromCluster(c *gin.Context)
 }
 
 type QueueControllerImpl struct {

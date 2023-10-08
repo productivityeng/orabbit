@@ -8,6 +8,10 @@ import { RabbitMqQueue } from "@/models/queues";
 
 export const RabbitMqQueueColumn: ColumnDef<RabbitMqQueue>[] = [
   {
+    accessorKey: "ID",
+    header: "Id",
+  },
+  {
     accessorKey: "Name",
     header: "Name",
   },

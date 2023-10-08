@@ -3,7 +3,7 @@
 import { RabbitMqQueue } from "@/models/queues";
 import { FrontResponse } from "./common/frontresponse";
 import { CreateRabbitMqQeueueRequestSchema } from "@/schemas/queue-schemas";
-import { z } from "zod";
+import { boolean, z } from "zod";
 
 export async function fetchQeueusFromCluster(
   clusterId: number
@@ -97,5 +97,59 @@ export async function createQueue(
     default:
       console.error(JSON.stringify(response));
       return { ErrorMessage: `[UNKNOW_ERROR]`, Result: null };
+  }
+}
+
+export async function syncronizeQueueAction({
+  ClusterId,
+  QueueId,
+}: {
+  ClusterId: number;
+  QueueId: number;
+}): Promise<FrontResponse<boolean>> {
+  const createUserEndpoint = `${process.env
+    .PRIVATE_INVENTORY_ENDPOINT!}/${ClusterId}/queue/syncronize`;
+
+  let response = await fetch(createUserEndpoint, {
+    body: JSON.stringify({
+      QueueId,
+    }),
+    method: "POST",
+    cache: "no-store",
+  });
+
+  switch (response.status) {
+    case 201:
+    case 200:
+      return { ErrorMessage: null, Result: true };
+    default:
+      return { ErrorMessage: `[UNKNOW_ERROR]`, Result: false };
+  }
+}
+
+export async function removeQueueFromClusterAction({
+  ClusterId,
+  QueueId,
+}: {
+  ClusterId: number;
+  QueueId: number;
+}): Promise<FrontResponse<boolean>> {
+  const createUserEndpoint = `${process.env
+    .PRIVATE_INVENTORY_ENDPOINT!}/${ClusterId}/queue/remove`;
+
+  let response = await fetch(createUserEndpoint, {
+    body: JSON.stringify({
+      QueueId,
+    }),
+    method: "DELETE",
+    cache: "no-store",
+  });
+
+  switch (response.status) {
+    case 201:
+    case 200:
+      return { ErrorMessage: null, Result: true };
+    default:
+      return { ErrorMessage: `[UNKNOW_ERROR]`, Result: false };
   }
 }

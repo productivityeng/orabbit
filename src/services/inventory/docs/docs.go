@@ -259,6 +259,94 @@ const docTemplate = `{
                 }
             }
         },
+        "/{clusterId}/queue/remove": {
+            "delete": {
+                "description": "Remove a fila do cluster mas nao altera o cadastro no ostern",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Queue"
+                ],
+                "summary": "Remove a fila do cluster",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request",
+                        "name": "QueueImportRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.QueueRemoveRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/{clusterId}/queue/syncronize": {
+            "post": {
+                "description": "Create a queue in a cluster that not exist in cluster but is registered in ostern",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Queue"
+                ],
+                "summary": "Syncronize a queue between cluster and ostern",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request",
+                        "name": "QueueImportRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.QueueSycronizeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/{clusterId}/user": {
             "get": {
                 "description": "Recovery the details of a specific mirror user that is already imported from the cluster",
@@ -550,6 +638,22 @@ const docTemplate = `{
             "properties": {
                 "QueueName": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.QueueRemoveRequest": {
+            "type": "object",
+            "properties": {
+                "QueueId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.QueueSycronizeRequest": {
+            "type": "object",
+            "properties": {
+                "QueueId": {
+                    "type": "integer"
                 }
             }
         },
