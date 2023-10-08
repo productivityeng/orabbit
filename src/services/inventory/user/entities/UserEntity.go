@@ -16,3 +16,15 @@ type UserEntity struct {
 func (UserEntity) TableName() string {
 	return "User"
 }
+
+type UserEntityList []UserEntity
+
+func (list UserEntityList) UserInListByName(username string) *UserEntity {
+
+	for _, item := range list {
+		if item.Username == username {
+			return &item
+		}
+	}
+	return nil
+}

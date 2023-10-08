@@ -4,14 +4,13 @@ import UsersClient from "./components/client";
 
 async function UsersPage({ params }: { params: { clusterId: number } }) {
   const users = await fetchUsersFromCluster(params.clusterId);
+  if (!users || users.length == 0) {
+    return <p>Error</p>;
+  }
 
   return (
     <div className="">
-      <UsersClient
-        data={users.sort((user1, user2) =>
-          user1.Username > user2.Username ? 1 : -1
-        )}
-      />
+      <UsersClient data={users} />
     </div>
   );
 }

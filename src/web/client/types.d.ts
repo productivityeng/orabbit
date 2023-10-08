@@ -11,16 +11,3 @@ export type RabbitMqCluster = {
   password: string;
 };
 
-export type RabbitMqUser = {
-  Id: number;
-  BrokerId: number;
-  Username: string;
-  PasswordHash: string;
-  IsRegistered: boolean;
-};
-
-export type ImportRabbitMqUser = {
-  ClusterId: number;
-  Username: string;
-  Create: boolean = false;
-};

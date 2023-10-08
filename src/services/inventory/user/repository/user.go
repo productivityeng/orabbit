@@ -18,5 +18,5 @@ type UserRepository interface {
 	GetUser(clusterId uint, userId uint, ctx context.Context) (*userEntities.UserEntity, error)
 
 	CheckIfUserExistsForCluster(brokerId uint, username string, ctx context.Context) (bool, error)
-	ListAllRegisteredUsers(clusterId uint, ctx context.Context) ([]userEntities.UserEntity, error)
+	ListAllRegisteredUsers(clusterId uint, ctx context.Context) (userEntities.UserEntityList, error)
 }

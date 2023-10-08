@@ -14,6 +14,12 @@ type CreateNewUserRequest struct {
 	PasswordOfUsertToCreate string
 }
 
+type CreateNewUserWithHashPasswordRequest struct {
+	common.RabbitAccess
+	UsernameToCreate string
+	PasswordHash     string
+}
+
 type CreateNewUserResult struct {
 	PasswordHash string
 }

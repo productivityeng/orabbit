@@ -22,13 +22,12 @@ func Routes(routes *gin.Engine, db *gorm.DB) *gin.RouterGroup {
 	userController = controllers.NewUserController(userRepository, brokerRepository, userManagement)
 
 	userRouter := routes.Group("/:clusterId/user")
-	userRouter.GET("/usersfromcluster", userController.ListUsersFromCluster)
-	userRouter.GET("", userController.ListUsers)
+	userRouter.GET("/", userController.ListUsersFromCluster)
 	userRouter.POST("/", userController.CreateUser)
 	userRouter.DELETE("/:userId", userController.DeleteUser)
-	userRouter.DELETE("/rabbitmq/:userId", userController.DeleteRabbitUser)
 	userRouter.GET("/:userId", userController.FindUser)
 	userRouter.GET("/find", userController.FindUser)
+	userRouter.POST("/syncronize", userController.SyncronizeUser)
 
 	return userRouter
 }

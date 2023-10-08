@@ -21,7 +21,7 @@ function CellMaintening({ Queue }: CellMainteningProps) {
     return (
       <Button onClick={handleImportUser} size="sm" variant="destructive">
         {<Hammer className="w-4 h-4 fill-white mx-1" />}
-        {"Import"}
+        {"Not Tracked"}
       </Button>
     );
   }

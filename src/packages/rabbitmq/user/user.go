@@ -11,6 +11,7 @@ import (
 type UserManagement interface {
 	GetUserHash(request GetUserHashRequest, ctx context.Context) (string, error)
 	CreateNewUser(request CreateNewUserRequest, ctx context.Context) (*CreateNewUserResult, error)
+	CreateNewUserWithHashPassword(request CreateNewUserWithHashPasswordRequest, ctx context.Context) (*CreateNewUserResult, error)
 	ListAllUser(request ListAllUsersRequest) ([]ListUserResult, error)
 	DeleteUser(request DeleteUserRequest, ctx context.Context) error
 }
@@ -20,6 +21,26 @@ type UserManagementImpl struct {
 func NewUserManagement() *UserManagementImpl {
 
 	return &UserManagementImpl{}
+}
+
+func (management *UserManagementImpl) CreateNewUserWithHashPassword(request CreateNewUserWithHashPasswordRequest, ctx context.Context) (*CreateNewUserResult, error) {
+	rmqc, err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.RabbitAccess.Username, request.RabbitAccess.Password)
+	if err != nil {
+		logrus.WithError(err).Error(fmt.Sprintf("Erro ao remover usuario %s do cluster %s", request.Username, request.Host))
+		return nil, err
+	}
+
+	_, err = rmqc.PutUser(request.Username, rabbithole.UserSettings{
+		Name:         request.Username,
+		Tags:         nil,
+		PasswordHash: request.PasswordHash,
+	})
+	if err != nil {
+		logrus.WithError(err).Error("Erro ao criar usuario usando hash")
+		return nil, err
+	}
+
+	return &CreateNewUserResult{PasswordHash: request.PasswordHash}, nil
 }
 
 func (management *UserManagementImpl) DeleteUser(request DeleteUserRequest, ctx context.Context) error {

@@ -349,7 +349,7 @@ const docTemplate = `{
         },
         "/{clusterId}/user": {
             "get": {
-                "description": "Recovery the details of a specific mirror user that is already imported from the cluster",
+                "description": "Retrieve all users that exist on rabbit cluster. Event if it its registered in ostern",
                 "consumes": [
                     "application/json"
                 ],
@@ -359,27 +359,13 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Retrieve a mirror user from broker",
+                "summary": "Retrieve all users from rabbitmq cluster",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Cluster id from where retrieve users",
                         "name": "clusterId",
                         "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "default": 1,
-                        "name": "PageNumber",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "name": "PageSize",
-                        "in": "query",
                         "required": true
                     }
                 ],
@@ -434,9 +420,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/{clusterId}/user/rabbitmq/{userId}": {
-            "delete": {
-                "description": "Completely delete a rabbitmq user",
+        "/{clusterId}/user/syncronize": {
+            "post": {
+                "description": "Cria um ususario que esteja na base do ostern e nao exista no cluster",
                 "consumes": [
                     "application/json"
                 ],
@@ -446,57 +432,27 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Delete a user from rabbitmq cluster and ostern database",
+                "summary": "Sincronize um ususario no rabbitmq",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "User id registered",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
+                        "description": "Request",
+                        "name": "ImportOrCreateUserRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserSyncronizeRequest"
+                        }
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No Content"
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "number"
+                        }
                     },
-                    "404": {
-                        "description": "Not Found"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/{clusterId}/user/usersfromcluster": {
-            "get": {
-                "description": "Retrieve all users that exist on rabbit cluster. Event if it its registered in ostern",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Retrieve all users from rabbitmq cluster",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Cluster id from where retrieve users",
-                        "name": "clusterId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "404": {
-                        "description": "Not Found"
+                    "400": {
+                        "description": "Bad Request"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -653,6 +609,14 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "QueueId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.UserSyncronizeRequest": {
+            "type": "object",
+            "properties": {
+                "UserId": {
                     "type": "integer"
                 }
             }

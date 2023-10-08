@@ -4,9 +4,9 @@ import { UserColumn } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import SimpleHeading from "@/components/Heading/SimpleHeading";
 import { useTranslations } from "next-intl";
-import { RabbitMqUser } from "@/types";
 import { Button } from "@/components/ui/button";
 import { FileStack } from "lucide-react";
+import { RabbitMqUser } from "@/models/users";
 
 interface UsersClientProps {
   data: RabbitMqUser[];

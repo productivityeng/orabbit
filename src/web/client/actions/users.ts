@@ -2,8 +2,8 @@
 
 import { CreateRabbitmqUserSchema } from "@/schemas/user-schemas";
 import { FrontResponse, PaginatedResponse } from "./common/frontresponse";
-import { ImportRabbitMqUser, RabbitMqCluster, RabbitMqUser } from "@/types";
 import { z } from "zod";
+import { ImportRabbitMqUser, RabbitMqUser } from "@/models/users";
 
 /**
  *
@@ -32,7 +32,7 @@ export async function fetchRegisteredUsers(
 
 export async function importUserFromCluster(
   request: ImportRabbitMqUser
-): Promise<RabbitMqUser> {
+): Promise<FrontResponse<RabbitMqUser | undefined>> {
   let result = await fetch(
     `${process.env.PRIVATE_INVENTORY_ENDPOINT!}/${request.ClusterId}/user`,
     {
@@ -42,8 +42,12 @@ export async function importUserFromCluster(
     }
   );
 
-  let payloadResult = await result.json();
-  return payloadResult;
+  try {
+    let payloadResult = (await result.json()) as RabbitMqUser;
+    return { ErrorMessage: null, Result: payloadResult };
+  } catch (error) {
+    return { ErrorMessage: "Erro ao importar usuario", Result: undefined };
+  }
 }
 
 /**
@@ -55,8 +59,7 @@ export async function fetchUsersFromCluster(
   clusterId: number
 ): Promise<RabbitMqUser[]> {
   let result = await fetch(
-    `${process.env
-      .PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/user/usersfromcluster`,
+    `${process.env.PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/user`,
     {
       method: "GET",
       cache: "no-store",
@@ -134,7 +137,7 @@ export async function deleteUserFromRabbit(
   userId: number
 ): Promise<FrontResponse<string | null>> {
   const createUserEndpoint = `${process.env
-    .PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/user/rabbitmq/${userId}`;
+    .PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/user/${userId}`;
 
   let response = await fetch(createUserEndpoint, {
     method: "DELETE",
@@ -170,31 +173,28 @@ export async function deleteUserFromRabbit(
   }
 }
 
-/**
- * Remove o usuario da base do ostern, nao do rabbitmq.
- * @param clusterId Identificação do Cluster do usuario
- * @param userId Identificação Global do usuário
- * @returns
- */
-export async function deleteUserFromTracking(
+export async function SyncronizeUserAction(
   clusterId: number,
   userId: number
-): Promise<FrontResponse<string | null>> {
-  const createUserEndpoint = `${process.env
-    .PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/user/${userId}`;
+): Promise<FrontResponse<boolean>> {
+  const syncronizeUserEndnpoint = `${process.env
+    .PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/user/syncronize`;
 
-  let response = await fetch(createUserEndpoint, {
-    method: "DELETE",
+  let response = await fetch(syncronizeUserEndnpoint, {
+    body: JSON.stringify({
+      UserId: userId,
+    }),
+    method: "POST",
   });
-
   switch (response.status) {
+    case 201:
     case 204: {
-      return { ErrorMessage: null, Result: "Deleted" };
+      return { ErrorMessage: null, Result: true };
     }
 
     case 400: {
       let contentBadRequest = (await response.json()) as { error: string };
-      return { ErrorMessage: contentBadRequest.error, Result: null };
+      return { ErrorMessage: contentBadRequest.error, Result: false };
     }
 
     case 406: {
@@ -204,15 +204,15 @@ export async function deleteUserFromTracking(
       };
       return {
         ErrorMessage: `field ${contentInaceptable.field} with error => ${contentInaceptable.error}`,
-        Result: null,
+        Result: false,
       };
     }
 
     case 500: {
       let contenctUnkow = await response.json();
-      return { ErrorMessage: JSON.stringify(contenctUnkow), Result: null };
+      return { ErrorMessage: JSON.stringify(contenctUnkow), Result: false };
     }
     default:
-      throw new Error("Erro desconhecido => " + JSON.stringify(response));
+      return { ErrorMessage: "Erro desconhecido", Result: false };
   }
 }

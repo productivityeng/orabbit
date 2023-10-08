@@ -129,7 +129,7 @@ func (repo *UserRepositoryMySql) CheckIfUserExistsForCluster(cluster uint, usern
 	return count > 0, nil
 }
 
-func (repo *UserRepositoryMySql) ListAllRegisteredUsers(clusterId uint, ctx context.Context) ([]userEntities.UserEntity, error) {
+func (repo *UserRepositoryMySql) ListAllRegisteredUsers(clusterId uint, ctx context.Context) (userEntities.UserEntityList, error) {
 	var users []userEntities.UserEntity
 	result := repo.Db.WithContext(ctx).Where(&userEntities.UserEntity{ClusterId: clusterId}).Find(&users)
 	if result.Error != nil {

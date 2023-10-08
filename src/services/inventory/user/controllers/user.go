@@ -8,13 +8,12 @@ import (
 )
 
 type UserController interface {
-	ListUsers(c *gin.Context)
 	ListUsersFromCluster(c *gin.Context)
 	CreateUser(c *gin.Context)
 	UpdateUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
-	DeleteRabbitUser(c *gin.Context)
 	FindUser(c *gin.Context)
+	SyncronizeUser(c *gin.Context)
 }
 
 type UserControllerImpl struct {

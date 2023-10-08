@@ -4,58 +4,12 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/contracts"
-	"github.com/productivityeng/orabbit/src/packages/common"
 	common_rabbit "github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/user"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
 )
-
-// ListUsers
-// @Summary Retrieve a mirror user from broker
-// @Schemes
-// @Description Recovery the details of a specific mirror user that is already imported from the cluster
-// @Tags User
-// @Accept json
-// @Produce json
-// @Param clusterId path int true "Cluster id from where retrieve users"
-// @Param params query common.PageParam true "Number of items in one page"
-// @Success 200
-// @Failure 404
-// @Failure 500
-// @Router /{clusterId}/user [get]
-func (userCtrl *UserControllerImpl) ListUsers(c *gin.Context) {
-
-	var param common.PageParam
-
-	err := c.BindQuery(&param)
-	if err != nil {
-		log.WithError(err).Error("Error trying to parse query params")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	clusterIdParam := c.Param("clusterId")
-	clusterId, err := strconv.ParseInt(clusterIdParam, 10, 32)
-	if err != nil {
-		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to parse brokerId Param")
-		c.JSON(http.StatusBadRequest, "Error parsing brokerId from url route")
-		return
-	}
-	log.WithField("parameter", clusterIdParam).Info("Looking for list of users")
-
-	result, err := userCtrl.UserRepository.ListUsers(uint(clusterId), param.PageSize, param.PageNumber, c)
-
-	if err != nil {
-		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to retrieve users for the cluster")
-		c.JSON(http.StatusBadRequest, "Fail to retrieve users for the cluster")
-		return
-	}
-
-	c.JSON(http.StatusOK, result)
-	return
-}
 
 // ListUsersFromCluster
 // @Summary Retrieve all users from rabbitmq cluster
@@ -68,7 +22,7 @@ func (userCtrl *UserControllerImpl) ListUsers(c *gin.Context) {
 // @Success 200
 // @Failure 404
 // @Failure 500
-// @Router /{clusterId}/user/usersfromcluster [get]
+// @Router /{clusterId}/user [get]
 func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 
 	clusterIdParam := c.Param("clusterId")
@@ -115,25 +69,33 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 
 	log.WithFields(fields).Info("Preparing response")
 
-	var response []contracts.GetUserResponse
+	var response contracts.GetUserResponseList
 
 	for _, userFromCluster := range usersFromCluster {
 		userResponse := contracts.GetUserResponse{
 			Username:     userFromCluster.Name,
 			PasswordHash: userFromCluster.PasswordHash,
 			Id:           0,
+			IsInCluster:  true,
+			IsInDatabase: false,
 		}
-
-	loopUsersFromdb:
-		for _, userFromDb := range usersFromDb {
-			if userFromDb.Username == userResponse.Username {
-				userResponse.Id = userFromDb.ID
-				userResponse.IsRegistered = true
-				break loopUsersFromdb
-			}
+		if userEqual := usersFromDb.UserInListByName(userFromCluster.Name); userEqual != nil {
+			userResponse.Id = userEqual.ID
+			userResponse.IsInDatabase = true
 		}
-
 		response = append(response, userResponse)
+	}
+
+	for _, userFromDb := range usersFromDb {
+		if response.UserInListByName(userFromDb.Username) == false {
+			response = append(response, contracts.GetUserResponse{
+				Id:           userFromDb.ID,
+				Username:     userFromDb.Username,
+				PasswordHash: userFromDb.PasswordHash,
+				IsInCluster:  false,
+				IsInDatabase: true,
+			})
+		}
 	}
 
 	c.JSON(http.StatusOK, response)

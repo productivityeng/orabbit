@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import CellAction from "./cell-action";
 import CellMaintening from "./cell-maintening";
-import { RabbitMqUser } from "@/types";
+import { RabbitMqUser } from "@/models/users";
 
 export const UserColumn: ColumnDef<RabbitMqUser>[] = [
   {
@@ -22,7 +22,7 @@ export const UserColumn: ColumnDef<RabbitMqUser>[] = [
   },
   {
     id: "actions",
-    header: () => <b></b>,
+    header: () => <b>Actions</b>,
     cell: ({ row }) => <CellAction data={row.original} />,
   },
 ];
