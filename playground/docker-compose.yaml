@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   keykloack:
     image: "quay.io/keycloak/keycloak:21.1.2"
@@ -12,7 +12,7 @@ services:
       - KC_DB_URL_PORT=3306
       - KC_DB_SCHEMA=keycloak
     ports:
-      - '8081:8080'
+      - "8081:8080"
     command: start-dev
     depends_on:
       - database
@@ -20,7 +20,7 @@ services:
     image: mysql:8.0
     container_name: db_mysql
     ports:
-      - '3306:3306'
+      - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL=1
@@ -60,5 +60,7 @@ networks:
 volumes:
   db:
     driver: local
+    name: mysql-volume
   rabbit:
     driver: local
+    name: rabbitmq-volume

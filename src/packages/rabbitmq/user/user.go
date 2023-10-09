@@ -30,10 +30,25 @@ func (management *UserManagementImpl) CreateNewUserWithHashPassword(request Crea
 		return nil, err
 	}
 
-	_, err = rmqc.PutUser(request.Username, rabbithole.UserSettings{
-		Name:         request.Username,
-		Tags:         nil,
+	_, err = rmqc.PutUser(request.UsernameToCreate, rabbithole.UserSettings{
+		Name:         request.UsernameToCreate,
+		Tags:         []string{"management"},
 		PasswordHash: request.PasswordHash,
+	})
+
+	if err != nil {
+		logrus.WithError(err).Error("Erro ao ")
+	}
+	_, err = rmqc.UpdatePermissionsIn("/", request.UsernameToCreate, rabbithole.Permissions{
+		Configure: "*",
+		Write:     "*",
+		Read:      "*",
+	})
+
+	rmqc.UpdateTopicPermissionsIn("/", request.UsernameToCreate, rabbithole.TopicPermissions{
+		Exchange: "*",
+		Write:    "*",
+		Read:     "*",
 	})
 	if err != nil {
 		logrus.WithError(err).Error("Erro ao criar usuario usando hash")
@@ -95,7 +110,7 @@ func (management *UserManagementImpl) CreateNewUser(request CreateNewUserRequest
 	logrus.WithField("request", request).Info("Creating new user in cluster")
 	_, err = rmqc.PutUser(request.UserToCreate, rabbithole.UserSettings{
 		Tags:     []string{"management"},
-		Password: request.Password,
+		Password: request.PasswordOfUsertToCreate,
 	})
 
 	if err != nil {

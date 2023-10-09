@@ -103,9 +103,11 @@ function CellAction({ data }: CellActionProps) {
               <Edit className="mr-2 h-4 w-4" /> Remover do cluster
             </DropdownMenuItem>
           )}
-          <DropdownMenuItem onClick={importUser}>
-            <Files className="mr-2 h-4 w-4" /> Importar
-          </DropdownMenuItem>
+          {!data.IsInDatabase && data.IsInCluster && (
+            <DropdownMenuItem onClick={importUser}>
+              <Files className="mr-2 h-4 w-4" /> Importar
+            </DropdownMenuItem>
+          )}
           {data.IsInDatabase && !data.IsInCluster && (
             <DropdownMenuItem onClick={syncronizeUser}>
               <RefreshCw className="mr-2 h-4 w-4" /> Sincronizar
