@@ -37,7 +37,8 @@ func (management *UserManagementImpl) CreateNewUserWithHashPassword(request Crea
 	})
 
 	if err != nil {
-		logrus.WithError(err).Error("Erro ao ")
+		logrus.WithError(err).Error("Erro ao criar usuario usando hash")
+		return nil, err
 	}
 	_, err = rmqc.UpdatePermissionsIn("/", request.UsernameToCreate, rabbithole.Permissions{
 		Configure: "*",
@@ -45,13 +46,18 @@ func (management *UserManagementImpl) CreateNewUserWithHashPassword(request Crea
 		Read:      "*",
 	})
 
-	rmqc.UpdateTopicPermissionsIn("/", request.UsernameToCreate, rabbithole.TopicPermissions{
+	if err != nil {
+		logrus.WithError(err).Error("Erro ao adicionar permissoes no vhost")
+		return nil, err
+	}
+
+	_, err = rmqc.UpdateTopicPermissionsIn("/", request.UsernameToCreate, rabbithole.TopicPermissions{
 		Exchange: "*",
 		Write:    "*",
 		Read:     "*",
 	})
 	if err != nil {
-		logrus.WithError(err).Error("Erro ao criar usuario usando hash")
+		logrus.WithError(err).Error("Erro ao adicionar topic permissions no vhost")
 		return nil, err
 	}
 

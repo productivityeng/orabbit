@@ -45,6 +45,12 @@ func (entity *UserControllerImpl) DeleteUser(c *gin.Context) {
 		return
 	}
 
+	if userFromDb.IsLocked() {
+		log.WithField("user", userFromDb.ID).Warn("Usuario com interacao bloqueada")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "usuario com interacao bloqueada"})
+		return
+	}
+
 	cluster, err := entity.ClusterRepository.GetCluster(uint(clusterId), c)
 	if err != nil {
 		log.WithError(err).WithField("clusterId", clusterId).Error("Erro ao buscar cluster na base")

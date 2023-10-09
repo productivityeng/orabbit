@@ -58,6 +58,12 @@ func (entity *UserControllerImpl) SyncronizeUser(c *gin.Context) {
 		return
 	}
 
+	if user.IsLocked() {
+		log.WithField("user", user.ID).Warn("Usuario com interacao bloqueada")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "usuario com interacao bloqueada"})
+		return
+	}
+
 	createUserRequest := user2.CreateNewUserWithHashPasswordRequest{
 		RabbitAccess:     cluster.GetRabbitMqAccess(),
 		UsernameToCreate: user.Username,

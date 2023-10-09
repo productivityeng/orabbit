@@ -6,6 +6,7 @@ import (
 	brokerEntities "github.com/productivityeng/orabbit/cluster/entities"
 	database_mysql "github.com/productivityeng/orabbit/database"
 	"github.com/productivityeng/orabbit/docs"
+	lockerEntities "github.com/productivityeng/orabbit/locker/entities"
 	"github.com/productivityeng/orabbit/queue"
 	"github.com/productivityeng/orabbit/queue/entities"
 	"github.com/productivityeng/orabbit/user"
@@ -17,7 +18,8 @@ import (
 )
 
 func main() {
-	database_mysql.Db.AutoMigrate(&brokerEntities.ClusterEntity{}, &userEntities.UserEntity{}, &entities.QueueEntity{})
+	database_mysql.Db.AutoMigrate(&brokerEntities.ClusterEntity{},
+		&userEntities.UserEntity{}, &entities.QueueEntity{}, &lockerEntities.LockerEntity{})
 
 	gin.ForceConsoleColor()
 
