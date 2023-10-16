@@ -4,6 +4,28 @@ import { RabbitMqQueue } from "@/models/queues";
 import { FrontResponse } from "./common/frontresponse";
 import { CreateRabbitMqQeueueRequestSchema } from "@/schemas/queue-schemas";
 import { boolean, z } from "zod";
+import { log } from "console";
+
+/**
+ * Import a queue that exists in rabbitmq cluster and register it on ostern
+ * @param clusterId
+ * @param queueName
+ */
+export async function ImportQueueFromClusterAction(
+  clusterId: number,
+  queueName: string
+) {
+  const importQueueFromClusterEndpoint = `${process.env
+    .PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/queue/import`;
+
+  await fetch(importQueueFromClusterEndpoint, {
+    method: "POST",
+    cache: "no-store",
+    body: JSON.stringify({
+      QueueName: queueName,
+    }),
+  });
+}
 
 export async function fetchQeueusFromCluster(
   clusterId: number
@@ -30,6 +52,12 @@ export async function fetchQeueusFromCluster(
   }
 }
 
+/**
+ * Get specified detail about a RabbitMQ queue from a cluster
+ * @param queueId
+ * @param clusterId
+ * @returns
+ */
 export async function fetchQueue(
   queueId: number,
   clusterId: number
@@ -50,6 +78,12 @@ export async function fetchQueue(
   return { ErrorMessage: null, Result: contentResponse };
 }
 
+/**
+ * Create a new Queue in specified RabbitMQ cluster and register it on ostern
+ * @param clusterId C
+ * @param request
+ * @returns
+ */
 export async function createQueue(
   clusterId: number,
   request: z.infer<typeof CreateRabbitMqQeueueRequestSchema>
@@ -127,6 +161,11 @@ export async function syncronizeQueueAction({
   }
 }
 
+/**
+ * Removes a queue from a specified RabbitMQ Cluster based on ClusterID and QueueID.
+ * @param param0
+ * @returns
+ */
 export async function removeQueueFromClusterAction({
   ClusterId,
   QueueId,

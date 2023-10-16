@@ -15,11 +15,9 @@ function CellMaintening({ Queue }: CellMainteningProps) {
   const params = useParams();
   const route = useRouter();
 
-  const handleImportUser = async () => {};
-
   if (Queue.IsInCluster && !Queue.IsInDatabase) {
     return (
-      <Button onClick={handleImportUser} size="sm" variant="destructive">
+      <Button size="sm" variant="destructive">
         {<Hammer className="w-4 h-4 fill-white mx-1" />}
         {"Not Tracked"}
       </Button>

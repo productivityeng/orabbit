@@ -7,23 +7,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  Copy,
-  Edit,
-  Files,
-  MoreHorizontal,
-  RefreshCcw,
-  RefreshCw,
-  SettingsIcon,
-  Trash,
-} from "lucide-react";
-import toast from "react-hot-toast";
+import { Edit, Files, RefreshCw, SettingsIcon } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { RabbitMqQueue } from "@/models/queues";
-import { cn } from "@/lib/utils";
+import { cn, standardToastableAction } from "@/lib/utils";
 import {
+  ImportQueueFromClusterAction,
   removeQueueFromClusterAction,
-  syncronizeQueueAction,
 } from "@/actions/queue";
 
 interface CellActionProps {
@@ -37,94 +27,69 @@ function CellAction({ data }: CellActionProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const syncronizeQueue = async () => {
-    const toastId = toast.loading(
+    await standardToastableAction(
+      async () => {
+        await ImportQueueFromClusterAction(Number(params.clusterId), data.Name);
+      },
       <p>
         Sincronizando fila <p className="text-rabbit">{data.Name}</p> ...
-      </p>
+      </p>,
+      <p>
+        Fila <p className="text-rabbit">{data.Name}</p> sincronizada com sucesso{" "}
+      </p>,
+      <p>
+        Erro ao sincronizar fila <p className="text-rabbit">{data.Name}</p>{" "}
+      </p>,
+      [
+        () => {
+          router.refresh();
+        },
+      ],
+      []
     );
-    try {
-      let response = await syncronizeQueueAction({
-        ClusterId: Number(params.clusterId),
-        QueueId: data.ID,
-      });
-      if (response.ErrorMessage) {
-        toast.error(
-          <p>
-            Erro {response.ErrorMessage} ao sincronizar fila{" "}
-            <p className="text-rabbit">{data.Name}</p>{" "}
-          </p>,
-          {
-            id: toastId,
-          }
-        );
-        return;
-      }
-
-      toast.success(
-        <p>
-          Fila <p className="text-rabbit">{data.Name}</p> sincronizada com
-          sucesso{" "}
-        </p>,
-        {
-          id: toastId,
-        }
-      );
-      router.refresh();
-    } catch (error) {
-      toast.error(
-        <p>
-          Erro ao sincronizar fila <p className="text-rabbit">{data.Name}</p>{" "}
-        </p>,
-        {
-          id: toastId,
-        }
-      );
-    }
   };
 
   const removeQueueFromCluster = async () => {
-    const toastId = toast.loading(
+    await standardToastableAction(
+      async () => {
+        await removeQueueFromClusterAction({
+          ClusterId: Number(params.clusterId),
+          QueueId: data.ID,
+        });
+      },
       <p>
         Removendo fila <p className="text-rabbit">{data.Name}</p> ...
-      </p>
+      </p>,
+      <p>
+        Fila <p className="text-rabbit">{data.Name}</p> removida com sucesso
+      </p>,
+      <p>
+        Erro ao remover fila <p className="text-rabbit">{data.Name}</p>{" "}
+      </p>,
+      [
+        () => {
+          router.refresh();
+        },
+      ],
+      []
     );
-    try {
-      let response = await removeQueueFromClusterAction({
-        ClusterId: Number(params.clusterId),
-        QueueId: data.ID,
-      });
-      if (response.ErrorMessage) {
-        toast.error(
-          <p>
-            Erro {response.ErrorMessage} ao remover fila{" "}
-            <p className="text-rabbit">{data.Name}</p>{" "}
-          </p>,
-          {
-            id: toastId,
-          }
-        );
-        return;
-      }
+  };
 
-      toast.success(
-        <p>
-          Fila <p className="text-rabbit">{data.Name}</p> removida com sucesso
-        </p>,
-        {
-          id: toastId,
-        }
-      );
-      router.refresh();
-    } catch (error) {
-      toast.error(
-        <p>
-          Erro ao remover fila <p className="text-rabbit">{data.Name}</p>{" "}
-        </p>,
-        {
-          id: toastId,
-        }
-      );
-    }
+  const importQueueFromCluster = async () => {
+    await standardToastableAction(
+      async () => {
+        await ImportQueueFromClusterAction(Number(params.clusterId), data.Name);
+      },
+      <p>"Importando fila do cluster"</p>,
+      <p>"Fila importada com sucesso!"</p>,
+      <p>"Fila importada com sucesso!"</p>,
+      [
+        () => {
+          router.refresh();
+        },
+      ],
+      []
+    );
   };
 
   return (
@@ -150,7 +115,7 @@ function CellAction({ data }: CellActionProps) {
             </DropdownMenuItem>
           )}
           {data.IsInCluster && !data.IsInDatabase && (
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={importQueueFromCluster}>
               <Files className="mr-2 h-4 w-4" /> Importar
             </DropdownMenuItem>
           )}
