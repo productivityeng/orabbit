@@ -2,7 +2,15 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import AlertModal from "@/components/Modals/alert-danger-modal";
-import { Edit, Files, RefreshCw, SettingsIcon, Trash } from "lucide-react";
+import {
+  Edit,
+  Files,
+  Lock,
+  RefreshCw,
+  SettingsIcon,
+  Trash,
+  UnlockIcon,
+} from "lucide-react";
 import { UserColumn } from "./columns";
 import {
   SyncronizeUserAction,
@@ -19,6 +27,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { RabbitMqUser } from "@/models/users";
+import { Unlock } from "next/font/google";
 
 interface CellActionProps {
   data: RabbitMqUser;
@@ -80,6 +89,8 @@ function CellAction({ data }: CellActionProps) {
     router.refresh();
   };
 
+  const lockuser = async () => {};
+
   return (
     <>
       <DropdownMenu>
@@ -111,6 +122,12 @@ function CellAction({ data }: CellActionProps) {
           {data.IsInDatabase && !data.IsInCluster && (
             <DropdownMenuItem onClick={syncronizeUser}>
               <RefreshCw className="mr-2 h-4 w-4" /> Sincronizar
+            </DropdownMenuItem>
+          )}
+          {data.IsInDatabase && (
+            <DropdownMenuItem onClick={lockuser}>
+              <Lock className="mr-2 h-4 w-4 text-yellow-600 rounded-sm" />{" "}
+              Trancar
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>

@@ -5,6 +5,7 @@ export type RabbitMqUser = {
   PasswordHash: string;
   IsInCluster: boolean;
   IsInDatabase: boolean;
+  LockedReason: string;
 };
 
 export type ImportRabbitMqUser = {

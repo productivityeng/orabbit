@@ -1,4 +1,5 @@
 import { fetchRegisteredUsers, fetchUsersFromCluster } from "@/actions/users";
+import _ from "lodash";
 import React from "react";
 import UsersClient from "./components/client";
 
@@ -10,7 +11,7 @@ async function UsersPage({ params }: { params: { clusterId: number } }) {
 
   return (
     <div className="">
-      <UsersClient data={users} />
+      <UsersClient data={_.sortBy(users, (user) => user.Id)} />
     </div>
   );
 }

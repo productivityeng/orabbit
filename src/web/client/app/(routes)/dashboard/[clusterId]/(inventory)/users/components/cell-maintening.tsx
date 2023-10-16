@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteUserFromCluster, importUserFromCluster } from "@/actions/users";
+import { deleteUserFromRabbit, importUserFromCluster } from "@/actions/users";
 import { Button } from "@/components/ui/button";
 import { RabbitMqUser } from "@/models/users";
 import { BadgeCheck, Frown, Hammer, RefreshCcw } from "lucide-react";
@@ -48,7 +48,7 @@ function CellMaintening({ User }: CellMainteningProps) {
   const handleDetachUser = async () => {
     const toastId = toast.loading("Removendo usuario do ostern...");
     try {
-      await deleteUserFromCluster(Number(params["clusterId"]), User.Id);
+      await deleteUserFromRabbit(Number(params["clusterId"]), User.Id);
       toast.success(
         <p>
           Usuario {<b className="text-rabbit">{User.Username}</b>} removido do
