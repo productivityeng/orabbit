@@ -118,6 +118,7 @@ func (entity *UserControllerImpl) CreateUser(c *gin.Context) {
 		Username:     userCreated.Username,
 		PasswordHash: userCreated.PasswordHash,
 		ClusterId:    userCreated.ClusterId,
+		LockedReason: userCreated.Locker.Reason,
 	})
 
 }

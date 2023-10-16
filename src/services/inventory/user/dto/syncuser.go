@@ -12,4 +12,5 @@ type GetUserResponse struct {
 	Username     string `json:"Username"`
 	PasswordHash string `json:"PasswordHash"`
 	ClusterId    uint   `json:"ClusterId"`
+	LockedReason string `json:"LockedReason"`
 }
