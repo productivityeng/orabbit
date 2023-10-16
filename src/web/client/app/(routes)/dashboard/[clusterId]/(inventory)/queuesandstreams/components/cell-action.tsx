@@ -14,6 +14,7 @@ import { cn, standardToastableAction } from "@/lib/utils";
 import {
   ImportQueueFromClusterAction,
   removeQueueFromClusterAction,
+  syncronizeQueueAction,
 } from "@/actions/queue";
 
 interface CellActionProps {
@@ -29,7 +30,10 @@ function CellAction({ data }: CellActionProps) {
   const syncronizeQueue = async () => {
     await standardToastableAction(
       async () => {
-        await ImportQueueFromClusterAction(Number(params.clusterId), data.Name);
+        await syncronizeQueueAction({
+          ClusterId: Number(params.clusterId),
+          QueueId: data.ID,
+        });
       },
       <p>
         Sincronizando fila <p className="text-rabbit">{data.Name}</p> ...

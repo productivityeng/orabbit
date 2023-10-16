@@ -21,7 +21,7 @@ export async function standardToastableAction<T>(
       id: toastId,
     });
     successCallbacks.forEach((callback) => callback());
-  } catch {
+  } catch (e) {
     toast.error(errorMessage, { id: toastId });
     errorCallbacks.forEach((callback) => callback());
   }

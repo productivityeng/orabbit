@@ -157,7 +157,7 @@ export async function syncronizeQueueAction({
     case 200:
       return { ErrorMessage: null, Result: true };
     default:
-      return { ErrorMessage: `[UNKNOW_ERROR]`, Result: false };
+      throw await response.json();
   }
 }
 
