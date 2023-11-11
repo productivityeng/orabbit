@@ -5,6 +5,7 @@ import CellAction from "./cell-action";
 import CellMaintening from "./cell-maintening";
 import CellArguments from "./cell-arguments";
 import { RabbitMqQueue } from "@/models/queues";
+import CellDurable from "./cell-durable";
 
 export const RabbitMqQueueColumn: ColumnDef<RabbitMqQueue>[] = [
   {
@@ -24,12 +25,17 @@ export const RabbitMqQueueColumn: ColumnDef<RabbitMqQueue>[] = [
     header: () => <b>Is Registered</b>,
     cell: ({ row }) => <CellMaintening Queue={row.original} />,
   },
-
+  {
+    accessorKey: "Durable",
+    header: () => <b>Durable</b>,
+    cell: ({ row }) => <CellDurable Queue={row.original} />,
+  },
   {
     accessorKey: "Arguments",
     header: () => <b>Arguments</b>,
     cell: ({ row }) => <CellArguments Queue={row.original} />,
   },
+
   {
     id: "actions",
     header: () => <b>Actions</b>,

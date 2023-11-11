@@ -4,7 +4,6 @@ import ImportClusterProvider from "@/providers/import-cluster-provider";
 import { fetchAllClusters } from "@/actions/cluster";
 import { Metadata } from "next";
 import React from "react";
-import DeleteCluseter from "./[clusterId]/(general)/settings/components/delete-cluster";
 
 export const metadata: Metadata = {
   title: "ORabbit | Dashboard",

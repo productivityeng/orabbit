@@ -12,9 +12,6 @@ interface CellMainteningProps {
   Queue: RabbitMqQueue;
 }
 function CellMaintening({ Queue }: CellMainteningProps) {
-  const params = useParams();
-  const route = useRouter();
-
   if (Queue.IsInCluster && !Queue.IsInDatabase) {
     return (
       <Button size="sm" variant="destructive">

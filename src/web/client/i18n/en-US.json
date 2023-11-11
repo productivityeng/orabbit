@@ -57,7 +57,17 @@
   },
   "ImportClusterForm": {
     "FailToCreate": "Fail to create cluster with",
-    "Creating": "Creating cluster ..."
+    "Creating": "Creating cluster ...",
+    "Type": {
+      "Label": "Type",
+      "Description": "Choose between a queue of type Quorum or Type ",
+      "Placeholder": "Select queue type"
+    },
+    "Queue": {
+      "Label": "Name",
+      "Description": "Queue name in the cluster",
+      "Placeholder": "Provide a nome for the queue"
+    }
   },
   "[BROKER_ALREADY_EXISTS]": "This cluster already exists in database, maybe there was disabled. You can enable the cluster in the graviardy page",
   "[QUEUE_NOTFOUND_INCLUSTER]": "The name of the queue cound'nt not be found on rabbitmq cluster",

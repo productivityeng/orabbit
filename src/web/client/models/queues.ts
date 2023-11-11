@@ -7,4 +7,5 @@ export type RabbitMqQueue = {
   Name: string;
   IsInCluster: boolean;
   IsInDatabase: boolean;
+  Durable: boolean;
 };

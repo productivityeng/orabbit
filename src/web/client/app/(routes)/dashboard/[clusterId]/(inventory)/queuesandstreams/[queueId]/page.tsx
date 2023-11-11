@@ -1,10 +1,8 @@
 import React from "react";
-import UserForm from "./components/queue-form";
-import { fetchUser } from "@/actions/users";
+import QueueForm from "./components/queue-form";
 import { fetchQueue } from "@/actions/queue";
 import { FrontResponse } from "@/actions/common/frontresponse";
-import { RabbitMqQueue } from "@/types";
-import { Translation } from "next-i18next";
+import { RabbitMqQueue } from "@/models/queues";
 
 async function UserPage({
   params,
@@ -22,7 +20,7 @@ async function UserPage({
       {fetchedQueue?.ErrorMessage != null ? (
         <p>Queue not found</p>
       ) : (
-        <UserForm initialData={fetchedQueue?.Result ?? null} />
+        <QueueForm initialData={fetchedQueue?.Result ?? null} />
       )}
     </div>
   );

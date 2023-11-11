@@ -64,7 +64,17 @@
   },
   "ImportClusterForm": {
     "FailToCreate": "Falha ao criar o cluster",
-    "Creating": "Criando cluster..."
+    "Creating": "Criando cluster...",
+    "Type": {
+      "Label": "Tipo",
+      "Description": "Escolha entre uma fila do tipo Quorum e Type",
+      "Placeholder": "Selecione um tipo de fila"
+    },
+    "Queue": {
+      "Label": "Nome",
+      "Description": "Nome da fila exibida no cluster",
+      "Placeholder": "Preencha com o nome da fila"
+    }
   },
   "[BROKER_ALREADY_EXISTS]": "Esse cluster ja existe na base. Talvez ela tenha sido deletado, mas é possível reativa-lo.",
   "[QUEUE_NOTFOUND_INCLUSTER]": "O nome da fila fornecido não foi encontrado no cluster",

@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Frown, Loader2 } from "lucide-react";
+import { Frown, Import, Loader2, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useParams, useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -22,17 +22,26 @@ import { toast } from "react-hot-toast";
 import { z } from "zod";
 import { CreateRabbitMqQeueueRequestSchema } from "@/schemas/queue-schemas";
 import { createQueue } from "@/actions/queue";
-import { RabbitMqQueue } from "@/types";
+import { RabbitMqQueue } from "@/models/queues";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-interface UserFormProps {
+interface QueueFormProps {
   initialData: RabbitMqQueue | null;
 }
 
-function UserForm({ initialData }: UserFormProps) {
+function QueueForm({ initialData }: QueueFormProps) {
   const params = useParams() as unknown as { clusterId: number };
   const router = useRouter();
   const [creationError, setCreationError] = useState<string>();
   const t = useTranslations();
+
+  const queueTypes = ["classic", "quorum"];
 
   const form = useForm<z.infer<typeof CreateRabbitMqQeueueRequestSchema>>({
     resolver: zodResolver(CreateRabbitMqQeueueRequestSchema),
@@ -134,21 +143,60 @@ function UserForm({ initialData }: UserFormProps) {
             />
           </div>
         )}
-        <div className="w-1/2">
+        <div className="w-1/2 space-y-5">
           <FormField
             control={form.control}
             name="QueueName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Queue Name</FormLabel>
+                <FormLabel> {t("ImportClusterForm.Queue.Label")}</FormLabel>
                 <FormControl>
                   <Input
                     className="col-span-3"
                     {...field}
                     type="text"
-                    placeholder="queue name"
+                    placeholder={t("ImportClusterForm.Queue.Placeholder")}
                   />
                 </FormControl>
+                <FormDescription>
+                  {t("ImportClusterForm.Queue.Description")}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name="Type"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="col-span-2 md:col-span-1">
+                <FormLabel> {t("ImportClusterForm.Type.Label")}</FormLabel>
+                <Select
+                  disabled={form.formState.isLoading}
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="bg-background">
+                      <SelectValue
+                        defaultValue={field.value}
+                        placeholder={t("ImportClusterForm.Type.Placeholder")}
+                      />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {queueTypes.map((queueType) => (
+                      <SelectItem key={queueType} value={queueType}>
+                        {queueType}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  {t("ImportClusterForm.Type.Description")}
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -159,15 +207,19 @@ function UserForm({ initialData }: UserFormProps) {
           <Button
             variant="outline"
             type="button"
-            size="sm"
             onClick={() => router.push("./")}
           >
             Cancelar
           </Button>
-          <Button disabled={!form.formState.isValid} size="sm">
+          <Button
+            className=""
+            disabled={!form.formState.isValid}
+          >
             {form.formState.isSubmitting && (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             )}
+            {action == "Criar" && <Plus className="mr-2" />}
+            {action == "Importar" && <Import className="mr-2" />}
             {action}
           </Button>
         </div>
@@ -176,4 +228,4 @@ function UserForm({ initialData }: UserFormProps) {
   );
 }
 
-export default UserForm;
+export default QueueForm;
