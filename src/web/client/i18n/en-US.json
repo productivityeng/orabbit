@@ -22,7 +22,8 @@
     "Create": "Create",
     "Settings": "Settings",
     "Drift": "Drift",
-    "Trail": "Trail"
+    "Trail": "Trail",
+    "VirtualHost": "Virtual Hosts"
   },
   "Dashboard": {
     "ImportClusterButton": {
@@ -71,5 +72,9 @@
   },
   "[BROKER_ALREADY_EXISTS]": "This cluster already exists in database, maybe there was disabled. You can enable the cluster in the graviardy page",
   "[QUEUE_NOTFOUND_INCLUSTER]": "The name of the queue cound'nt not be found on rabbitmq cluster",
-  "[QUEUE_ALREADY_TRACKED]": "This queue already is imported"
+  "[QUEUE_ALREADY_TRACKED]": "This queue already is imported",
+  "VirtualHostsPage": {
+    "TopDescription": "Isolate, secure, and manage independent messaging environments within a single broker",
+    "CreateNew": "Create a new Virtual Host"
+  }
 }

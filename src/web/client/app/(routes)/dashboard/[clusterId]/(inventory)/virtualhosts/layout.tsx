@@ -19,7 +19,7 @@ function UsersLayout({ children }: { children: React.ReactNode }) {
       <Heading
         Icon={UserIcon}
         IconColor="text-sky-500 "
-        Titlei18Label="Commons.VirtualHosts"
+        Titlei18Label="Commons.VirtualHost"
         BgIconColor="bg-sky-200/50"
         Descriptioni18Label="VirtualHostsPage.TopDescription"
       >

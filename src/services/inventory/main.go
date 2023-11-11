@@ -8,10 +8,11 @@ import (
 	"github.com/productivityeng/orabbit/docs"
 	lockerEntities "github.com/productivityeng/orabbit/locker/entities"
 	"github.com/productivityeng/orabbit/queue"
-	"github.com/productivityeng/orabbit/queue/entities"
+	queueEntities "github.com/productivityeng/orabbit/queue/entities"
 	"github.com/productivityeng/orabbit/user"
 	userEntities "github.com/productivityeng/orabbit/user/entities"
 	"github.com/productivityeng/orabbit/virtualhost"
+	virtualHostEntities "github.com/productivityeng/orabbit/virtualhost/entities"
 	log "github.com/sirupsen/logrus"
 
 	swaggerfiles "github.com/swaggo/files"
@@ -20,7 +21,8 @@ import (
 
 func main() {
 	database_mysql.Db.AutoMigrate(&brokerEntities.ClusterEntity{},
-		&userEntities.UserEntity{}, &entities.QueueEntity{}, &lockerEntities.LockerEntity{})
+		&userEntities.UserEntity{}, &queueEntities.QueueEntity{}, &lockerEntities.LockerEntity{},
+		&virtualHostEntities.VirtualHost{})
 
 	gin.ForceConsoleColor()
 
