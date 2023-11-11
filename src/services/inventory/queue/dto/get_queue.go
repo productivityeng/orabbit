@@ -9,6 +9,7 @@ type GetQueueResponse struct {
 	IsInCluster  bool                   `json:"IsInCluster"`
 	IsInDatabase bool                   `json:"IsInDatabase"`
 	Arguments    map[string]interface{} `json:"Arguments"`
+	Durable      bool                   `json:"Durable"`
 }
 
 type GetQueueResponseList []GetQueueResponse

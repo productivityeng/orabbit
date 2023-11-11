@@ -534,6 +534,77 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/{clusterId}/virtualhost": {
+            "get": {
+                "description": "Retrieve all virtual hosts from cluster and database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "VirtualHost"
+                ],
+                "summary": "Retrieve all virtual hosts from cluster and database",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve virtualhost",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "description": "Import or Create a new VirtualHost",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "VirtualHost"
+                ],
+                "summary": "Import or Create a new VirtualHost",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve virtualhost",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -593,6 +664,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "QueueName": {
+                    "type": "string"
+                },
+                "Type": {
                     "type": "string"
                 }
             }

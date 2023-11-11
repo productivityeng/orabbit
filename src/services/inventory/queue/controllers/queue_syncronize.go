@@ -59,7 +59,7 @@ func (q QueueControllerImpl) SyncronizeQueue(c *gin.Context) {
 		Queue:        queueFromOstern.Name,
 		Vhost:        "/",
 		Type:         queueFromOstern.Type,
-		Durable:      false,
+		Durable:      queueFromOstern.Durable,
 		Arguments:    queueFromOstern.Arguments,
 	}
 	_, err = q.QueueManagement.CreateQueue(createQueueResut)

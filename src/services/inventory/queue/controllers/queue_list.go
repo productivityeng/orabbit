@@ -60,19 +60,27 @@ func (q QueueControllerImpl) ListQueuesFromCluster(c *gin.Context) {
 
 	var getQueueResponse dto.GetQueueResponseList
 
-	for _, queueItem := range queuesFromCluster {
-		if queueFromBd := queuesFromDatabase.GetQueueFromListByName(queueItem.Name); queueFromBd != nil {
-			getQueueResponse = append(getQueueResponse, dto.GetQueueResponse{
-				ID:           queueFromBd.ID,
-				ClusterID:    uint(clusterId),
-				Name:         queueItem.Name,
-				VHost:        queueItem.Vhost,
-				Type:         queueItem.Type,
-				IsInCluster:  true,
-				IsInDatabase: true,
-				Arguments:    queueItem.Arguments,
-			})
+	for _, queueFromCluster := range queuesFromCluster {
+
+		var queueFromClusterExistsInDatabase = false
+		var queueIdFromDatabase = uint(0)
+		if queueFromBd := queuesFromDatabase.GetQueueFromListByName(queueFromCluster.Name); queueFromBd != nil {
+			queueFromClusterExistsInDatabase = true
+			queueIdFromDatabase = queueFromBd.ID
 		}
+
+		getQueueResponse = append(getQueueResponse, dto.GetQueueResponse{
+			ID:           queueIdFromDatabase,
+			ClusterID:    uint(clusterId),
+			Name:         queueFromCluster.Name,
+			VHost:        queueFromCluster.Vhost,
+			Type:         queueFromCluster.Type,
+			IsInCluster:  true,
+			IsInDatabase: queueFromClusterExistsInDatabase,
+			Arguments:    queueFromCluster.Arguments,
+			Durable:      queueFromCluster.Durable,
+		})
+
 	}
 
 	for _, queueFromDb := range queuesFromDatabase {
@@ -86,6 +94,7 @@ func (q QueueControllerImpl) ListQueuesFromCluster(c *gin.Context) {
 				IsInCluster:  false,
 				IsInDatabase: true,
 				Arguments:    queueFromDb.Arguments,
+				Durable:      queueFromDb.Durable,
 			})
 		}
 	}

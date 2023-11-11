@@ -39,6 +39,8 @@ definitions:
     properties:
       QueueName:
         type: string
+      Type:
+        type: string
     type: object
   dto.QueueRemoveRequest:
     properties:
@@ -329,6 +331,53 @@ paths:
       summary: Sincronize um ususario no rabbitmq
       tags:
       - User
+  /{clusterId}/virtualhost:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all virtual hosts from cluster and database
+      parameters:
+      - description: Cluster id from where retrieve virtualhost
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Retrieve all virtual hosts from cluster and database
+      tags:
+      - VirtualHost
+    post:
+      consumes:
+      - application/json
+      description: Import or Create a new VirtualHost
+      parameters:
+      - description: Cluster id from where retrieve virtualhost
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "201":
+          description: Created
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Import or Create a new VirtualHost
+      tags:
+      - VirtualHost
   /cluster:
     get:
       consumes:

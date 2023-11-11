@@ -11,6 +11,7 @@ import (
 	"github.com/productivityeng/orabbit/queue/entities"
 	"github.com/productivityeng/orabbit/user"
 	userEntities "github.com/productivityeng/orabbit/user/entities"
+	"github.com/productivityeng/orabbit/virtualhost"
 	log "github.com/sirupsen/logrus"
 
 	swaggerfiles "github.com/swaggo/files"
@@ -29,6 +30,7 @@ func main() {
 	cluster.Routes(r, database_mysql.Db)
 	user.Routes(r, database_mysql.Db)
 	queue.Routes(r, database_mysql.Db)
+	virtualhost.Routes(r, database_mysql.Db)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	log.Fatal(r.Run(":8082"))
