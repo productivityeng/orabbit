@@ -2,43 +2,35 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	broker_controller "github.com/productivityeng/orabbit/broker/controllers"
-	"github.com/productivityeng/orabbit/broker/entities"
-	"github.com/productivityeng/orabbit/broker/repository"
-	"github.com/productivityeng/orabbit/core/validators"
+	"github.com/productivityeng/orabbit/cluster"
+	brokerEntities "github.com/productivityeng/orabbit/cluster/entities"
 	database_mysql "github.com/productivityeng/orabbit/database"
 	"github.com/productivityeng/orabbit/docs"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq"
+	lockerEntities "github.com/productivityeng/orabbit/locker/entities"
+	"github.com/productivityeng/orabbit/queue"
+	"github.com/productivityeng/orabbit/queue/entities"
+	"github.com/productivityeng/orabbit/user"
+	userEntities "github.com/productivityeng/orabbit/user/entities"
+	"github.com/productivityeng/orabbit/virtualhost"
 	log "github.com/sirupsen/logrus"
 
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-var brokerController broker_controller.BrokerController
-var brokerRepository repository.BrokerRepositoryInterface
-var brokerValidator validators.BrokerValidator
-var overviewManagement rabbitmq.OverviewManagement
-
 func main() {
-	database_mysql.Db.AutoMigrate(&entities.BrokerEntity{})
+	database_mysql.Db.AutoMigrate(&brokerEntities.ClusterEntity{},
+		&userEntities.UserEntity{}, &entities.QueueEntity{}, &lockerEntities.LockerEntity{})
 
 	gin.ForceConsoleColor()
 
 	r := gin.Default()
-	docs.SwaggerInfo.BasePath = "/"
+	docs.SwaggerInfo.BasePath = ""
 
-	overviewManagement = rabbitmq.NewOverviewManagementImpl()
-	brokerRepository = repository.NewBrokerMysqlImpl(database_mysql.Db)
-	brokerValidator = validators.NewBrokerValidatorDefault(brokerRepository, overviewManagement)
-	brokerController = broker_controller.NewBrokerController(brokerRepository, brokerValidator)
-	brokerResourcePath := "/broker/:brokerId"
-	r.GET("/broker", brokerController.ListBrokers)
-	r.GET("/broker/exists", brokerController.FindBroker)
-	r.GET(brokerResourcePath, brokerController.GetBroker)
-	r.PUT(brokerResourcePath, brokerController.UpdateBroker)
-	r.POST("/broker", brokerController.CreateBroker)
-	r.DELETE(brokerResourcePath, brokerController.DeleteBroker)
+	cluster.Routes(r, database_mysql.Db)
+	user.Routes(r, database_mysql.Db)
+	queue.Routes(r, database_mysql.Db)
+	virtualhost.Routes(r, database_mysql.Db)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	log.Fatal(r.Run(":8082"))

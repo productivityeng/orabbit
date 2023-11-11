@@ -1,5 +1,5 @@
 definitions:
-  contracts.CreateBrokerRequest:
+  contracts.CreateClusterRequest:
     properties:
       description:
         type: string
@@ -21,23 +21,48 @@ definitions:
     - port
     - user
     type: object
-  contracts.PaginatedResult-entities_BrokerEntity:
+  dto.ImportOrCreateUserRequest:
     properties:
-      pageNumber:
+      ClusterId:
         type: integer
-      pageSize:
-        type: integer
-      result:
-        items:
-          $ref: '#/definitions/entities.BrokerEntity'
-        type: array
-      totalItems:
+      Create:
+        type: boolean
+      Password:
+        type: string
+      Username:
+        type: string
+    required:
+    - ClusterId
+    - Username
+    type: object
+  dto.QueueImportRequest:
+    properties:
+      QueueName:
+        type: string
+      Type:
+        type: string
+    type: object
+  dto.QueueRemoveRequest:
+    properties:
+      QueueId:
         type: integer
     type: object
-  entities.BrokerEntity:
+  dto.QueueSycronizeRequest:
+    properties:
+      QueueId:
+        type: integer
+    type: object
+  dto.UserSyncronizeRequest:
+    properties:
+      UserId:
+        type: integer
+    type: object
+  entities.ClusterEntity:
     properties:
       createdAt:
         type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
       description:
         type: string
       host:
@@ -55,10 +80,305 @@ definitions:
       user:
         type: string
     type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
 info:
   contact: {}
 paths:
-  /broker:
+  /{clusterId}/queue/import:
+    post:
+      consumes:
+      - application/json
+      description: Import existing queue from cluster or creater another one
+      parameters:
+      - description: Cluster id from where retrieve users
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      - description: Request
+        in: body
+        name: QueueImportRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.QueueImportRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Import or create queue
+      tags:
+      - Queue
+  /{clusterId}/queue/queuesfromcluster:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all users that exist on rabbit cluster. Event if it its
+        registered in ostern
+      parameters:
+      - description: Cluster id from where retrieve users
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Retrieve all users from rabbitmq cluster
+      tags:
+      - Queue
+  /{clusterId}/queue/remove:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a fila do cluster mas nao altera o cadastro no ostern
+      parameters:
+      - description: Cluster id
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      - description: Request
+        in: body
+        name: QueueImportRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.QueueRemoveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Remove a fila do cluster
+      tags:
+      - Queue
+  /{clusterId}/queue/syncronize:
+    post:
+      consumes:
+      - application/json
+      description: Create a queue in a cluster that not exist in cluster but is registered
+        in ostern
+      parameters:
+      - description: Cluster id
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      - description: Request
+        in: body
+        name: QueueImportRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.QueueSycronizeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Syncronize a queue between cluster and ostern
+      tags:
+      - Queue
+  /{clusterId}/user:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all users that exist on rabbit cluster. Event if it its
+        registered in ostern
+      parameters:
+      - description: Cluster id from where retrieve users
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Retrieve all users from rabbitmq cluster
+      tags:
+      - User
+    post:
+      consumes:
+      - application/json
+      description: Create a new <b>RabbitMQ User mirror</b> from the broker. The user
+        must exist in the cluster, the login and hashpassword will be imported
+      parameters:
+      - description: Request
+        in: body
+        name: ImportOrCreateUserRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ImportOrCreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: number
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Syncronize a existing RabbitMQ user from the broker.
+      tags:
+      - User
+  /{clusterId}/user/{userId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a mirrored user from the registry, the user will not be
+        deleted from the cluster
+      parameters:
+      - description: User id registered
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete a mirror user
+      tags:
+      - User
+    get:
+      consumes:
+      - application/json
+      description: Recovery the details of a specific mirror user that is already
+        imported from the cluster
+      parameters:
+      - description: User id registered
+        in: path
+        name: userId
+        required: true
+        type: integer
+      - description: Cluster from where the user is
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Retrieve a mirror user from broker
+      tags:
+      - User
+  /{clusterId}/user/syncronize:
+    post:
+      consumes:
+      - application/json
+      description: Cria um ususario que esteja na base do ostern e nao exista no cluster
+      parameters:
+      - description: Request
+        in: body
+        name: ImportOrCreateUserRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserSyncronizeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: number
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Sincronize um ususario no rabbitmq
+      tags:
+      - User
+  /{clusterId}/virtualhost:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all virtual hosts from cluster and database
+      parameters:
+      - description: Cluster id from where retrieve virtualhost
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Retrieve all virtual hosts from cluster and database
+      tags:
+      - VirtualHost
+    post:
+      consumes:
+      - application/json
+      description: Import or Create a new VirtualHost
+      parameters:
+      - description: Cluster id from where retrieve virtualhost
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "201":
+          description: Created
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Import or Create a new VirtualHost
+      tags:
+      - VirtualHost
+  /cluster:
     get:
       consumes:
       - application/json
@@ -79,15 +399,13 @@ paths:
       responses:
         "200":
           description: OK
-          schema:
-            $ref: '#/definitions/contracts.PaginatedResult-entities_BrokerEntity'
       summary: Retrieve a list of rabbitmq clusters registered
       tags:
-      - Broker
+      - Cluster
     post:
       consumes:
       - application/json
-      description: Create a new <b>RabbitMQ</b> broker. The credential provider must
+      description: Create a new <b>RabbitMQ</b> cluster. The credential provider must
         be valid and the cluster operational
       parameters:
       - description: Request
@@ -95,7 +413,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/contracts.CreateBrokerRequest'
+          $ref: '#/definitions/contracts.CreateClusterRequest'
       produces:
       - application/json
       responses:
@@ -103,19 +421,19 @@ paths:
           description: Created
           schema:
             type: string
-      summary: Register a new RabbitMQ Broker
+      summary: Register a new RabbitMQ Cluster
       tags:
-      - Broker
-  /broker/{brokerId}:
+      - Cluster
+  /cluster/{clusterId}:
     delete:
       consumes:
       - application/json
-      description: Soft delete a broker will not completly erase from database, but
+      description: Soft delete a cluster will not completly erase from database, but
         will not show up anymore in the
       parameters:
-      - description: Id of a broker to be soft deleted
+      - description: Id of a cluster to be soft deleted
         in: path
-        name: brokerId
+        name: clusterId
         required: true
         type: integer
       produces:
@@ -125,17 +443,17 @@ paths:
           description: No Content
           schema:
             type: boolean
-      summary: Soft delete a broker
+      summary: Soft delete a cluster
       tags:
-      - Broker
+      - Cluster
     get:
       consumes:
       - application/json
       description: Retrieve a single rabbitmq cluster
       parameters:
-      - description: Id of a broker to be retrived
+      - description: Id of a cluster to be retrived
         in: path
-        name: brokerId
+        name: clusterId
         required: true
         type: integer
       produces:
@@ -144,11 +462,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.BrokerEntity'
+            $ref: '#/definitions/entities.ClusterEntity'
       summary: Retrieve a single rabbitmq cluster
       tags:
-      - Broker
-  /broker/exists:
+      - Cluster
+  /cluster/exists:
     get:
       consumes:
       - application/json
@@ -169,5 +487,5 @@ paths:
           description: OK
       summary: Verify if exists a rabbitmqcluster
       tags:
-      - Broker
+      - Cluster
 swagger: "2.0"

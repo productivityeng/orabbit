@@ -2,13 +2,15 @@
   "Sidebar": {
     "ClusterSelect": "Selecione um cluster",
     "SearchForCluster": "Busque o cluster",
-    "NoClusterFounded": "Nenhum cluster encontrado"
+    "NoClusterFounded": "Nenhum cluster encontrado",
+    "ImportCluster": "Importar Cluster"
   },
   "Errors": {
     "Unknow": "Erro desconhecido, contact o suporte"
   },
   "Commons": {
-    "User": "Usuários",
+    "Users": "Usuários",
+    "User": "Usuário",
     "Exchange": "Exchange",
     "Queue": "Filas",
     "Import": "Importar",
@@ -20,7 +22,10 @@
     "Password": "Senha",
     "Port": "Porta",
     "Cancel": "Cancelar",
-    "Create": "Criar"
+    "Create": "Criar",
+    "Settings": "Configurações",
+    "Drift": "Conformidade",
+    "Trail": "Trilha"
   },
   "Dashboard": {
     "ImportClusterButton": {
@@ -43,7 +48,10 @@
     }
   },
   "UsersPage": {
-    "TopDescription": "Configure e gerencie todos os usuarios que acessam o seu cluster"
+    "TopDescription": "Configure e gerencie todos os usuarios que acessam o seu cluster",
+    "AddUser": "Novo usuario",
+    "TrackedUsers": "Usuarios rastreados",
+    "TrackedUsersDescription": "Usuarios que estao registrados no ostern. Podem haver usuarios cadastrados no cluster de rabbit que nao aparecem nesse lista"
   },
   "QueuesPage": {
     "TopDescription": "Configure e gerencie todos os aspectos relacionados as filas do seu cluster"
@@ -51,8 +59,24 @@
   "ExchangePage": {
     "TopDescription": "Configure e gerencia todos os aspectos relacionados as exchanges do seu cluster"
   },
+  "SettingsPage": {
+    "TopDescription": "Configurações do cluster na plataforma orabbit"
+  },
   "ImportClusterForm": {
     "FailToCreate": "Falha ao criar o cluster",
-    "Creating": "Criando cluster..."
-  }
+    "Creating": "Criando cluster...",
+    "Type": {
+      "Label": "Tipo",
+      "Description": "Escolha entre uma fila do tipo Quorum e Type",
+      "Placeholder": "Selecione um tipo de fila"
+    },
+    "Queue": {
+      "Label": "Nome",
+      "Description": "Nome da fila exibida no cluster",
+      "Placeholder": "Preencha com o nome da fila"
+    }
+  },
+  "[BROKER_ALREADY_EXISTS]": "Esse cluster ja existe na base. Talvez ela tenha sido deletado, mas é possível reativa-lo.",
+  "[QUEUE_NOTFOUND_INCLUSTER]": "O nome da fila fornecido não foi encontrado no cluster",
+  "[QUEUE_ALREADY_TRACKED]": "Esta fila ja foi importada"
 }

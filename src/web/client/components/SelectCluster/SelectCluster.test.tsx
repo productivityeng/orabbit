@@ -5,6 +5,8 @@ import { RabbitMqCluster } from "@/types";
 import "@testing-library/jest-dom/extend-expect";
 import { SelectCluster } from "./SelectCluster";
 import { faker } from "@faker-js/faker";
+import ResizeObserver from "resize-observer-polyfill";
+global.ResizeObserver = ResizeObserver;
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn().mockReturnValue({
@@ -19,7 +21,7 @@ jest.mock("next-intl", () => ({
 let mockClusters: RabbitMqCluster[] = [
   {
     Id: 1,
-    createdAt: new Date("2023-07-19T00:00:00Z"),
+    CreatedAt: new Date("2023-07-19T00:00:00Z"),
     updatedAt: new Date("2023-07-19T12:00:00Z"),
     deletedAt: null,
     name: "Cluster 1",
@@ -31,7 +33,7 @@ let mockClusters: RabbitMqCluster[] = [
   },
   {
     Id: 2,
-    createdAt: new Date("2023-07-20T00:00:00Z"),
+    CreatedAt: new Date("2023-07-20T00:00:00Z"),
     updatedAt: new Date("2023-07-20T12:00:00Z"),
     deletedAt: null,
     name: "Cluster 2",
@@ -43,7 +45,7 @@ let mockClusters: RabbitMqCluster[] = [
   },
   {
     Id: 3,
-    createdAt: new Date("2023-07-21T00:00:00Z"),
+    CreatedAt: new Date("2023-07-21T00:00:00Z"),
     updatedAt: new Date("2023-07-21T12:00:00Z"),
     deletedAt: null,
     name: "Cluster 3",

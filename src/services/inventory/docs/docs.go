@@ -16,7 +16,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/broker": {
+        "/cluster": {
             "get": {
                 "description": "Retrieve a paginated list of cluster that the user has access",
                 "consumes": [
@@ -26,7 +26,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Broker"
+                    "Cluster"
                 ],
                 "summary": "Retrieve a list of rabbitmq clusters registered",
                 "parameters": [
@@ -47,15 +47,12 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/contracts.PaginatedResult-entities_BrokerEntity"
-                        }
+                        "description": "OK"
                     }
                 }
             },
             "post": {
-                "description": "Create a new \u003cb\u003eRabbitMQ\u003c/b\u003e broker. The credential provider must be valid and the cluster operational",
+                "description": "Create a new \u003cb\u003eRabbitMQ\u003c/b\u003e cluster. The credential provider must be valid and the cluster operational",
                 "consumes": [
                     "application/json"
                 ],
@@ -63,9 +60,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Broker"
+                    "Cluster"
                 ],
-                "summary": "Register a new RabbitMQ Broker",
+                "summary": "Register a new RabbitMQ Cluster",
                 "parameters": [
                     {
                         "description": "Request",
@@ -73,7 +70,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/contracts.CreateBrokerRequest"
+                            "$ref": "#/definitions/contracts.CreateClusterRequest"
                         }
                     }
                 ],
@@ -87,7 +84,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/broker/exists": {
+        "/cluster/exists": {
             "get": {
                 "description": "Check if exists an rabbitmq cluster with host es",
                 "consumes": [
@@ -97,7 +94,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Broker"
+                    "Cluster"
                 ],
                 "summary": "Verify if exists a rabbitmqcluster",
                 "parameters": [
@@ -121,7 +118,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/broker/{brokerId}": {
+        "/cluster/{clusterId}": {
             "get": {
                 "description": "Retrieve a single rabbitmq cluster",
                 "consumes": [
@@ -131,14 +128,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Broker"
+                    "Cluster"
                 ],
                 "summary": "Retrieve a single rabbitmq cluster",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Id of a broker to be retrived",
-                        "name": "brokerId",
+                        "description": "Id of a cluster to be retrived",
+                        "name": "clusterId",
                         "in": "path",
                         "required": true
                     }
@@ -147,13 +144,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.BrokerEntity"
+                            "$ref": "#/definitions/entities.ClusterEntity"
                         }
                     }
                 }
             },
             "delete": {
-                "description": "Soft delete a broker will not completly erase from database, but will not show up anymore in the",
+                "description": "Soft delete a cluster will not completly erase from database, but will not show up anymore in the",
                 "consumes": [
                     "application/json"
                 ],
@@ -161,14 +158,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Broker"
+                    "Cluster"
                 ],
-                "summary": "Soft delete a broker",
+                "summary": "Soft delete a cluster",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Id of a broker to be soft deleted",
-                        "name": "brokerId",
+                        "description": "Id of a cluster to be soft deleted",
+                        "name": "clusterId",
                         "in": "path",
                         "required": true
                     }
@@ -182,10 +179,436 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/{clusterId}/queue/import": {
+            "post": {
+                "description": "Import existing queue from cluster or creater another one",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Queue"
+                ],
+                "summary": "Import or create queue",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve users",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request",
+                        "name": "QueueImportRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.QueueImportRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/{clusterId}/queue/queuesfromcluster": {
+            "get": {
+                "description": "Retrieve all users that exist on rabbit cluster. Event if it its registered in ostern",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Queue"
+                ],
+                "summary": "Retrieve all users from rabbitmq cluster",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve users",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/{clusterId}/queue/remove": {
+            "delete": {
+                "description": "Remove a fila do cluster mas nao altera o cadastro no ostern",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Queue"
+                ],
+                "summary": "Remove a fila do cluster",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request",
+                        "name": "QueueImportRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.QueueRemoveRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/{clusterId}/queue/syncronize": {
+            "post": {
+                "description": "Create a queue in a cluster that not exist in cluster but is registered in ostern",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Queue"
+                ],
+                "summary": "Syncronize a queue between cluster and ostern",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request",
+                        "name": "QueueImportRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.QueueSycronizeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/{clusterId}/user": {
+            "get": {
+                "description": "Retrieve all users that exist on rabbit cluster. Event if it its registered in ostern",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Retrieve all users from rabbitmq cluster",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve users",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new \u003cb\u003eRabbitMQ User mirror\u003c/b\u003e from the broker. The user must exist in the cluster, the login and hashpassword will be imported",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Syncronize a existing RabbitMQ user from the broker.",
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ImportOrCreateUserRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ImportOrCreateUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/{clusterId}/user/syncronize": {
+            "post": {
+                "description": "Cria um ususario que esteja na base do ostern e nao exista no cluster",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Sincronize um ususario no rabbitmq",
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ImportOrCreateUserRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserSyncronizeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/{clusterId}/user/{userId}": {
+            "get": {
+                "description": "Recovery the details of a specific mirror user that is already imported from the cluster",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Retrieve a mirror user from broker",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User id registered",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cluster from where the user is",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a mirrored user from the registry, the user will not be deleted from the cluster",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Delete a mirror user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User id registered",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/{clusterId}/virtualhost": {
+            "get": {
+                "description": "Retrieve all virtual hosts from cluster and database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "VirtualHost"
+                ],
+                "summary": "Retrieve all virtual hosts from cluster and database",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve virtualhost",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "description": "Import or Create a new VirtualHost",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "VirtualHost"
+                ],
+                "summary": "Import or Create a new VirtualHost",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve virtualhost",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
         }
     },
     "definitions": {
-        "contracts.CreateBrokerRequest": {
+        "contracts.CreateClusterRequest": {
             "type": "object",
             "required": [
                 "description",
@@ -216,31 +639,70 @@ const docTemplate = `{
                 }
             }
         },
-        "contracts.PaginatedResult-entities_BrokerEntity": {
+        "dto.ImportOrCreateUserRequest": {
+            "type": "object",
+            "required": [
+                "ClusterId",
+                "Username"
+            ],
+            "properties": {
+                "ClusterId": {
+                    "type": "integer"
+                },
+                "Create": {
+                    "type": "boolean"
+                },
+                "Password": {
+                    "type": "string"
+                },
+                "Username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.QueueImportRequest": {
             "type": "object",
             "properties": {
-                "pageNumber": {
-                    "type": "integer"
+                "QueueName": {
+                    "type": "string"
                 },
-                "pageSize": {
-                    "type": "integer"
-                },
-                "result": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.BrokerEntity"
-                    }
-                },
-                "totalItems": {
+                "Type": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.QueueRemoveRequest": {
+            "type": "object",
+            "properties": {
+                "QueueId": {
                     "type": "integer"
                 }
             }
         },
-        "entities.BrokerEntity": {
+        "dto.QueueSycronizeRequest": {
+            "type": "object",
+            "properties": {
+                "QueueId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.UserSyncronizeRequest": {
+            "type": "object",
+            "properties": {
+                "UserId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entities.ClusterEntity": {
             "type": "object",
             "properties": {
                 "createdAt": {
                     "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "description": {
                     "type": "string"
@@ -265,6 +727,18 @@ const docTemplate = `{
                 },
                 "user": {
                     "type": "string"
+                }
+            }
+        },
+        "gorm.DeletedAt": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if Time is not NULL",
+                    "type": "boolean"
                 }
             }
         }

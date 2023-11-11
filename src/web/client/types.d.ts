@@ -1,14 +1,13 @@
-
 export type RabbitMqCluster = {
-    Id: number
-    createdAt: Date
-    updatedAt:Date
-    deletedAt: Date | null
-    name: string
-    description: string
-    host: string
-    port: number
-    user: string
-    password: string
-}
+  ID: number;
+  CreatedAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+  name: string;
+  description: string;
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+};
 

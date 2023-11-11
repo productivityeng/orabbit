@@ -1,6 +1,7 @@
 {
   "Sidebar": {
-    "ClusterSelect": "Selecione um cluster"
+    "ClusterSelect": "Selecione um cluster",
+    "ImportCluster": "Import Cluster"
   },
   "Errors": {
     "Unknow": "Unknow error, contact the support"
@@ -18,7 +19,10 @@
     "Password": "Password",
     "Port": "Port",
     "Cancel": "Cancel",
-    "Create": "Create"
+    "Create": "Create",
+    "Settings": "Settings",
+    "Drift": "Drift",
+    "Trail": "Trail"
   },
   "Dashboard": {
     "ImportClusterButton": {
@@ -37,7 +41,10 @@
     }
   },
   "UsersPage": {
-    "TopDescription": "Configure e manage all aspects related to access of your cluster"
+    "TopDescription": "Configure e manage all aspects related to access of your cluster",
+    "AddUser": "Add new user",
+    "TrackedUsers": "Tracked users",
+    "TrackedUsersDescription": "Users who are registered with ostern. There may be users registered in the rabbit cluster that do not appear in this list."
   },
   "QueuesPage": {
     "TopDescription": "Configure e manage all aspects related to queues of your cluster"
@@ -45,8 +52,24 @@
   "ExchangePage": {
     "TopDescription": "Configure e manage all aspects related to exchanges of your cluster"
   },
+  "SettingsPage": {
+    "TopDescription": "Managament of cluster config on orabbit platform"
+  },
   "ImportClusterForm": {
     "FailToCreate": "Fail to create cluster with",
-    "Creating": "Creating cluster ..."
-  }
+    "Creating": "Creating cluster ...",
+    "Type": {
+      "Label": "Type",
+      "Description": "Choose between a queue of type Quorum or Type ",
+      "Placeholder": "Select queue type"
+    },
+    "Queue": {
+      "Label": "Name",
+      "Description": "Queue name in the cluster",
+      "Placeholder": "Provide a nome for the queue"
+    }
+  },
+  "[BROKER_ALREADY_EXISTS]": "This cluster already exists in database, maybe there was disabled. You can enable the cluster in the graviardy page",
+  "[QUEUE_NOTFOUND_INCLUSTER]": "The name of the queue cound'nt not be found on rabbitmq cluster",
+  "[QUEUE_ALREADY_TRACKED]": "This queue already is imported"
 }
