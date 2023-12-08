@@ -75,11 +75,11 @@ func (brs *BrokerRepositorySuite) TestCreateBroker() {
 	broker, err := brs.SUT.CreateCluster(brs.broker)
 
 	assert.NoError(brs.T(), err)
-	brokerGTZero := broker.Id >= 1
+	brokerGTZero := broker.ID >= 1
 	assert.True(brs.T(), brokerGTZero)
 }
 
-// TestCreateBrokerError check if can deal with error in create a broker
+// TestCreateBrokerError check if you can deal with error in create a broker
 func (brs *BrokerRepositorySuite) TestCreateBrokerError() {
 	brs.mock.ExpectBegin()
 	brs.mock.ExpectExec("").
@@ -94,7 +94,6 @@ func (brs *BrokerRepositorySuite) TestCreateBrokerError() {
 func (brs *BrokerRepositorySuite) TestListBroker() {
 
 	expectedResult := &entities.ClusterEntity{
-		Id:          1,
 		Name:        "Test Broker",
 		Description: "Test Description",
 		Host:        "localhost",
@@ -118,7 +117,7 @@ func (brs *BrokerRepositorySuite) TestListBroker() {
 		"user",
 		"password",
 	}).AddRow(
-		expectedResult.Id,
+		expectedResult.ID,
 		expectedResult.CreatedAt,
 		expectedResult.UpdatedAt,
 		expectedResult.Name,
@@ -128,7 +127,7 @@ func (brs *BrokerRepositorySuite) TestListBroker() {
 		expectedResult.User,
 		expectedResult.Password,
 	).AddRow(
-		expectedResult.Id,
+		expectedResult.ID,
 		expectedResult.CreatedAt,
 		expectedResult.UpdatedAt,
 		expectedResult.Name,
@@ -162,7 +161,7 @@ func (brs *BrokerRepositorySuite) TestListBrokerErrorTryingToRetrieveResult() {
 }
 
 func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenBrokerNotExists() {
-	brokerid := int32(10)
+	brokerid := uint(10)
 	brs.mock.ExpectQuery("SELECT").WillReturnError(errors.New("genericerro"))
 
 	err := brs.SUT.DeleteCluster(brokerid, context.TODO())
@@ -173,7 +172,6 @@ func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenBrokerNot
 
 func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenFailToDeleteBroker() {
 	expectedResult := &entities.ClusterEntity{
-		Id: 1,
 
 		Name:        "Test Broker",
 		Description: "Test Description",
@@ -197,7 +195,7 @@ func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenFailToDel
 		"user",
 		"password",
 	}).AddRow(
-		expectedResult.Id,
+		expectedResult.ID,
 		expectedResult.CreatedAt,
 		expectedResult.UpdatedAt,
 		expectedResult.Name,
@@ -208,7 +206,7 @@ func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenFailToDel
 		expectedResult.Password,
 	)
 
-	brokerid := int32(10)
+	brokerid := uint(10)
 
 	brs.mock.ExpectQuery("").WillReturnRows(rows)
 
@@ -222,7 +220,6 @@ func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenFailToDel
 
 func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldSuccess() {
 	expectedResult := &entities.ClusterEntity{
-		Id:          1,
 		Name:        "Test Broker",
 		Description: "Test Description",
 		Host:        "localhost",
@@ -233,6 +230,7 @@ func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldSuccess() {
 			UpdatedAt: time.Now(),
 		},
 	}
+	expectedResult.ID = 1
 
 	rows := sqlmock.NewRows([]string{
 		"id",
@@ -245,7 +243,7 @@ func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldSuccess() {
 		"user",
 		"password",
 	}).AddRow(
-		expectedResult.Id,
+		expectedResult.ID,
 		expectedResult.CreatedAt,
 		expectedResult.UpdatedAt,
 		expectedResult.Name,
@@ -256,7 +254,7 @@ func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldSuccess() {
 		expectedResult.Password,
 	)
 
-	brokerid := int32(10)
+	brokerid := uint(10)
 
 	brs.mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `broker` WHERE `broker`.`deleted_at` IS NULL AND `broker`.`id` = ? ORDER BY `broker`.`id` LIMIT 1")).WillReturnRows(rows)
 	brs.mock.ExpectBegin()
@@ -267,7 +265,7 @@ func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldSuccess() {
 }
 
 func (brs *BrokerRepositorySuite) TestGetBrokerShouldReturnErrorWhenBrokerNotExists() {
-	brokerid := int32(10)
+	brokerid := uint(10)
 	brs.mock.ExpectQuery("SELECT").WillReturnError(errors.New("genericerro"))
 
 	broker, err := brs.SUT.GetCluster(brokerid, context.TODO())
@@ -278,7 +276,6 @@ func (brs *BrokerRepositorySuite) TestGetBrokerShouldReturnErrorWhenBrokerNotExi
 
 func (brs *BrokerRepositorySuite) TestGetBrokerShouldReturnSuccess() {
 	expectedResult := &entities.ClusterEntity{
-		Id: 1,
 
 		Name:        "Test Broker",
 		Description: "Test Description",
@@ -290,6 +287,7 @@ func (brs *BrokerRepositorySuite) TestGetBrokerShouldReturnSuccess() {
 			UpdatedAt: time.Now(),
 		},
 	}
+	expectedResult.ID = 1
 
 	rows := sqlmock.NewRows([]string{
 		"id",
@@ -302,7 +300,7 @@ func (brs *BrokerRepositorySuite) TestGetBrokerShouldReturnSuccess() {
 		"user",
 		"password",
 	}).AddRow(
-		expectedResult.Id,
+		expectedResult.ID,
 		expectedResult.CreatedAt,
 		expectedResult.UpdatedAt,
 		expectedResult.Name,
@@ -313,7 +311,7 @@ func (brs *BrokerRepositorySuite) TestGetBrokerShouldReturnSuccess() {
 		expectedResult.Password,
 	)
 
-	brokerid := int32(10)
+	brokerid := uint(10)
 
 	brs.mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `broker` WHERE `broker`.`deleted_at` IS NULL AND `broker`.`id` = ? ORDER BY `broker`.`id` LIMIT 1")).WillReturnRows(rows)
 	broker, err := brs.SUT.GetCluster(brokerid, context.TODO())
