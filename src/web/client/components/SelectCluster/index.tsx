@@ -25,7 +25,7 @@ type SelectClusterProps = {
   Clusters: RabbitMqCluster[];
 };
 
-export function SelectCluster({ Clusters }: SelectClusterProps) {
+export function SelectCluster({ Clusters }: Readonly<SelectClusterProps>) {
   const router = useRouter();
   const t = useTranslations("Sidebar");
   const [open, setOpen] = React.useState(false);
@@ -36,7 +36,6 @@ export function SelectCluster({ Clusters }: SelectClusterProps) {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          role="combobox"
           aria-expanded={open}
           className="w-full justify-between text-center text-slate-400 bg-slate-700 border-0 hover:bg-rabbit hover:text-slate-100 duration-200 ease-in-out"
         >

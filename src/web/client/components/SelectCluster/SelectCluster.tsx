@@ -55,7 +55,7 @@ export function SelectCluster({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className="w-full p-0 popover-content-width-same-as-its-trigger">
         <Command className="w-full">
           <CommandList>
             <CommandInput
