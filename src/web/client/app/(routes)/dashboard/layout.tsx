@@ -14,11 +14,11 @@ async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const cluster = await fetchAllClusters();
 
   return (
-    <div className="flex  h-screen">
-      <div className="w-[25vw] md:w-[20vw]  ">
+    <div className="grid grid-cols-12 h-screen">
+      <div className="col-span-2">
         <Sidebar Clusters={cluster.result} />
       </div>
-      <div className="flex flex-col w-full h-screen">
+      <div className="flex col-span-10 flex-col w-full h-screen">
         <div className="w-full h-[7vh]">
           <Header />
         </div>
