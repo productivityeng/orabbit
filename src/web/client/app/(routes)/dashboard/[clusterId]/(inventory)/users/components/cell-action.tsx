@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { RabbitMqUser } from "@/models/users";
 import { Unlock } from "next/font/google";
+import LockItem from "@/components/lock-item/lock-item";
 
 interface CellActionProps {
   data: RabbitMqUser;
@@ -92,47 +93,42 @@ function CellAction({ data }: CellActionProps) {
   const lockuser = async () => {};
 
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant={"ghost"}
-            className="w-8 h-8 p-0 focus-visible:ring-0  focus-visible:ring-offset-0"
-          >
-            <SettingsIcon
-              className={cn("w-4 h-4 duration-200 ease-in-out ", {
-                "text-rabbit w-8 h-8": false,
-              })}
-            />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant={"ghost"}
+          className="w-8 h-8 p-0 focus-visible:ring-0  focus-visible:ring-offset-0"
+        >
+          <SettingsIcon
+            className={cn("w-4 h-4 duration-200 ease-in-out ", {
+              "text-rabbit w-8 h-8": false,
+            })}
+          />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-          {data.IsInCluster && (
-            <DropdownMenuItem onClick={removeUserFromCluster}>
-              <Edit className="mr-2 h-4 w-4" /> Remover do cluster
-            </DropdownMenuItem>
-          )}
-          {!data.IsInDatabase && data.IsInCluster && (
-            <DropdownMenuItem onClick={importUser}>
-              <Files className="mr-2 h-4 w-4" /> Importar
-            </DropdownMenuItem>
-          )}
-          {data.IsInDatabase && !data.IsInCluster && (
-            <DropdownMenuItem onClick={syncronizeUser}>
-              <RefreshCw className="mr-2 h-4 w-4" /> Sincronizar
-            </DropdownMenuItem>
-          )}
-          {data.IsInDatabase && (
-            <DropdownMenuItem onClick={lockuser}>
-              <Lock className="mr-2 h-4 w-4 text-yellow-600 rounded-sm" />{" "}
-              Trancar
-            </DropdownMenuItem>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
+        {data.IsInCluster && (
+          <DropdownMenuItem onClick={removeUserFromCluster}>
+            <Edit className="mr-2 h-4 w-4" /> Remover do cluster
+          </DropdownMenuItem>
+        )}
+        {!data.IsInDatabase && data.IsInCluster && (
+          <DropdownMenuItem onClick={importUser}>
+            <Files className="mr-2 h-4 w-4" /> Importar
+          </DropdownMenuItem>
+        )}
+        {data.IsInDatabase && !data.IsInCluster && (
+          <DropdownMenuItem onClick={syncronizeUser}>
+            <RefreshCw className="mr-2 h-4 w-4" /> Sincronizar
+          </DropdownMenuItem>
+        )}
+        {data.IsInDatabase && (
+          <DropdownMenuItem onClick={lockuser}></DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 

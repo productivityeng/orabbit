@@ -58,6 +58,33 @@ func (controller VirtualHostControllerImpl) ListVirtualHost(c *gin.Context) {
 			Id:          0,
 			Description: vhostFromCluster.Description,
 			Name:        vhostFromCluster.Name,
+			IsInCluster: true,
+		})
+	}
+
+	vhostsFromDatabase, err := controller.VirtualHostRepository.ListVirtualHosts(uint(clusterId), 100, 5, c)
+
+	if err != nil {
+		log.WithError(err).Error("Erro ao obter a lista de VirtualHosts do banco de dados")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	for _, vhostFromDatabase := range vhostsFromDatabase {
+		for _, vhostFromClusterInResponse := range response {
+			if vhostFromClusterInResponse.Name == vhostFromDatabase.Name {
+				vhostFromClusterInResponse.Id = vhostFromDatabase.ID
+				vhostFromClusterInResponse.IsInDatabase = true
+				continue
+			}
+		}
+
+		response = append(response, dto.GetVirtualHostDto{
+			Id:           vhostFromDatabase.ID,
+			Description:  vhostFromDatabase.Description,
+			Name:         vhostFromDatabase.Name,
+			IsInDatabase: true,
+			IsInCluster:  false,
 		})
 	}
 

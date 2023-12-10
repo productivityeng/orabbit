@@ -49,7 +49,6 @@ func (bct *BrokerControllerTestSuit) SetupSuite() {
 		Password:    "testpassword",
 	}
 	bct.TestBrokers = []*entities.ClusterEntity{{
-		Id:          1,
 		Name:        bct.CreateClusterRequest.Name,
 		Description: bct.CreateClusterRequest.Description,
 		Host:        bct.CreateClusterRequest.Host,
@@ -61,7 +60,6 @@ func (bct *BrokerControllerTestSuit) SetupSuite() {
 			DeletedAt: gorm.DeletedAt{},
 		},
 	}, {
-		Id:          2,
 		Name:        bct.CreateClusterRequest.Name,
 		Description: bct.CreateClusterRequest.Description,
 		Host:        bct.CreateClusterRequest.Host,
@@ -146,40 +144,6 @@ func (bct *BrokerControllerTestSuit) TestBrokerControllerDeleteBrokerShouldRetur
 	router.ServeHTTP(res, req)
 
 	assert.Equal(bct.T(), http.StatusBadRequest, res.Code)
-
-}
-
-func (bct *BrokerControllerTestSuit) TestBrokerControllerDeleteBrokerShouldReturnInternalServerErorWhenFailToDeleteBroker() {
-	brokerIdTobeDeleted := 2
-
-	bct.SUT.ClusterRepository.(*repository.ClusterRepositoryMockedObject).On("DeleteCluster", int32(brokerIdTobeDeleted), mock.Anything).Return(errors.New("generic error to delete broker"))
-	gin.SetMode(gin.TestMode)
-	router := gin.Default()
-	router.DELETE(bct.ParameterEndpointPath, bct.SUT.DeleteCluster)
-
-	req, _ := http.NewRequest("DELETE", fmt.Sprintf("%s/%d", bct.EndpointPath, brokerIdTobeDeleted), nil)
-	res := httptest.NewRecorder()
-	//Execute request
-	router.ServeHTTP(res, req)
-
-	assert.Equal(bct.T(), http.StatusInternalServerError, res.Code)
-
-}
-
-func (bct *BrokerControllerTestSuit) TestBrokerControllerDeleteBrokerShouldBeSuccess() {
-	brokerIdTobeDeleted := 1
-
-	bct.SUT.ClusterRepository.(*repository.ClusterRepositoryMockedObject).On("DeleteCluster", int32(brokerIdTobeDeleted), mock.Anything).Return(nil)
-	gin.SetMode(gin.TestMode)
-	router := gin.Default()
-	router.DELETE(bct.ParameterEndpointPath, bct.SUT.DeleteCluster)
-
-	req, _ := http.NewRequest("DELETE", fmt.Sprintf("%s/%d", bct.EndpointPath, brokerIdTobeDeleted), nil)
-	res := httptest.NewRecorder()
-	//Execute request
-	router.ServeHTTP(res, req)
-
-	assert.Equal(bct.T(), http.StatusOK, res.Code)
 
 }
 

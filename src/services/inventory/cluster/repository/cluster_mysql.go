@@ -23,6 +23,7 @@ func NewClusterMysqlRepositoryImpl(Db *gorm.DB) *ClusterRepositoryMysqlImpl {
 	}
 }
 
+// CreateCluster create a registry for a new cluster in the database
 func (repo *ClusterRepositoryMysqlImpl) CreateCluster(entityToCreate *entities.ClusterEntity) (*entities.ClusterEntity, error) {
 
 	tx := repo.Db.Save(entityToCreate)
@@ -34,7 +35,7 @@ func (repo *ClusterRepositoryMysqlImpl) CreateCluster(entityToCreate *entities.C
 	return entityToCreate, nil
 }
 
-// ListBroker retrieve paginated result of brokers in mysql store
+// ListCluster retrieve paginated result of brokers in mysql store
 func (repo *ClusterRepositoryMysqlImpl) ListCluster(pageSize int, pageNumber int) (*contracts.PaginatedResult[entities.ClusterEntity], error) {
 
 	entryFields := log.Fields{"pageSize": pageSize, "pageNumber": pageNumber}

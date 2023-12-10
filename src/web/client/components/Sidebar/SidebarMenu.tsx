@@ -2,13 +2,11 @@
 import {
   ArrowBigDown,
   CompassIcon,
+  Home,
   Mail,
   Router,
-  Settings,
   Settings2,
-  ShieldCheck,
   ShieldClose,
-  ShieldIcon,
   User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -36,6 +34,12 @@ const menuItems = [
     icon: Router,
     href: "exchanges",
     iconColor: "text-stone-500",
+  },
+  {
+    label: "Commons.VirtualHost",
+    icon: Home,
+    href: "virtualhosts",
+    iconColor: "text-sky-500",
   },
 ];
 

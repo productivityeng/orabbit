@@ -10,4 +10,3 @@ export type RabbitMqCluster = {
   user: string;
   password: string;
 };
-

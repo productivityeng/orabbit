@@ -25,7 +25,8 @@
     "Create": "Criar",
     "Settings": "Configurações",
     "Drift": "Conformidade",
-    "Trail": "Trilha"
+    "Trail": "Trilha",
+    "VirtualHost": "Virtual Hosts"
   },
   "Dashboard": {
     "ImportClusterButton": {
@@ -78,5 +79,13 @@
   },
   "[BROKER_ALREADY_EXISTS]": "Esse cluster ja existe na base. Talvez ela tenha sido deletado, mas é possível reativa-lo.",
   "[QUEUE_NOTFOUND_INCLUSTER]": "O nome da fila fornecido não foi encontrado no cluster",
-  "[QUEUE_ALREADY_TRACKED]": "Esta fila ja foi importada"
+  "[QUEUE_ALREADY_TRACKED]": "Esta fila ja foi importada",
+  "VirtualHostsPage": {
+    "TopDescription": " Isolamento, segurança e gestão de ambientes de mensagens independentes dentro de um único broker.",
+    "CreateNew": "Criar Virtual Host"
+  },
+  "label-User": "o Usuário",
+  "label-block-item": "Ao bloquear esse item todas as alterações serão desabilitadas. Isso irá impedir que mudancas nao autorizadas sejam feitas ate que o item seja desbloqueado.",
+  "label-reason": "Motivo",
+  "label-reason-explain": "Explique para seus colegas o motivo do bloqueio"
 }

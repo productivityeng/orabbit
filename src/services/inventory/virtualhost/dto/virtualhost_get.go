@@ -1,7 +1,9 @@
 package dto
 
 type GetVirtualHostDto struct {
-	Id          uint32
-	Description string
-	Name        string
+	Id           uint
+	Description  string
+	Name         string
+	IsInDatabase bool
+	IsInCluster  bool
 }

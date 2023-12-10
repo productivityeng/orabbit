@@ -216,3 +216,13 @@ export async function SyncronizeUserAction(
       return { ErrorMessage: "Erro desconhecido", Result: false };
   }
 }
+
+export async function LockUser({
+  clusterId,
+  userId,
+  reason,
+}: {
+  clusterId: number;
+  userId: number;
+  reason: string;
+}) {}
