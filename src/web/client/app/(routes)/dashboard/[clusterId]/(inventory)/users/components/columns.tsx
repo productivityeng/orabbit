@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import CellAction from "./cell-action";
 import CellMaintening from "./cell-maintening";
 import { RabbitMqUser } from "@/models/users";
+import LockItem from "@/components/lock-item/lock-item";
 
 export const UserColumn: ColumnDef<RabbitMqUser>[] = [
   {
@@ -23,6 +24,16 @@ export const UserColumn: ColumnDef<RabbitMqUser>[] = [
   {
     id: "actions",
     header: () => <b>Actions</b>,
-    cell: ({ row }) => <CellAction data={row.original} />,
+    cell: ({ row }) => (
+      <>
+        {" "}
+        <LockItem
+          isLocked={false}
+          lockType="User"
+          artifactName={row.original.Username}
+        />
+        <CellAction data={row.original} />
+      </>
+    ),
   },
 ];

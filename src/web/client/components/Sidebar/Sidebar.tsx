@@ -5,8 +5,6 @@ import SidebarMenu from "./SidebarMenu";
 import { RabbitMqCluster } from "@/types";
 import { useAppState } from "@/hooks/cluster";
 import Link from "next/link";
-import Image from "next/image";
-import RabbitLogo from "../../public/svg/rabbitmq-logo.svg";
 function Sidebar({ Clusters }: { Clusters: RabbitMqCluster[] }) {
   const {
     SetAvailableClusters,
@@ -14,7 +12,7 @@ function Sidebar({ Clusters }: { Clusters: RabbitMqCluster[] }) {
     SelectedClusterId,
     GetSelectedCluster,
   } = useAppState();
-  
+
   useEffect(() => {
     SetAvailableClusters(Clusters);
   }, [SelectedClusterId]);
@@ -23,8 +21,9 @@ function Sidebar({ Clusters }: { Clusters: RabbitMqCluster[] }) {
       <div className="w-full flex flex-col space-y-8">
         <Link href="/dashboard">
           <div className="flex justify-center py-5 text-white items-center space-x-2 font-semibold text-2xl truncate">
-            <Image alt="" className="w-8 h-8" src={RabbitLogo} />
-            <p className="truncate">Ostern</p>
+            <p className="truncate font-extrabold text-5xl bg-gradient-to-r from-orange-100  to-orange-500 inline-block text-transparent bg-clip-text">
+              Ostern
+            </p>
           </div>
         </Link>
         <div>

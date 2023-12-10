@@ -76,5 +76,9 @@
   "VirtualHostsPage": {
     "TopDescription": "Isolate, secure, and manage independent messaging environments within a single broker",
     "CreateNew": "Create a new Virtual Host"
-  }
+  },
+  "label-User": "User",
+  "label-block-item": "By blocking this item, all changes will be disabled. This will prevent unauthorized changes from being made until the item is unlocked.",
+  "label-reason": "Reason",
+  "label-reason-explain": "Explain the reason for blocking this item"
 }

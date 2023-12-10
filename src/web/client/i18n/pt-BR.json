@@ -83,5 +83,9 @@
   "VirtualHostsPage": {
     "TopDescription": " Isolamento, segurança e gestão de ambientes de mensagens independentes dentro de um único broker.",
     "CreateNew": "Criar Virtual Host"
-  }
+  },
+  "label-User": "o Usuário",
+  "label-block-item": "Ao bloquear esse item todas as alterações serão desabilitadas. Isso irá impedir que mudancas nao autorizadas sejam feitas ate que o item seja desbloqueado.",
+  "label-reason": "Motivo",
+  "label-reason-explain": "Explique para seus colegas o motivo do bloqueio"
 }
