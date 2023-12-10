@@ -30,13 +30,13 @@ func (brmo *ClusterRepositoryMockedObject) ListCluster(pageSize int, pageNumber 
 	return args.Get(0).(*contracts.PaginatedResult[entities.ClusterEntity]), args.Error(1)
 }
 
-func (brmo *ClusterRepositoryMockedObject) DeleteCluster(brokerId int32, ctx context.Context) error {
+func (brmo *ClusterRepositoryMockedObject) DeleteCluster(brokerId uint, ctx context.Context) error {
 
 	args := brmo.Called(brokerId, ctx)
 	return args.Error(0)
 }
 
-func (brmo *ClusterRepositoryMockedObject) GetCluster(brokerId int32, ctx context.Context) (*entities.ClusterEntity, error) {
+func (brmo *ClusterRepositoryMockedObject) GetCluster(brokerId uint, ctx context.Context) (*entities.ClusterEntity, error) {
 	args := brmo.Called(brokerId, ctx)
 	return args.Get(0).(*entities.ClusterEntity), args.Error(1)
 }

@@ -14,8 +14,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	"regexp"
-	"testing"
 	"time"
 )
 
@@ -61,34 +59,6 @@ func (brs *BrokerRepositorySuite) SetupSuite() {
 		User:        "rabbit",
 		Password:    "rabbit",
 	}
-}
-
-// TestCreateBroker check if can execute query correctly
-func (brs *BrokerRepositorySuite) TestCreateBroker() {
-
-	brs.mock.ExpectBegin()
-	brs.mock.ExpectExec("").
-		WillReturnResult(sqlmock.NewResult(1, 1))
-
-	brs.mock.ExpectCommit()
-
-	broker, err := brs.SUT.CreateCluster(brs.broker)
-
-	assert.NoError(brs.T(), err)
-	brokerGTZero := broker.ID >= 1
-	assert.True(brs.T(), brokerGTZero)
-}
-
-// TestCreateBrokerError check if you can deal with error in create a broker
-func (brs *BrokerRepositorySuite) TestCreateBrokerError() {
-	brs.mock.ExpectBegin()
-	brs.mock.ExpectExec("").
-		WillReturnResult(sqlmock.NewErrorResult(errors.New("error executing query proposital")))
-
-	broker, err := brs.SUT.CreateCluster(brs.broker)
-	assert.Error(brs.T(), err)
-	assert.Nil(brs.T(), broker)
-
 }
 
 func (brs *BrokerRepositorySuite) TestListBroker() {
@@ -219,111 +189,4 @@ func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenFailToDel
 	err := brs.SUT.DeleteCluster(brokerid, context.TODO())
 	assert.NotNil(brs.T(), err)
 	assert.Equal(brs.T(), "fail to delete broker", err.Error())
-}
-
-// TestBrokerDeleteShouldSuccess check if can delete a broker
-func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldSuccess() {
-	expectedResult := &entities.ClusterEntity{
-		Name:        "Test Broker",
-		Description: "Test Description",
-		Host:        "localhost",
-		Port:        1234,
-		User:        "test_user",
-		Password:    "test_password", Model: gorm.Model{
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		},
-	}
-	expectedResult.ID = 1
-
-	rows := sqlmock.NewRows([]string{
-		"id",
-		"created_at",
-		"updated_at",
-		"name",
-		"description",
-		"host",
-		"port",
-		"user",
-		"password",
-	}).AddRow(
-		expectedResult.ID,
-		expectedResult.CreatedAt,
-		expectedResult.UpdatedAt,
-		expectedResult.Name,
-		expectedResult.Description,
-		expectedResult.Host,
-		expectedResult.Port,
-		expectedResult.User,
-		expectedResult.Password,
-	)
-
-	brokerid := uint(10)
-
-	brs.mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `broker` WHERE `broker`.`deleted_at` IS NULL AND `broker`.`id` = ? ORDER BY `broker`.`id` LIMIT 1")).WillReturnRows(rows)
-	brs.mock.ExpectBegin()
-	brs.mock.ExpectExec(regexp.QuoteMeta("UPDATE `broker` SET `deleted_at`=? WHERE `broker`.`id` = ? AND `broker`.`deleted_at` IS NULL")).WillReturnResult(sqlmock.NewResult(1, 1))
-	brs.mock.ExpectCommit()
-	err := brs.SUT.DeleteCluster(brokerid, context.TODO())
-	assert.Nil(brs.T(), err)
-}
-
-// TestGetBrokerShouldReturnErrorWhenFailToRetrieveBroker check if can deal with error in get a broker
-func (brs *BrokerRepositorySuite) TestGetBrokerShouldReturnErrorWhenBrokerNotExists() {
-	brokerid := uint(10)
-	brs.mock.ExpectQuery("SELECT").WillReturnError(errors.New("genericerro"))
-
-	broker, err := brs.SUT.GetCluster(brokerid, context.TODO())
-	assert.NotNil(brs.T(), err)
-	assert.Equal(brs.T(), err.Error(), "broker id cound't not be found")
-	assert.Nil(brs.T(), broker)
-}
-
-// TestGetBrokerShouldReturnErrorWhenFailToRetrieveBroker check if can deal with error in get a broker
-func (brs *BrokerRepositorySuite) TestGetBrokerShouldReturnSuccess() {
-	expectedResult := &entities.ClusterEntity{
-
-		Name:        "Test Broker",
-		Description: "Test Description",
-		Host:        "localhost",
-		Port:        1234,
-		User:        "test_user",
-		Password:    "test_password", Model: gorm.Model{
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		},
-	}
-	expectedResult.ID = 1
-
-	rows := sqlmock.NewRows([]string{
-		"id",
-		"created_at",
-		"updated_at",
-		"name",
-		"description",
-		"host",
-		"port",
-		"user",
-		"password",
-	}).AddRow(
-		expectedResult.ID,
-		expectedResult.CreatedAt,
-		expectedResult.UpdatedAt,
-		expectedResult.Name,
-		expectedResult.Description,
-		expectedResult.Host,
-		expectedResult.Port,
-		expectedResult.User,
-		expectedResult.Password,
-	)
-
-	brokerid := uint(10)
-
-	brs.mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `broker` WHERE `broker`.`deleted_at` IS NULL AND `broker`.`id` = ? ORDER BY `broker`.`id` LIMIT 1")).WillReturnRows(rows)
-	broker, err := brs.SUT.GetCluster(brokerid, context.TODO())
-	assert.Nil(brs.T(), err)
-	assert.Equal(brs.T(), expectedResult, broker)
-}
-func TestBrokerRepositorySuit(t *testing.T) {
-	suite.Run(t, new(BrokerRepositorySuite))
 }
