@@ -8,12 +8,12 @@ import (
 
 type UserEntity struct {
 	gorm.Model
-	Username     string                 `json:"Username" gorm:"index:idx_unique_username_by_host,unique"`
-	PasswordHash string                 `json:"PasswordHash"`
-	ClusterId    uint                   `json:"ClusterId" gorm:"index:idx_unique_username_by_host,unique"`
-	Cluster      entities.ClusterEntity `json:"Cluster" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE,foreignKey:ClusterId"`
-	Locker       entities2.LockerEntity `json:"Locker" gorm:"onDelete:CASCADE"`
-	LockerId     uint                   `json:"LockerId"`
+	Username     string                  `json:"Username" gorm:"index:idx_unique_username_by_host,unique"`
+	PasswordHash string                  `json:"PasswordHash"`
+	ClusterId    uint                    `json:"ClusterId" gorm:"index:idx_unique_username_by_host,unique"`
+	Cluster      entities.ClusterEntity  `json:"Cluster" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE,foreignKey:ClusterId"`
+	Locker       *entities2.LockerEntity `json:"Locker" gorm:"onDelete:CASCADE"`
+	LockerId     *uint                   `json:"LockerId"`
 }
 
 func (UserEntity) TableName() string {
@@ -33,5 +33,5 @@ func (list UserEntityList) UserInListByName(username string) *UserEntity {
 }
 
 func (entity UserEntity) IsLocked() bool {
-	return entity.LockerId != 0
+	return *entity.LockerId != 0
 }

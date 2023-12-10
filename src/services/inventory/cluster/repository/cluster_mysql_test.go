@@ -149,6 +149,7 @@ func (brs *BrokerRepositorySuite) TestListBroker() {
 	assert.Equal(brs.T(), pageNumber, result.PageNumber)
 }
 
+// TestListBrokerErrorTryingToRetrieveResult check if can deal with error in list brokers
 func (brs *BrokerRepositorySuite) TestListBrokerErrorTryingToRetrieveResult() {
 
 	pageSize := 1
@@ -160,6 +161,7 @@ func (brs *BrokerRepositorySuite) TestListBrokerErrorTryingToRetrieveResult() {
 	assert.Nil(brs.T(), result)
 }
 
+// TestBrokerDeleteShouldReturnErrorWhenBrokerNotExists check if can deal with error in delete a broker
 func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenBrokerNotExists() {
 	brokerid := uint(10)
 	brs.mock.ExpectQuery("SELECT").WillReturnError(errors.New("genericerro"))
@@ -170,6 +172,7 @@ func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenBrokerNot
 
 }
 
+// TestBrokerDeleteShouldReturnErrorWhenFailToDeleteBroker check if can deal with error in delete a broker
 func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenFailToDeleteBroker() {
 	expectedResult := &entities.ClusterEntity{
 
@@ -218,6 +221,7 @@ func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldReturnErrorWhenFailToDel
 	assert.Equal(brs.T(), "fail to delete broker", err.Error())
 }
 
+// TestBrokerDeleteShouldSuccess check if can delete a broker
 func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldSuccess() {
 	expectedResult := &entities.ClusterEntity{
 		Name:        "Test Broker",
@@ -264,6 +268,7 @@ func (brs *BrokerRepositorySuite) TestBrokerDeleteShouldSuccess() {
 	assert.Nil(brs.T(), err)
 }
 
+// TestGetBrokerShouldReturnErrorWhenFailToRetrieveBroker check if can deal with error in get a broker
 func (brs *BrokerRepositorySuite) TestGetBrokerShouldReturnErrorWhenBrokerNotExists() {
 	brokerid := uint(10)
 	brs.mock.ExpectQuery("SELECT").WillReturnError(errors.New("genericerro"))
@@ -274,6 +279,7 @@ func (brs *BrokerRepositorySuite) TestGetBrokerShouldReturnErrorWhenBrokerNotExi
 	assert.Nil(brs.T(), broker)
 }
 
+// TestGetBrokerShouldReturnErrorWhenFailToRetrieveBroker check if can deal with error in get a broker
 func (brs *BrokerRepositorySuite) TestGetBrokerShouldReturnSuccess() {
 	expectedResult := &entities.ClusterEntity{
 
