@@ -1,10 +1,14 @@
 package entities
 
-import "gorm.io/gorm"
+import (
+	"time"
+)
 
 type LockerEntity struct {
-	gorm.Model
-	Reason string `json:"Reason"`
+	ID         uint       `json:"ID" gorm:"primaryKey"`
+	Reason     string     `json:"Reason"`
+	EnabledAt  time.Time  `json:"EnabledAt"`
+	DisabledAt *time.Time `json:"DisabledAt"`
 }
 
 func (LockerEntity) TableName() string {
