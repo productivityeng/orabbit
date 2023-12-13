@@ -2,10 +2,12 @@ package entities
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type LockerEntity struct {
-	ID         uint       `json:"ID" gorm:"primaryKey"`
+	gorm.Model
 	Reason     string     `json:"Reason"`
 	EnabledAt  time.Time  `json:"EnabledAt"`
 	DisabledAt *time.Time `json:"DisabledAt"`
