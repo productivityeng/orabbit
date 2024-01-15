@@ -94,7 +94,7 @@ func (management *UserManagementImpl) ListAllUser(request ListAllUsersRequest) (
 	return result, nil
 }
 
-func (management *UserManagementImpl) GetUserHash(request GetUserHashRequest, ctx context.Context) (string, error) {
+func (management *UserManagementImpl) GetUserHash(request contracts.GetUserHashRequest, ctx context.Context) (string, error) {
 	rmqc, err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.Username, request.Password)
 	if err != nil {
 		logrus.WithError(err).Error("Error trying to connect to cluster")
@@ -109,7 +109,7 @@ func (management *UserManagementImpl) GetUserHash(request GetUserHashRequest, ct
 
 	return userInfo.PasswordHash, nil
 }
-func (management *UserManagementImpl) CreateNewUser(request CreateNewUserRequest, ctx context.Context) (*CreateNewUserResult, error) {
+func (management *UserManagementImpl) CreateNewUser(request contracts.CreateNewUserRequest, ctx context.Context) (*CreateNewUserResult, error) {
 	rmqc, err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.Username, request.Password)
 	if err != nil {
 		logrus.WithError(err).Error("Error trying to connect to cluster")
