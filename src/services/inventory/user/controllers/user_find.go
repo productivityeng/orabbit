@@ -30,7 +30,7 @@ func (controller *UserControllerImpl) FindUser(c *gin.Context) {
 		return
 	}
 
-	result,err  := controller.DependencyLocator.Client.User.FindUnique(db.User.UniqueIDClusterid(db.User.ID.Equals(userId), db.User.ClusterID.Equals(clusterId))).Exec(c)
+	result,err  := controller.DependencyLocator.PrismaClient.User.FindUnique(db.User.UniqueIDClusterid(db.User.ID.Equals(userId), db.User.ClusterID.Equals(clusterId))).Exec(c)
 
 	if errors.Is(err,db.ErrNotFound) {
 		log.WithError(err).WithContext(c).Error("Fail to retrieve user by id")

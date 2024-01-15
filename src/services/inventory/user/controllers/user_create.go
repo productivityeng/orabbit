@@ -41,7 +41,7 @@ func (controller *UserControllerImpl) CreateUser(c *gin.Context) {
 
 	log.WithFields(fields).WithContext(c).Info("verifying if user already exists for this broker")
 	
-	_,err = controller.DependencyLocator.Client.User.FindUnique(db.User.UniqueUsernameClusterid(db.User.Username.Equals(importUserReuqest.Username), db.User.ClusterID.Equals(importUserReuqest.ClusterId))).Exec(c)
+	_,err = controller.DependencyLocator.PrismaClient.User.FindUnique(db.User.UniqueUsernameClusterid(db.User.Username.Equals(importUserReuqest.Username), db.User.ClusterID.Equals(importUserReuqest.ClusterId))).Exec(c)
 
 	if errors.Is(err,db.ErrNotFound) { 
 		log.WithContext(c).Warn("User already exists in this cluster")
@@ -96,7 +96,7 @@ func (controller *UserControllerImpl) CreateUser(c *gin.Context) {
 
 	}
 
-	userCreated,err := controller.DependencyLocator.Client.User.CreateOne(
+	userCreated,err := controller.DependencyLocator.PrismaClient.User.CreateOne(
 		db.User.Username.Set(importUserReuqest.Username),
 		db.User.PasswordHash.Set(passwordHash),
 		db.User.Cluster.Link(

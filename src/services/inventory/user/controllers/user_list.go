@@ -61,7 +61,7 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 	}
 	log.WithFields(fields).Info("Looking for rabbitmq users from ostern")
 
-	usersFromDb, err := userCtrl.DependencyLocator.Client.User.FindMany(db.User.ClusterID.Equals(cluster.ID)).Exec(c)
+	usersFromDb, err := userCtrl.DependencyLocator.PrismaClient.User.FindMany(db.User.ClusterID.Equals(cluster.ID)).Exec(c)
 
 	if err != nil {
 		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to retrieve users for the cluster")
@@ -82,7 +82,7 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 			IsInDatabase: false,
 		}
 
-		userEqual,err := userCtrl.DependencyLocator.Client.User.FindUnique(db.User.UniqueUsernameClusterid(db.User.Username.Equals(userFromCluster.Name),db.User.ClusterID.Equals(cluster.ID))).Exec(c)
+		userEqual,err := userCtrl.DependencyLocator.PrismaClient.User.FindUnique(db.User.UniqueUsernameClusterid(db.User.Username.Equals(userFromCluster.Name),db.User.ClusterID.Equals(cluster.ID))).Exec(c)
 
 		if errors.Is(err, db.ErrNotFound) {
 			continue

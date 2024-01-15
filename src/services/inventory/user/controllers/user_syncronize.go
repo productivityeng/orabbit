@@ -70,7 +70,7 @@ func (entity *UserControllerImpl) SyncronizeUser(c *gin.Context)  {
 func (userController *UserControllerImpl) getUser(context *gin.Context, userId int) (*db.UserModel, error) {
 	fields := log.Fields{"userId": fmt.Sprintf("%+v", userId)}
 
-	user, err := userController.DependencyLocator.Client.User.FindUnique(db.User.ID.Equals(userId)).Exec(context)
+	user, err := userController.DependencyLocator.PrismaClient.User.FindUnique(db.User.ID.Equals(userId)).Exec(context)
 
 	if errors.Is(err, db.ErrNotFound) { 
 		log.WithContext(context).WithFields(fields).WithError(err).Error("User not found")
@@ -86,7 +86,7 @@ func (userController *UserControllerImpl) getUser(context *gin.Context, userId i
 
 func (userController *UserControllerImpl) getCluster(context *gin.Context, clusterId int) (*db.ClusterModel, error){
 
-	cluster,err := userController.DependencyLocator.Client.Cluster.FindUnique(db.Cluster.ID.Equals(int(clusterId))).Exec(context)
+	cluster,err := userController.DependencyLocator.PrismaClient.Cluster.FindUnique(db.Cluster.ID.Equals(int(clusterId))).Exec(context)
 
 	if errors.Is(err, db.ErrNotFound) { 
 		log.WithContext(context).WithError(err).Error("Cluster not found")
@@ -123,7 +123,7 @@ func (userController *UserControllerImpl) parseRequestParams(context *gin.Contex
 }
 
 func (UserController *UserControllerImpl) verifyIfUserIsLocked(context *gin.Context,user *db.UserModel) (error){
-	_,err := UserController.DependencyLocator.Client.Locker.FindFirst(db.Locker.And(db.Locker.ArtifactName.Equals(user.Username),db.Locker.Type.Equals(db.LockerTypeUser))).Exec(context)
+	_,err := UserController.DependencyLocator.PrismaClient.Locker.FindFirst(db.Locker.And(db.Locker.ArtifactName.Equals(user.Username),db.Locker.Type.Equals(db.LockerTypeUser))).Exec(context)
 	if errors.Is(err, db.ErrNotFound) { 
 		log.WithContext(context).Info("No locker founded")
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

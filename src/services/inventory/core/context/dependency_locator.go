@@ -4,7 +4,7 @@ import "github.com/productivityeng/orabbit/db"
 
 
 type DependencyLocator struct { 
-	Client *db.PrismaClient
+	PrismaClient *db.PrismaClient
 }
 
 func NewDependencyLocator() (*DependencyLocator) { 
@@ -13,6 +13,6 @@ func NewDependencyLocator() (*DependencyLocator) {
 		panic(err)
 	}
 
-	return &DependencyLocator{ Client: client }
+	return &DependencyLocator{ PrismaClient: client }
 
 }
