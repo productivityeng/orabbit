@@ -4,13 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
+	"github.com/productivityeng/orabbit/contracts"
 	"github.com/sirupsen/logrus"
 )
 
 type UserManagement interface {
-	GetUserHash(request GetUserHashRequest, ctx context.Context) (string, error)
-	CreateNewUser(request CreateNewUserRequest, ctx context.Context) (*CreateNewUserResult, error)
+	GetUserHash(request contracts.GetUserHashRequest, ctx context.Context) (string, error)
+	CreateNewUser(request contracts.CreateNewUserRequest, ctx context.Context) (*CreateNewUserResult, error)
 	CreateNewUserWithHashPassword(request CreateNewUserWithHashPasswordRequest, ctx context.Context) (*CreateNewUserResult, error)
 	ListAllUser(request ListAllUsersRequest) ([]ListUserResult, error)
 	DeleteUser(request DeleteUserRequest, ctx context.Context) error

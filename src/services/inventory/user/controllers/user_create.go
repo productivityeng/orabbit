@@ -1,14 +1,15 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq/user"
-	"github.com/productivityeng/orabbit/user/dto"
-	"github.com/productivityeng/orabbit/user/entities"
-	log "github.com/sirupsen/logrus"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/productivityeng/orabbit/contracts"
+	"github.com/productivityeng/orabbit/db"
+	"github.com/productivityeng/orabbit/user/dto"
+	log "github.com/sirupsen/logrus"
 )
 
 // CreateUser godoc
@@ -23,51 +24,46 @@ import (
 // @Failure 400
 // @Failure 500
 // @Router /{clusterId}/user [post]
-func (entity *UserControllerImpl) CreateUser(c *gin.Context) {
-	var importUserReuqest dto.ImportOrCreateUserRequest
-
-	err := c.BindJSON(&importUserReuqest)
-	if err != nil {
-		log.WithContext(c).WithError(err).Error("Fail to parse user request")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+func (controller *UserControllerImpl) CreateUser(c *gin.Context) {
+	
+	importUserReuqest,err := controller.parseInputRequest(c)
+	if err != nil { 
 		return
 	}
-
 	fields := log.Fields{"request": fmt.Sprintf("%+v", importUserReuqest)}
 
 	log.WithFields(fields).Info("looking for broker")
-	broker, err := entity.ClusterRepository.GetCluster(importUserReuqest.ClusterId, c)
-
+	cluster,err := controller.getCluster(c, importUserReuqest.ClusterId)
 	if err != nil {
-		log.WithContext(c).WithError(err).Error("Fail to retrieve broker from user")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		
 		return
 	}
 
 	log.WithFields(fields).WithContext(c).Info("verifying if user already exists for this broker")
+	
+	_,err = controller.DependencyLocator.Client.User.FindUnique(db.User.UniqueUsernameClusterid(db.User.Username.Equals(importUserReuqest.Username), db.User.ClusterID.Equals(importUserReuqest.ClusterId))).Exec(c)
 
-	exists, err := entity.UserRepository.CheckIfUserExistsForCluster(importUserReuqest.ClusterId, importUserReuqest.Username, c)
-	if err != nil {
+	if errors.Is(err,db.ErrNotFound) { 
+		log.WithContext(c).Warn("User already exists in this cluster")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "[USER_ALREADY_EXISTS_IN_THIS_CLUSTERS]"})
+		return
+	} else if err != nil { 
 		log.WithError(err).WithContext(c).Error("Fail to verify if username already exists for this cluster")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	
 
-	if exists {
-		log.WithContext(c).Warn("User already exists in this cluster")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "[USER_ALREADY_EXISTS_IN_THIS_CLUSTERS]"})
-		return
-	}
 
 	var passwordHash string
 	if importUserReuqest.Create {
 		log.WithFields(fields).Info("User want to create a new user")
-		result, err := entity.UserManagement.CreateNewUser(user.CreateNewUserRequest{
-			RabbitAccess: common.RabbitAccess{
-				Host:     broker.Host,
-				Port:     broker.Port,
-				Username: broker.User,
-				Password: broker.Password,
+		result, err := controller.UserManagement.CreateNewUser(contracts.CreateNewUserRequest{
+			RabbitAccess: contracts.RabbitAccess{
+				Host:     cluster.Host,
+				Port:     cluster.Port,
+				Username: cluster.User,
+				Password: cluster.Password,
 			},
 			UserToCreate:            importUserReuqest.Username,
 			PasswordOfUsertToCreate: importUserReuqest.Password,
@@ -82,12 +78,12 @@ func (entity *UserControllerImpl) CreateUser(c *gin.Context) {
 	} else {
 		log.WithFields(fields).Info("broker founded")
 		log.WithFields(fields).Info("looking for passwordhash")
-		passwordHash, err = entity.UserManagement.GetUserHash(user.GetUserHashRequest{
-			RabbitAccess: common.RabbitAccess{
-				Host:     broker.Host,
-				Port:     broker.Port,
-				Username: broker.User,
-				Password: broker.Password,
+		passwordHash, err = controller.UserManagement.GetUserHash(contracts.GetUserHashRequest{
+			RabbitAccess: contracts.RabbitAccess{
+				Host:     cluster.Host,
+				Port:     cluster.Port,
+				Username: cluster.User,
+				Password: cluster.Password,
 			},
 			UserToRetrieveHash: importUserReuqest.Username,
 		}, c)
@@ -98,26 +94,43 @@ func (entity *UserControllerImpl) CreateUser(c *gin.Context) {
 			return
 		}
 
-		log.WithFields(fields).WithField("exists", exists).WithContext(c).Info("user not exists for this broker, creating now")
 	}
 
-	userCreated, err := entity.UserRepository.CreateUser(&entities.UserEntity{
-		Username:     importUserReuqest.Username,
-		PasswordHash: passwordHash,
-		ClusterId:    broker.ID,
-	})
+	userCreated,err := controller.DependencyLocator.Client.User.CreateOne(
+		db.User.Username.Set(importUserReuqest.Username),
+		db.User.PasswordHash.Set(passwordHash),
+		db.User.Cluster.Link(
+			db.Cluster.ID.Equals(importUserReuqest.ClusterId),
+		),
+	).Exec(c)
 
-	if err != nil {
-		log.WithContext(c).WithError(err).Error("Fail to save user")
+	if err != nil { 
+		log.WithError(err).Error("Fail to create user")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 
 	c.JSON(http.StatusCreated, dto.GetUserResponse{
 		Id:           userCreated.ID,
 		Username:     userCreated.Username,
 		PasswordHash: userCreated.PasswordHash,
-		ClusterId:    userCreated.ClusterId,
+		ClusterId:    userCreated.ClusterID,
 	})
+
+}
+
+func (ctrl *UserControllerImpl) parseInputRequest(c *gin.Context) (*dto.ImportOrCreateUserRequest, error) {
+	var importUserReuqest dto.ImportOrCreateUserRequest
+
+	fields := log.Fields{"request": fmt.Sprintf("%+v", importUserReuqest)}
+
+	err := c.BindJSON(&importUserReuqest)
+	if err != nil {
+		log.WithContext(c).WithFields(fields).WithError(err).Error("Fail to parse user request")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return nil,err
+	}
+	return &importUserReuqest,nil
 
 }

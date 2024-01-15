@@ -1,0 +1,90 @@
+datasource db {
+    provider = "mysql"
+    url      = "mysql://root:password@localhost:3306/inventory"
+}
+
+generator db {
+    provider = "go run github.com/steebchen/prisma-client-go"
+}
+
+model Cluster {
+    Id Int @id @default(autoincrement()) @map("ID")
+    Name String @map("TX_NAME")
+    Description String @map("TX_DESCRIPTION")
+    Host String @map("TX_HOST")
+    Port Int @map("NM_PORT")
+    User String @map("TX_USER")
+    Password String @map("TX_PASSWORD")
+    Users User[]
+    VirtualHosts VirtualHost[]
+    Queues Queue[]
+
+    @@map("TB_CLUSTER")
+}
+
+model VirtualHost {
+    Id Int @id @default(autoincrement())
+    Name String @map("TX_NAME") @unique
+    Description String @map("TX_DESCRIPTION")
+    ClusterId Int @map("FK_CLUSTER_ID")
+    Cluster Cluster @relation(fields: [ClusterId], references: [Id],onDelete: Cascade)
+
+    @@map("TB_VIRTUALHOST")
+}
+
+enum QueueType {
+    CLASSIC
+    QUORUM
+}
+
+model Queue {
+    Id Int @id @default(autoincrement()) @map("ID")
+    Name String @map("TX_NAME") @unique()
+    Description String @map("TX_DESCRIPTION")
+    Durable Boolean @map("IS_DURABLE")
+    Arguments Json @map("JS_ARGUMENTS")
+    Type QueueType @map("TY_QUEUE_TYPE")
+
+    ClusterId Int @map("FK_CLUSTER_ID")
+    Cluster Cluster @relation(fields: [ClusterId], references: [Id],onDelete: Cascade)
+
+    @@map("TB_QUEUE")
+}
+
+model User {
+    Id      Int     @id @default(autoincrement()) @map("ID")
+    Username String  @unique @map("TX_USERNAME")
+    PasswordHash String @map("TX_PASSWORD_HASH")
+    ClusterId Int @map("FK_CLUSTER_ID")
+    Cluster Cluster @relation(fields: [ClusterId], references: [Id],onDelete: Cascade)
+
+    @@map("TB_USER")
+    @@unique([Username, ClusterId],name: "UNIQUE_USERNAME_CLUSTERID")
+    @@unique([Id, ClusterId],name: "UNIQUE_ID_CLUSTERID")
+}
+
+
+enum LockerType {
+    QUEUE 
+    VIRTUALHOST
+    CLUSTER
+    USER
+}
+
+model Locker {
+    Id Int @id @default(autoincrement()) @map("ID")
+    Reason String @map("TX_REASON")
+
+    Type LockerType  @map("TY_LOCKER_TYPE")
+    ArtifactName String @map("TX_ARTIFACT_NAME")
+
+    UserResponsibleEmail String @map("TX_USER_RESPONSIBLE_EMAIL")
+
+    Enabled Boolean @map("IS_ENABLED")
+
+    CreatedAt DateTime @default(now()) @map("DT_CREATED_AT")
+    UpdatedAt DateTime @updatedAt @map("DT_UPDATED_AT")
+
+    @@unique([Type, ArtifactName],name: "UNIQUE_LOCKERTYPE_ARTIFACTNAME")
+    @@map("TB_LOCKER")
+}

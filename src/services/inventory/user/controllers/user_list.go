@@ -2,13 +2,15 @@ package controllers
 
 import (
 	"errors"
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/contracts"
+	"github.com/productivityeng/orabbit/db"
 	common_rabbit "github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/user"
 	log "github.com/sirupsen/logrus"
-	"net/http"
-	"strconv"
 )
 
 // ListUsersFromCluster
@@ -36,13 +38,13 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 	fields := log.Fields{"clusterId": clusterId}
 
 	log.WithFields(fields).Info("Looking for rabbitmq cluster")
-	cluster, err := userCtrl.ClusterRepository.GetCluster(uint(clusterId), c)
 
-	if err != nil {
-		log.WithError(err).WithFields(fields).Error("Fail to retrieve cluster")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	cluster,err := userCtrl.getCluster(c, int(clusterId))
+	
+	if err != nil { 
 		return
 	}
+
 	log.WithFields(fields).Info("Looking for rabbitmq users from cluster")
 
 	usersFromCluster, err := userCtrl.UserManagement.ListAllUser(user.ListAllUsersRequest{RabbitAccess: common_rabbit.RabbitAccess{
@@ -59,7 +61,7 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 	}
 	log.WithFields(fields).Info("Looking for rabbitmq users from ostern")
 
-	usersFromDb, err := userCtrl.UserRepository.ListAllRegisteredUsers(cluster.ID, c)
+	usersFromDb, err := userCtrl.DependencyLocator.Client.User.FindMany(db.User.ClusterID.Equals(cluster.ID)).Exec(c)
 
 	if err != nil {
 		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to retrieve users for the cluster")
@@ -79,10 +81,15 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 			IsInCluster:  true,
 			IsInDatabase: false,
 		}
-		if userEqual := usersFromDb.UserInListByName(userFromCluster.Name); userEqual != nil {
-			userResponse.Id = userEqual.ID
-			userResponse.IsInDatabase = true
+
+		userEqual,err := userCtrl.DependencyLocator.Client.User.FindUnique(db.User.UniqueUsernameClusterid(db.User.Username.Equals(userFromCluster.Name),db.User.ClusterID.Equals(cluster.ID))).Exec(c)
+
+		if errors.Is(err, db.ErrNotFound) {
+			continue
 		}
+		userResponse.Id = userEqual.ID
+		userResponse.IsInDatabase = true
+		
 		response = append(response, userResponse)
 	}
 

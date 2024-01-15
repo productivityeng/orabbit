@@ -1,4 +1,4 @@
-package common
+package contracts
 
 type RabbitAccess struct {
 	Host     string

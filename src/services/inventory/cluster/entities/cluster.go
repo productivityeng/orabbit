@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
 	"gorm.io/gorm"
 )
 
@@ -19,11 +18,3 @@ func (ClusterEntity) TableName() string {
 	return "Cluster"
 }
 
-func (cluster ClusterEntity) GetRabbitMqAccess() common.RabbitAccess {
-	return common.RabbitAccess{
-		Host:     cluster.Host,
-		Port:     cluster.Port,
-		Username: cluster.User,
-		Password: cluster.Password,
-	}
-}

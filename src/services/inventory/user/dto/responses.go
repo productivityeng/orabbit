@@ -1,12 +1,14 @@
 package dto
 
-import userEntities "github.com/productivityeng/orabbit/user/entities"
+import (
+	"github.com/productivityeng/orabbit/db"
+)
 
-func GetUserResponseFromUserEntity(user *userEntities.UserEntity) GetUserResponse {
+func GetUserResponseFromUserEntity(user *db.UserModel) GetUserResponse {
 	return GetUserResponse{
 		Id:           user.ID,
 		Username:     user.Username,
 		PasswordHash: user.PasswordHash,
-		ClusterId:    user.ClusterId,
+		ClusterId:    user.ClusterID,
 	}
 }

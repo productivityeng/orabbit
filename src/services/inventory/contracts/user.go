@@ -1,7 +1,7 @@
 package contracts
 
 type GetUserResponse struct {
-	Id           uint   `json:"Id"`
+	Id           int   `json:"Id"`
 	Username     string `json:"Username"`
 	PasswordHash string `json:"PasswordHash"`
 	IsInCluster  bool   `json:"IsInCluster"`

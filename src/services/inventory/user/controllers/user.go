@@ -2,9 +2,8 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	repository2 "github.com/productivityeng/orabbit/cluster/repository"
+	"github.com/productivityeng/orabbit/core/context"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/user"
-	repository "github.com/productivityeng/orabbit/user/repository"
 )
 
 type UserController interface {
@@ -18,15 +17,13 @@ type UserController interface {
 }
 
 type UserControllerImpl struct {
-	UserRepository    repository.UserRepository
-	ClusterRepository repository2.ClusterRepositoryInterface
+	DependencyLocator *context.DependencyLocator 
 	UserManagement    user.UserManagement
 }
 
-func NewUserController(userRepository repository.UserRepository, BrokerRepository repository2.ClusterRepositoryInterface,
+func NewUserController(DependencyLocator *context.DependencyLocator,
 	userManagement user.UserManagement) *UserControllerImpl {
-	return &UserControllerImpl{UserRepository: userRepository,
-		ClusterRepository: BrokerRepository,
+	return &UserControllerImpl{DependencyLocator: DependencyLocator,
 		UserManagement:    userManagement}
 }
 

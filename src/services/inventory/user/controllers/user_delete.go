@@ -1,11 +1,13 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq/user"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/productivityeng/orabbit/cluster/models"
+	"github.com/productivityeng/orabbit/src/packages/rabbitmq/user"
+	log "github.com/sirupsen/logrus"
 )
 
 // DeleteUser PingExample godoc
@@ -20,49 +22,35 @@ import (
 // @Failure 404
 // @Failure 500
 // @Router /{clusterId}/user/{userId} [delete]
-func (entity *UserControllerImpl) DeleteUser(c *gin.Context) {
-	userIdParam := c.Param("userId")
-
-	userId, err := strconv.ParseInt(userIdParam, 10, 32)
-	if err != nil {
-		log.WithError(err).WithField("brokerId", userIdParam).Error("Fail to parse brokerId Param")
-		c.JSON(http.StatusBadRequest, "Error parsing cluster from url route")
+func (ctrl *UserControllerImpl) DeleteUser(c *gin.Context) {
+	
+	clusterId, userId, err := ctrl.parseDeleteUserRequest(c)
+	if err != nil { 
 		return
 	}
 
-	clusterIdParam := c.Param("clusterId")
-	clusterId, err := strconv.ParseInt(clusterIdParam, 10, 32)
-	if err != nil {
-		log.WithError(err).WithField("brokerId", clusterIdParam).Error("Fail to parse clusterId Param")
-		c.JSON(http.StatusBadRequest, "Error parsing clusterId from url route")
+	userFromDb,err := ctrl.getUser(c, userId)
+	if err != nil { 
 		return
 	}
+	
 
-	userFromDb, err := entity.UserRepository.GetUser(uint(clusterId), uint(userId), c)
-	if err != nil {
-		log.WithError(err).WithField("userId", userId).Error("Erro ao buscar usuario na base")
-		c.JSON(http.StatusBadRequest, "Erro ao buscar ususario na base")
-		return
+	err = ctrl.verifyIfUserIsLocked(c,userFromDb)
+	if err != nil { 
+		return 
 	}
+	
+	cluster, err := ctrl.getCluster(c, clusterId)
 
-	if userFromDb.IsLocked() {
-		log.WithField("user", userFromDb.ID).Warn("Usuario com interacao bloqueada")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "usuario com interacao bloqueada"})
-		return
-	}
-
-	cluster, err := entity.ClusterRepository.GetCluster(uint(clusterId), c)
-	if err != nil {
-		log.WithError(err).WithField("clusterId", clusterId).Error("Erro ao buscar cluster na base")
-		c.JSON(http.StatusBadRequest, "Erro ao buscar cluster na base")
+	if err != nil { 
 		return
 	}
 
 	deleteUserRequest := user.DeleteUserRequest{
-		RabbitAccess: cluster.GetRabbitMqAccess(),
+		RabbitAccess: models.GetRabbitMqAccess(cluster),
 		Username:     userFromDb.Username,
 	}
-	err = entity.UserManagement.DeleteUser(deleteUserRequest, c)
+	err = ctrl.UserManagement.DeleteUser(deleteUserRequest, c)
 
 	if err != nil {
 		log.WithError(err).WithField("request", deleteUserRequest).Error("Erro ao deletar usuario no rabbit")
@@ -70,4 +58,24 @@ func (entity *UserControllerImpl) DeleteUser(c *gin.Context) {
 	}
 	c.JSON(http.StatusNoContent, "Deleted")
 	return
+}
+
+func (controller *UserControllerImpl) parseDeleteUserRequest(c *gin.Context) (clusterId int, userId int, err error) {
+	userIdParam := c.Param("userId")
+
+	userIdConv, err := strconv.ParseInt(userIdParam, 10, 32)
+	if err != nil {
+		log.WithError(err).WithField("brokerId", userIdParam).Error("Fail to parse brokerId Param")
+		c.JSON(http.StatusBadRequest, "Error parsing cluster from url route")
+		return 0, 0, err
+	}
+
+	clusterIdParam := c.Param("clusterId")
+	clusterIdConv, err := strconv.ParseInt(clusterIdParam, 10, 32)
+	if err != nil {
+		log.WithError(err).WithField("brokerId", clusterIdParam).Error("Fail to parse clusterId Param")
+		c.JSON(http.StatusBadRequest, "Error parsing clusterId from url route")
+		return 0, 0, err
+	}
+	return int(clusterIdConv), int(userIdConv), nil
 }
