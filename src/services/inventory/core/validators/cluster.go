@@ -2,9 +2,10 @@ package validators
 
 import (
 	"context"
-	"errors"
-	"github.com/productivityeng/orabbit/cluster/repository"
+
 	"github.com/productivityeng/orabbit/contracts"
+	"github.com/productivityeng/orabbit/core/core"
+	"github.com/productivityeng/orabbit/db"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq"
 )
 
@@ -13,14 +14,14 @@ type ClusterValidator interface {
 }
 
 type clusterValidatorDefault struct {
-	ClusterRepository  repository.ClusterRepositoryInterface
 	OverviewManagement rabbitmq.OverviewManagement
+	DependencyLocator  *core.DependencyLocator
 }
 
-func NewClusterValidatorDefault(brokerRepository repository.ClusterRepositoryInterface, OverviewManagement rabbitmq.OverviewManagement) *clusterValidatorDefault {
+func NewClusterValidatorDefault(DependencyLocator *core.DependencyLocator, OverviewManagement rabbitmq.OverviewManagement) *clusterValidatorDefault {
 	return &clusterValidatorDefault{
-		ClusterRepository:  brokerRepository,
 		OverviewManagement: OverviewManagement,
+		DependencyLocator: DependencyLocator,
 	}
 }
 
@@ -42,9 +43,13 @@ func (val *clusterValidatorDefault) ValidateCreateRequest(request contracts.Crea
 }
 
 func (val *clusterValidatorDefault) validateIfClusterWithThisHostnameExists(request contracts.CreateClusterRequest, ctx context.Context) error {
-	exists := val.ClusterRepository.CheckIfHostIsAlreadyRegisted(request.Host, request.Port, ctx)
-	if exists {
-		return errors.New("[BROKER_ALREADY_EXISTS]")
+	unique := db.Cluster.UniqueNameHostPort(
+		db.Cluster.Host.Equals(request.Host),
+		db.Cluster.Port.Equals(request.Port),
+	)
+	_,err := val.DependencyLocator.PrismaClient.Cluster.FindUnique(unique).Exec(ctx)
+	if err != nil { 
+		return err
 	}
 	return nil
 }

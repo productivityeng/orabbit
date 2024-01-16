@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/productivityeng/orabbit/core/context"
+	"github.com/productivityeng/orabbit/core/core"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/user"
 	"github.com/productivityeng/orabbit/user/controllers"
 )
@@ -10,7 +10,7 @@ import (
 var userController controllers.UserController
 var userManagement user.UserManagement
 
-func Routes(routes *gin.Engine, DependencyLocator *context.DependencyLocator) *gin.RouterGroup {
+func Routes(routes *gin.Engine, DependencyLocator *core.DependencyLocator) *gin.RouterGroup {
 	userManagement = user.NewUserManagement()
 	userController = controllers.NewUserController(DependencyLocator, userManagement)
 

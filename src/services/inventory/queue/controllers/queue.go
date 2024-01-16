@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/productivityeng/orabbit/core/context"
+	"github.com/productivityeng/orabbit/core/core"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/queue"
 )
 
-func NewQueueController(DependencyLocator *context.DependencyLocator, management queue.QueueManagement,
+func NewQueueController(DependencyLocator *core.DependencyLocator, management queue.QueueManagement,
 	) QueueControllerImpl {
 	return QueueControllerImpl{ QueueManagement: management, DependencyLocator: DependencyLocator}
 }
@@ -19,6 +19,6 @@ type QueueController interface {
 }
 
 type QueueControllerImpl struct {
-	DependencyLocator *context.DependencyLocator
+	DependencyLocator *core.DependencyLocator
 	QueueManagement   queue.QueueManagement
 }

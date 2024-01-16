@@ -3,21 +3,19 @@ package cluster
 import (
 	"github.com/gin-gonic/gin"
 	broker_controller "github.com/productivityeng/orabbit/cluster/controllers"
-	"github.com/productivityeng/orabbit/cluster/repository"
-	"github.com/productivityeng/orabbit/core/context"
+	"github.com/productivityeng/orabbit/core/core"
 	"github.com/productivityeng/orabbit/core/validators"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq"
 )
 
 var clusterController broker_controller.ClusterController
-var brokerRepository repository.ClusterRepositoryInterface
 var clusterValidator validators.ClusterValidator
 var overviewManagement rabbitmq.OverviewManagement
 
-func Routes(routes *gin.Engine, DependencyLocator *context.DependencyLocator) {
+func Routes(routes *gin.Engine, DependencyLocator *core.DependencyLocator) {
 	overviewManagement = rabbitmq.NewOverviewManagementImpl()
-	clusterValidator = validators.NewClusterValidatorDefault(brokerRepository, overviewManagement)
-	clusterController = broker_controller.NewClusterController(brokerRepository, clusterValidator)
+	clusterValidator = validators.NewClusterValidatorDefault(DependencyLocator, overviewManagement)
+	clusterController = broker_controller.NewClusterController(DependencyLocator, clusterValidator)
 
 	brokerResourcePath := "/:clusterId"
 	clusterRoutes := routes.Group("/cluster")

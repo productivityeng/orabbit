@@ -1,10 +1,11 @@
 package cluster
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/src/packages/common"
 	log "github.com/sirupsen/logrus"
-	"net/http"
 )
 
 // ListClusters
@@ -19,20 +20,25 @@ import (
 // @Router /cluster [get]
 func (ctrl *clusterControllerDefaultImp) ListClusters(c *gin.Context) {
 
-	var param common.PageParam
-	err := c.BindQuery(&param)
-	if err != nil {
-		log.WithError(err).Error("Error trying to parse query params")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	params,err  := ctrl.parsePageParams(c)
+	if err != nil { return }
 
-	paginatedClusters, err := ctrl.ClusterRepository.ListCluster(param.PageSize, param.PageNumber)
+	paginatedClusters, err := ctrl.DependencyLocator.PrismaClient.Cluster.FindMany().Take(params.PageSize).Skip(params.PageNumber).Exec(c)
 	if err != nil {
 		log.WithError(err).Error("Error retrieving clusters from repository")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 	c.JSON(http.StatusOK, paginatedClusters)
-
 }
+
+func (ctrl *clusterControllerDefaultImp) parsePageParams(c *gin.Context) (params *common.PageParam, err error) {
+	err = c.BindQuery(&params)
+	if err != nil {
+		log.WithError(err).Error("Error trying to parse query params")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	return params, nil
+ }
+

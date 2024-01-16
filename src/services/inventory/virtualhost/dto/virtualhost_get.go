@@ -1,7 +1,7 @@
 package dto
 
 type GetVirtualHostDto struct {
-	Id           uint
+	Id           int 
 	Description  string
 	Name         string
 	IsInDatabase bool

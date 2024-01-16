@@ -2,18 +2,14 @@ package queue
 
 import (
 	"github.com/gin-gonic/gin"
-	repository2 "github.com/productivityeng/orabbit/cluster/repository"
-	"github.com/productivityeng/orabbit/core/context"
+	"github.com/productivityeng/orabbit/core/core"
 	queue_controller "github.com/productivityeng/orabbit/queue/controllers"
-	"github.com/productivityeng/orabbit/queue/repository"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/queue"
 )
 
 var queueController queue_controller.QueueController
-var clusterRepository repository2.ClusterRepositoryInterface
-var queueRepository repository.QueueRepository
 
-func Routes(routes *gin.Engine, dependencyLocator *context.DependencyLocator) *gin.RouterGroup {
+func Routes(routes *gin.Engine, dependencyLocator *core.DependencyLocator) *gin.RouterGroup {
 
 	queueController = queue_controller.NewQueueController(dependencyLocator,queue.NewQueueManagement())
 

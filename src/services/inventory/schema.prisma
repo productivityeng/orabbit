@@ -15,10 +15,13 @@ model Cluster {
     Port Int @map("NM_PORT")
     User String @map("TX_USER")
     Password String @map("TX_PASSWORD")
+
+    
     Users User[]
     VirtualHosts VirtualHost[]
     Queues Queue[]
 
+    @@unique([Host, Port],name: "UNIQUE_NAME_HOST_PORT")
     @@map("TB_CLUSTER")
 }
 

@@ -1,12 +1,14 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+	"github.com/productivityeng/orabbit/cluster/models"
+	"github.com/productivityeng/orabbit/db"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/virtualhost"
 	"github.com/productivityeng/orabbit/virtualhost/dto"
 	log "github.com/sirupsen/logrus"
-	"net/http"
-	"strconv"
 )
 
 // ListVirtualHost
@@ -22,27 +24,16 @@ import (
 // @Failure 500
 // @Router /{clusterId}/virtualhost [get]
 func (controller VirtualHostControllerImpl) ListVirtualHost(c *gin.Context) {
-	clusterIdParam := c.Param("clusterId")
-	clusterId, err := strconv.ParseInt(clusterIdParam, 10, 32)
-	if err != nil {
-		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to parse brokerId Param")
-		c.JSON(http.StatusBadRequest, "Error parsing brokerId from url route")
-		return
-	}
-
+	clusterId, err := controller.parseClusterIdParams(c)
+	if err != nil { return }
 	fields := log.Fields{"clusterId": clusterId}
 
 	log.WithFields(fields).Info("Looking for rabbitmq cluster")
-	cluster, err := controller.ClusterRepository.GetCluster(uint(clusterId), c)
-
-	if err != nil {
-		log.WithError(err).WithFields(fields).Error("Fail to retrieve cluster")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	cluster, err := controller.getClusterById(clusterId, c)
+	if err != nil { return }
 
 	vhosts, err := controller.VirtualHostManagement.ListVirtualHosts(virtualhost.ListVirtualHostRequest{
-		RabbitAccess: cluster.GetRabbitMqAccess(),
+		RabbitAccess: models.GetRabbitMqAccess(cluster),
 	})
 
 	if err != nil {
@@ -62,7 +53,7 @@ func (controller VirtualHostControllerImpl) ListVirtualHost(c *gin.Context) {
 		})
 	}
 
-	vhostsFromDatabase, err := controller.VirtualHostRepository.ListVirtualHosts(uint(clusterId), 100, 5, c)
+	vhostsFromDatabase, err := controller.DependencyLocator.PrismaClient.VirtualHost.FindMany(db.VirtualHost.ClusterID.Equals(clusterId)).Exec(c)
 
 	if err != nil {
 		log.WithError(err).Error("Erro ao obter a lista de VirtualHosts do banco de dados")
@@ -91,3 +82,5 @@ func (controller VirtualHostControllerImpl) ListVirtualHost(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 	return
 }
+
+

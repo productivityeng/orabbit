@@ -1,4 +1,4 @@
-package context
+package core
 
 import "github.com/productivityeng/orabbit/db"
 
