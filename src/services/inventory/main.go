@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/cluster"
 	brokerEntities "github.com/productivityeng/orabbit/cluster/entities"
+	"github.com/productivityeng/orabbit/core/context"
 	database_mysql "github.com/productivityeng/orabbit/database"
 	"github.com/productivityeng/orabbit/docs"
 	lockerEntities "github.com/productivityeng/orabbit/locker/entities"
@@ -20,6 +21,8 @@ import (
 )
 
 func main() {
+	DependencyLocator := context.NewDependencyLocator()
+
 	database_mysql.Db.AutoMigrate(&brokerEntities.ClusterEntity{},
 		&userEntities.UserEntity{}, &queueEntities.QueueEntity{}, &lockerEntities.LockerEntity{},
 		&virtualHostEntities.VirtualHost{})
@@ -29,9 +32,9 @@ func main() {
 	r := gin.Default()
 	docs.SwaggerInfo.BasePath = ""
 
-	cluster.Routes(r, database_mysql.Db)
-	user.Routes(r, database_mysql.Db)
-	queue.Routes(r, database_mysql.Db)
+	cluster.Routes(r, DependencyLocator)
+	user.Routes(r, DependencyLocator)
+	queue.Routes(r, DependencyLocator)
 	virtualhost.Routes(r, database_mysql.Db)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))

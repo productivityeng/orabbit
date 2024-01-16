@@ -1,5 +1,5 @@
 package dto
 
 type QueueRemoveRequest struct {
-	QueueId uint `json:"QueueId"`
+	QueueId int `json:"QueueId"`
 }

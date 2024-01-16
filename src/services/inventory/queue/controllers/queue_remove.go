@@ -1,13 +1,15 @@
 package controllers
 
 import (
-	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
+	"github.com/productivityeng/orabbit/cluster/models"
+	"github.com/productivityeng/orabbit/db"
 	"github.com/productivityeng/orabbit/queue/dto"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/queue"
 	log "github.com/sirupsen/logrus"
-	"net/http"
-	"strconv"
 )
 
 // RemoveQueueFromCluster
@@ -24,12 +26,50 @@ import (
 // @Param QueueImportRequest body dto.QueueRemoveRequest true "Request"
 // @Router /{clusterId}/queue/remove [delete]
 func (q QueueControllerImpl) RemoveQueueFromCluster(c *gin.Context) {
+	clusterId,queueRemoveRequest,err := q.parseRemoveQueueFromClusterParam(c)
+	if err != nil { 
+		return
+	}
+
+	queueFromDb,err := q.getQueueById(c,queueRemoveRequest.QueueId)
+	cluster,err := q.getClusterByid(c,clusterId)
+
+	if err != nil {
+		return
+	}
+
+	err = q.deleteQueue(c,cluster,queueFromDb)
+	if err != nil { return }
+
+	
+
+	c.JSON(http.StatusOK, gin.H{"info": "Fila removida do  cluster"})
+
+}
+
+func (controller QueueControllerImpl) deleteQueue(c *gin.Context,cluster *db.ClusterModel,queueFromCluster *db.QueueModel) error {
+	deleteQueueRequest := queue.DeleteQueueRequest{
+		RabbitAccess: models.GetRabbitMqAccess(cluster),
+		Queue:        queueFromCluster.Name,
+	}
+
+	err := controller.QueueManagement.DeleteQueue(deleteQueueRequest)
+
+	if err != nil {
+		log.WithError(err).WithField("request", deleteQueueRequest).Error("Erro ao tentar deletar a fila no cluster")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return err
+	}
+	return nil
+}
+
+func (controller QueueControllerImpl) parseRemoveQueueFromClusterParam(c *gin.Context)(clusterId int,request *dto.QueueRemoveRequest, err error){
 	clusterIdParam := c.Param("clusterId")
-	clusterId, err := strconv.ParseInt(clusterIdParam, 10, 32)
+	clusterIdConv, err := strconv.ParseInt(clusterIdParam, 10, 32)
 	if err != nil {
 		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to parse clusterId Param")
 		c.JSON(http.StatusBadRequest, "Error parsing clusterId from url route")
-		return
+		return 0,nil,err
 	}
 
 	var queueRemoveRequest dto.QueueRemoveRequest
@@ -38,34 +78,7 @@ func (q QueueControllerImpl) RemoveQueueFromCluster(c *gin.Context) {
 	if err != nil {
 		log.WithContext(c).WithError(err).Error("Falha ao interpretar a requisicao")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		return 0,nil,err
 	}
-
-	fields := log.Fields{"request": fmt.Sprintf("%+v", queueRemoveRequest), "clusterId": clusterId}
-
-	queueFromOstern, err := q.QueueRepository.Get(uint(clusterId), queueRemoveRequest.QueueId, c)
-
-	if err != nil {
-		log.WithError(err).WithFields(fields).Error("Error trying to get a queue from database")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	log.WithFields(fields).Info("looking for cluster")
-	cluster, err := q.ClusterRepository.GetCluster(uint(clusterId), c)
-
-	deleteQueueRequest := queue.DeleteQueueRequest{
-		RabbitAccess: cluster.GetRabbitMqAccess(),
-		Queue:        queueFromOstern.Name,
-	}
-	err = q.QueueManagement.DeleteQueue(deleteQueueRequest)
-
-	if err != nil {
-		log.WithError(err).WithField("request", deleteQueueRequest).Error("Erro ao tentar deletar a fila no cluster")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"info": "Fila removida do  cluster"})
-
+	return int(clusterIdConv),&queueRemoveRequest,nil
 }

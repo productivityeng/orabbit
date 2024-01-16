@@ -1,8 +1,8 @@
 package dto
 
 type GetQueueResponse struct {
-	ID           uint                   `json:"ID"`
-	ClusterID    uint                   `json:"ClusterId"`
+	ID           int                   `json:"ID"`
+	ClusterID    int                   `json:"ClusterId"`
 	Name         string                 `json:"Name"`
 	VHost        string                 `json:"VHost"`
 	Type         string                 `json:"Type"`

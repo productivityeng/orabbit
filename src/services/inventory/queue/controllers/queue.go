@@ -2,15 +2,13 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/productivityeng/orabbit/cluster/repository"
-	queue_repository "github.com/productivityeng/orabbit/queue/repository"
+	"github.com/productivityeng/orabbit/core/context"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/queue"
 )
 
-func NewQueueController(repositoryInterface repository.ClusterRepositoryInterface, management queue.QueueManagement,
-	queueRepository queue_repository.QueueRepository) QueueControllerImpl {
-	return QueueControllerImpl{ClusterRepository: repositoryInterface, QueueManagement: management,
-		QueueRepository: queueRepository}
+func NewQueueController(DependencyLocator *context.DependencyLocator, management queue.QueueManagement,
+	) QueueControllerImpl {
+	return QueueControllerImpl{ QueueManagement: management, DependencyLocator: DependencyLocator}
 }
 
 type QueueController interface {
@@ -21,7 +19,6 @@ type QueueController interface {
 }
 
 type QueueControllerImpl struct {
-	ClusterRepository repository.ClusterRepositoryInterface
+	DependencyLocator *context.DependencyLocator
 	QueueManagement   queue.QueueManagement
-	QueueRepository   queue_repository.QueueRepository
 }

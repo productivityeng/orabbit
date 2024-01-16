@@ -1,25 +1,25 @@
 package repository
 
 import (
-	"context"
 	"errors"
+
 	"github.com/productivityeng/orabbit/cluster/entities"
 	"github.com/productivityeng/orabbit/contracts"
+	"github.com/productivityeng/orabbit/core/context"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 type ClusterRepositoryMysqlImpl struct {
 	Db *gorm.DB
+	DependencyLocator *context.DependencyLocator
 }
 
-func NewClusterMysqlRepositoryImpl(Db *gorm.DB) *ClusterRepositoryMysqlImpl {
-	Db.AutoMigrate(&entities.ClusterEntity{})
-	/* if err != nil {
-		log.WithError(err).Fatal("erro migrating entity broker")
-	} */
+func NewClusterMysqlRepositoryImpl(DependencyLocator *context.DependencyLocator) *ClusterRepositoryMysqlImpl {
+	
+	
 	return &ClusterRepositoryMysqlImpl{
-		Db: Db,
+		DependencyLocator: DependencyLocator,
 	}
 }
 

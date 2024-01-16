@@ -48,6 +48,7 @@ model Queue {
     ClusterId Int @map("FK_CLUSTER_ID")
     Cluster Cluster @relation(fields: [ClusterId], references: [Id],onDelete: Cascade)
 
+    @@unique([Name, ClusterId],name: "UNIQUE_NAME_CLUSTERID")
     @@map("TB_QUEUE")
 }
 

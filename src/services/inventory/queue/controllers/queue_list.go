@@ -1,13 +1,16 @@
 package controllers
 
 import (
+	"encoding/json"
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
+	"github.com/productivityeng/orabbit/db"
 	"github.com/productivityeng/orabbit/queue/dto"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/queue"
 	log "github.com/sirupsen/logrus"
-	"net/http"
-	"strconv"
 )
 
 // ListQueuesFromCluster
@@ -23,24 +26,14 @@ import (
 // @Failure 500
 // @Router /{clusterId}/queue/queuesfromcluster [get]
 func (q QueueControllerImpl) ListQueuesFromCluster(c *gin.Context) {
-	clusterIdParam := c.Param("clusterId")
-	clusterId, err := strconv.ParseInt(clusterIdParam, 10, 32)
-	if err != nil {
-		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to parse brokerId Param")
-		c.JSON(http.StatusBadRequest, "Error parsing brokerId from url route")
+	clusterId, err := q.parseListQueuesFromClusterParams(c)
+	if err != nil { 
 		return
 	}
 
-	fields := log.Fields{"clusterId": clusterId}
-
-	log.WithFields(fields).Info("Looking for rabbitmq cluster")
-	cluster, err := q.ClusterRepository.GetCluster(uint(clusterId), c)
-
-	if err != nil {
-		log.WithError(err).WithFields(fields).Error("Fail to retrieve cluster")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	
+	cluster,err := q.getClusterByid(c,clusterId)
+	if err != nil { return }
 
 	queuesFromCluster, err := q.QueueManagement.GetAllQueuesFromCluster(queue.ListQueuesRequest{
 		RabbitAccess: common.RabbitAccess{
@@ -50,20 +43,21 @@ func (q QueueControllerImpl) ListQueuesFromCluster(c *gin.Context) {
 			Password: cluster.Password,
 		},
 	})
+
 	if err != nil {
-		log.WithError(err).WithFields(fields).Error("Fail to retrieve all queuesFromCluster from cluster")
+		log.WithError(err).Error("Fail to retrieve all queuesFromCluster from cluster")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	queuesFromDatabase, err := q.QueueRepository.List(uint(clusterId), c)
+	queuesFromDatabase,err := q.getAllQueuesFromDatabase(clusterId,c)
 
 	var getQueueResponse dto.GetQueueResponseList
 
 	for _, queueFromCluster := range queuesFromCluster {
 
 		var queueFromClusterExistsInDatabase = false
-		var queueIdFromDatabase = uint(0)
+		var queueIdFromDatabase = int(0)
 		if queueFromBd := queuesFromDatabase.GetQueueFromListByName(queueFromCluster.Name); queueFromBd != nil {
 			queueFromClusterExistsInDatabase = true
 			queueIdFromDatabase = queueFromBd.ID
@@ -71,7 +65,7 @@ func (q QueueControllerImpl) ListQueuesFromCluster(c *gin.Context) {
 
 		getQueueResponse = append(getQueueResponse, dto.GetQueueResponse{
 			ID:           queueIdFromDatabase,
-			ClusterID:    uint(clusterId),
+			ClusterID:    clusterId,
 			Name:         queueFromCluster.Name,
 			VHost:        queueFromCluster.Vhost,
 			Type:         queueFromCluster.Type,
@@ -87,17 +81,37 @@ func (q QueueControllerImpl) ListQueuesFromCluster(c *gin.Context) {
 		if queueFromResponse := getQueueResponse.GetByName(queueFromDb.Name); queueFromResponse == nil {
 			getQueueResponse = append(getQueueResponse, dto.GetQueueResponse{
 				ID:           queueFromDb.ID,
-				ClusterID:    uint(clusterId),
+				ClusterID:    clusterId,
 				Name:         queueFromDb.Name,
 				VHost:        "/",
-				Type:         queueFromDb.Type,
+				Type:         queueFromDb.Type.String(),
 				IsInCluster:  false,
 				IsInDatabase: true,
-				Arguments:    queueFromDb.Arguments,
 				Durable:      queueFromDb.Durable,
 			})
+			json.Unmarshal(queueFromDb.Arguments, &getQueueResponse[len(getQueueResponse)-1].Arguments)
 		}
 	}
 
 	c.JSON(http.StatusOK, getQueueResponse)
+}
+func (controller *QueueControllerImpl) parseListQueuesFromClusterParams(c *gin.Context) (clusterId int, err error) {
+	clusterIdParam := c.Param("clusterId")
+	clusterId, err = strconv.Atoi(clusterIdParam)
+	if err != nil {
+		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to parse clusterId Param")
+		c.JSON(http.StatusBadRequest, "Error parsing clusterId from url route")
+		return 0, err
+	}
+	return clusterId, nil
+}
+
+func (controller *QueueControllerImpl) getAllQueuesFromDatabase(clusterId int, c *gin.Context) (queuesFromDatabase db.QueueList, err error) {
+	queuesFromDatabase, err = controller.DependencyLocator.PrismaClient.Queue.FindMany(db.Queue.ClusterID.Equals(clusterId)).Exec(c)
+	if err != nil {
+		log.WithContext(c).WithError(err).Error("Fail to retrieve all queues from database")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return nil, err
+	}
+	return queuesFromDatabase, nil
 }
