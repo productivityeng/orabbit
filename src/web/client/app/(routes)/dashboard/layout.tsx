@@ -16,7 +16,7 @@ async function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid grid-cols-12 h-screen">
       <div className="col-span-2">
-        <Sidebar Clusters={cluster.result} />
+        <Sidebar Clusters={cluster} />
       </div>
       <div className="flex col-span-10 flex-col w-full h-screen">
         <div className="w-full h-[7vh]">

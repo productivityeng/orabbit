@@ -3,6 +3,7 @@ package queue
 import (
 	"errors"
 	"fmt"
+
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
 	"github.com/sirupsen/logrus"
@@ -96,6 +97,7 @@ func (q QueueManagementImpl) CreateQueue(request CreateQueueRequest) (*rabbithol
 	})
 	if err != nil {
 		logrus.WithError(err).WithField("request", request).Error("Fail to declare queue")
+		return nil,err
 	}
 
 	return q.GetQueueFromCluster(GetQueueRequest{

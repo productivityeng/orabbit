@@ -1,5 +1,7 @@
 package dto
 
+import "github.com/productivityeng/orabbit/db"
+
 type GetQueueResponse struct {
 	ID           int                   `json:"ID"`
 	ClusterID    int                   `json:"ClusterId"`
@@ -10,6 +12,7 @@ type GetQueueResponse struct {
 	IsInDatabase bool                   `json:"IsInDatabase"`
 	Arguments    map[string]interface{} `json:"Arguments"`
 	Durable      bool                   `json:"Durable"`
+	Lockers   	 []db.LockerQueueModel 	`json:"Lockers"`
 }
 
 type GetQueueResponseList []GetQueueResponse

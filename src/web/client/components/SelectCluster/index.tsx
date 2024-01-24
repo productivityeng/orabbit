@@ -40,7 +40,7 @@ export function SelectCluster({ Clusters }: Readonly<SelectClusterProps>) {
           className="w-full justify-between text-center text-slate-400 bg-slate-700 border-0 hover:bg-rabbit hover:text-slate-100 duration-200 ease-in-out"
         >
           {value
-            ? Clusters.find((cluster) => cluster.name === value)?.name
+            ? Clusters.find((cluster) => cluster.Name === value)?.Name
             : t("ClusterSelect") + "..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -48,27 +48,28 @@ export function SelectCluster({ Clusters }: Readonly<SelectClusterProps>) {
       <PopoverContent className="w-full ">
         <Command>
           <CommandInput
-            role="commandInput"
+            role="form"
             placeholder={`${t("SearchForCluster")}...`}
+            autoComplete="off"
           />
           <CommandEmpty>{t("NoClusterFounded")}</CommandEmpty>
           <CommandGroup>
             {Clusters.map((cluster) => (
               <CommandItem
-                key={cluster.name}
+                key={cluster.Name}
                 onSelect={(currentValue) => {
                   setValue(currentValue === value ? "" : currentValue);
                   setOpen(false);
-                  router.push(`/dashboard/${cluster.ID}`);
+                  router.push(`/dashboard/${cluster.Id}`);
                 }}
               >
                 <Check
                   className={cn(
                     "mr-2 h-4 w-4",
-                    value === cluster.name ? "opacity-100" : "opacity-0"
+                    value === cluster.Name ? "opacity-100" : "opacity-0"
                   )}
                 />
-                {cluster.name}
+                {cluster.Name}
               </CommandItem>
             ))}
           </CommandGroup>

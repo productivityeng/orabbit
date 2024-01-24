@@ -21,14 +21,18 @@ import (
 func (ctrl *clusterControllerDefaultImp) ListClusters(c *gin.Context) {
 
 	params,err  := ctrl.parsePageParams(c)
+	log.WithField("params", params).Info("Received request")
 	if err != nil { return }
 
-	paginatedClusters, err := ctrl.DependencyLocator.PrismaClient.Cluster.FindMany().Take(params.PageSize).Skip(params.PageNumber).Exec(c)
+	log.WithField("params", params).Info("Retrieving clusters")
+	paginatedClusters, err := ctrl.DependencyLocator.PrismaClient.Cluster.FindMany().Take(params.PageSize).Skip(params.PageNumber-1).Exec(c)
+	
 	if err != nil {
 		log.WithError(err).Error("Error retrieving clusters from repository")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
+	log.WithField("paginatedClusters", paginatedClusters).Info("Retrieved clusters")
 	c.JSON(http.StatusOK, paginatedClusters)
 }
 

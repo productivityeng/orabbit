@@ -70,6 +70,10 @@
       "Placeholder": "Provide a nome for the queue"
     }
   },
+  "QueuePage": {
+    "TrackedQueues": "Tracked queues",
+    "TrackedQueuesDescription": "Queues who are registered with ostern. There may be queues registered in the rabbit cluster that do not appear in this list."
+  },
   "[BROKER_ALREADY_EXISTS]": "This cluster already exists in database, maybe there was disabled. You can enable the cluster in the graviardy page",
   "[QUEUE_NOTFOUND_INCLUSTER]": "The name of the queue cound'nt not be found on rabbitmq cluster",
   "[QUEUE_ALREADY_TRACKED]": "This queue already is imported",

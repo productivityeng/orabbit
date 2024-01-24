@@ -50,7 +50,7 @@ export function SelectCluster({
           className="w-full justify-between text-center text-slate-400 bg-slate-700 border-0 hover:bg-rabbit hover:text-slate-100 duration-200 ease-in-out"
         >
           <p className="truncate">
-            {SelectedCluster?.name ?? t("ClusterSelect") + "..."}
+            {SelectedCluster?.Name ?? t("ClusterSelect") + "..."}
           </p>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -64,22 +64,22 @@ export function SelectCluster({
             />
             <CommandEmpty>{t("NoClusterFounded")}</CommandEmpty>
             <CommandGroup className="w-full ">
-              {Clusters.map((cluster) => (
+              {Clusters?.map((cluster) => (
                 <CommandItem
-                  key={"idx" + cluster.ID}
+                  key={"idx" + cluster.Id}
                   onSelect={(currentValue) => {
-                    SetSelectedClusterId(cluster.ID);
-                    router.push(`/dashboard/${cluster.ID}`);
+                    SetSelectedClusterId(cluster.Id);
+                    router.push(`/dashboard/${cluster.Id}`);
                     setOpen(false);
                   }}
                 >
                   <Check
                     className={cn("mr-2 h-4 w-4 opacity-0 ", {
                       "opacity-100":
-                        SelectedCluster && SelectedCluster.ID === cluster.ID,
+                        SelectedCluster && SelectedCluster.Id === cluster.Id,
                     })}
                   />
-                  <p className="truncate"> {cluster.name}</p>
+                  <p className="truncate"> {cluster.Name}</p>
                 </CommandItem>
               ))}
             </CommandGroup>

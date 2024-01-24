@@ -16,6 +16,7 @@ import {
   removeQueueFromClusterAction,
   syncronizeQueueAction,
 } from "@/actions/queue";
+import toast from "react-hot-toast";
 
 interface CellActionProps {
   data: RabbitMqQueue;
@@ -26,34 +27,6 @@ function CellAction({ data }: CellActionProps) {
   const params = useParams();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const syncronizeQueue = async () => {
-    await standardToastableAction(
-      async () => {
-        await syncronizeQueueAction({
-          ClusterId: Number(params.clusterId),
-          QueueId: data.ID,
-        });
-      },
-      <p>
-        Sincronizando fila <span className="text-rabbit">{data.Name}</span> ...
-      </p>,
-      <p>
-        Fila <span className="text-rabbit">{data.Name}</span> sincronizada com
-        sucesso{" "}
-      </p>,
-      <p>
-        Erro ao sincronizar fila{" "}
-        <span className="text-rabbit">{data.Name}</span>{" "}
-      </p>,
-      [
-        () => {
-          router.refresh();
-        },
-      ],
-      []
-    );
-  };
 
   const removeQueueFromCluster = async () => {
     await standardToastableAction(
@@ -99,6 +72,41 @@ function CellAction({ data }: CellActionProps) {
     );
   };
 
+  async function syncronizeQueue() {
+    let toastId = toast.loading(
+      <p>
+        Sincronizando fila <span className="text-rabbit">{data.Name}</span> ...
+      </p>
+    );
+    let result = await syncronizeQueueAction({
+      ClusterId: Number(params.clusterId),
+      QueueId: data.ID,
+    });
+
+    if (result.Result == true) {
+      toast.success(
+        <p>
+          Fila <span className="text-rabbit">{data.Name}</span> sincronizada com
+          sucesso{" "}
+        </p>,
+        {
+          id: toastId,
+        }
+      );
+    } else {
+      toast.error(
+        <p>
+          Erro {result.ErrorMessage} ao sincronizar fila
+          <span className="text-rabbit">{data.Name}</span>{" "}
+        </p>,
+        {
+          id: toastId,
+        }
+      );
+    }
+    router.refresh();
+  }
+
   return (
     <DropdownMenu onOpenChange={setIsMenuOpen}>
       <DropdownMenuTrigger asChild>
@@ -108,7 +116,7 @@ function CellAction({ data }: CellActionProps) {
         >
           <SettingsIcon
             className={cn("w-4 h-4 duration-200 ease-in-out ", {
-              "text-rabbit w-8 h-8": isMenuOpen,
+              "text-rabbit": isMenuOpen,
             })}
           />
         </Button>

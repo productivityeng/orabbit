@@ -44,13 +44,17 @@ func NewClusterController(DependencyLocator *core.DependencyLocator, ClusterVali
 func (ctrl *clusterControllerDefaultImp) CreateCluster(c *gin.Context) {
 
 	request,err := ctrl.parseCreateClusterParams(c)
+	log.WithField("request", request).Info("Received request")
 	if err != nil { return }
 
+	log.WithField("request", request).Info("Validating request")
 	if err := ctrl.ClusterValidator.ValidateCreateRequest(*request, c); err != nil {
 		log.WithError(err).Error("Error validating request")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	log.WithField("request", request).Info("Creating cluster")
 
 	result,err := ctrl.DependencyLocator.PrismaClient.Cluster.CreateOne(
 		db.Cluster.Name.Set(request.Name),
@@ -61,11 +65,11 @@ func (ctrl *clusterControllerDefaultImp) CreateCluster(c *gin.Context) {
 		db.Cluster.Password.Set(request.Password),
 	).Exec(c)
 
-
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cluster already exists"})
 		return
 	}
+	log.WithField("result", result).Info("Created cluster")
 
 	c.JSON(http.StatusCreated, result)
 }

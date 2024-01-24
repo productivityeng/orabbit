@@ -26,14 +26,17 @@ import (
 // @Failure 500
 // @Router /{clusterId}/queue/queuesfromcluster [get]
 func (q QueueControllerImpl) ListQueuesFromCluster(c *gin.Context) {
+	
 	clusterId, err := q.parseListQueuesFromClusterParams(c)
 	if err != nil { 
 		return
 	}
-
+	log.WithField("clusterId", clusterId).Info("ListQueuesFromCluster")
 	
 	cluster,err := q.getClusterByid(c,clusterId)
 	if err != nil { return }
+
+	log.WithField("cluster", cluster).Info("ListQueuesFromCluster")
 
 	queuesFromCluster, err := q.QueueManagement.GetAllQueuesFromCluster(queue.ListQueuesRequest{
 		RabbitAccess: common.RabbitAccess{
@@ -49,18 +52,30 @@ func (q QueueControllerImpl) ListQueuesFromCluster(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	log.WithField("qtdQueues", len(queuesFromCluster)).Info("queues retrived from the cluster ")
+
+	log.WithField("clusterId", clusterId).Info("getting queues from database")
 
 	queuesFromDatabase,err := q.getAllQueuesFromDatabase(clusterId,c)
 
-	var getQueueResponse dto.GetQueueResponseList
+	if err != nil {
+		return
+	 }
+
+	log.WithField("qtdQueues", len(queuesFromDatabase)).Info("queues retrived from the database ")
+
+	getQueueResponse := make(dto.GetQueueResponseList, 0)
 
 	for _, queueFromCluster := range queuesFromCluster {
 
 		var queueFromClusterExistsInDatabase = false
 		var queueIdFromDatabase = int(0)
+		var locker []db.LockerQueueModel
 		if queueFromBd := queuesFromDatabase.GetQueueFromListByName(queueFromCluster.Name); queueFromBd != nil {
 			queueFromClusterExistsInDatabase = true
 			queueIdFromDatabase = queueFromBd.ID
+			locker = queueFromBd.LockerQueues()
+			
 		}
 
 		getQueueResponse = append(getQueueResponse, dto.GetQueueResponse{
@@ -73,12 +88,14 @@ func (q QueueControllerImpl) ListQueuesFromCluster(c *gin.Context) {
 			IsInDatabase: queueFromClusterExistsInDatabase,
 			Arguments:    queueFromCluster.Arguments,
 			Durable:      queueFromCluster.Durable,
+			Lockers: 	  locker,
 		})
 
 	}
 
 	for _, queueFromDb := range queuesFromDatabase {
 		if queueFromResponse := getQueueResponse.GetByName(queueFromDb.Name); queueFromResponse == nil {
+
 			getQueueResponse = append(getQueueResponse, dto.GetQueueResponse{
 				ID:           queueFromDb.ID,
 				ClusterID:    clusterId,
@@ -88,6 +105,7 @@ func (q QueueControllerImpl) ListQueuesFromCluster(c *gin.Context) {
 				IsInCluster:  false,
 				IsInDatabase: true,
 				Durable:      queueFromDb.Durable,
+				Lockers: 	  queueFromDb.LockerQueues(),
 			})
 			json.Unmarshal(queueFromDb.Arguments, &getQueueResponse[len(getQueueResponse)-1].Arguments)
 		}
@@ -107,7 +125,9 @@ func (controller *QueueControllerImpl) parseListQueuesFromClusterParams(c *gin.C
 }
 
 func (controller *QueueControllerImpl) getAllQueuesFromDatabase(clusterId int, c *gin.Context) (queuesFromDatabase db.QueueList, err error) {
-	queuesFromDatabase, err = controller.DependencyLocator.PrismaClient.Queue.FindMany(db.Queue.ClusterID.Equals(clusterId)).Exec(c)
+	queuesFromDatabase, err = controller.DependencyLocator.PrismaClient.Queue.FindMany(db.Queue.ClusterID.Equals(clusterId)).With(
+		db.Queue.LockerQueues.Fetch(),
+	).Exec(c)
 	if err != nil {
 		log.WithContext(c).WithError(err).Error("Fail to retrieve all queues from database")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

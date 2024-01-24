@@ -14,7 +14,7 @@ import (
 // @Tags Cluster
 // @Accept json
 // @Produce json
-// @Success 200 {object} entities.ClusterEntity
+// @Success 200 {object} db.ClusterModel
 // @NotFound 404 {object} bool
 // @Param clusterId path int true "Id of a cluster to be retrived"
 // @Router /cluster/{clusterId} [get]

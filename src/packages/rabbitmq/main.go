@@ -3,7 +3,8 @@ package rabbitmq
 import (
 	"errors"
 	"fmt"
-	"github.com/michaelklishin/rabbit-hole/v2"
+
+	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
 	"github.com/sirupsen/logrus"
 )
 
@@ -11,7 +12,7 @@ type CheckCredentialsRequest struct {
 	Host     string
 	Username string
 	Password string
-	Port     int32
+	Port     int
 }
 type OverviewManagement interface {
 	CheckCredentials(request CheckCredentialsRequest) error

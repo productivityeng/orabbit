@@ -44,9 +44,20 @@ export async function importUserFromCluster(
 
   try {
     let payloadResult = (await result.json()) as RabbitMqUser;
+    if (result.status !== 201) {
+      return {
+        ErrorMessage: `Erro ao importar usuario ${JSON.stringify(
+          payloadResult
+        )}`,
+        Result: undefined,
+      };
+    }
     return { ErrorMessage: null, Result: payloadResult };
   } catch (error) {
-    return { ErrorMessage: "Erro ao importar usuario", Result: undefined };
+    return {
+      ErrorMessage: `Erro ao importar usuario: ${error} `,
+      Result: undefined,
+    };
   }
 }
 

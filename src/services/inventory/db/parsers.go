@@ -3,10 +3,10 @@ package db
 func (queueType QueueType) String() string {
 	switch queueType {
 	case QueueTypeClassic:
-		return "topic"
+		return "classic"
 	case QueueTypeQuorum:
 		return "direct"
-
+		
 	default:
 		return ""
 	}
@@ -14,7 +14,7 @@ func (queueType QueueType) String() string {
 
 func ParseQueueType (queueType String) QueueType {
 	switch queueType {
-	case "topic":
+	case "classic":
 		return QueueTypeClassic
 	case "direct":
 		return QueueTypeQuorum

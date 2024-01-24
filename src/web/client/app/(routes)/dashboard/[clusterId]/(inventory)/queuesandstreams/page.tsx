@@ -1,6 +1,6 @@
 import { fetchQeueusFromCluster } from "@/actions/queue";
 import React from "react";
-import QueueClient from "./components/client";
+import QueueClient from "./components/queue-table/client";
 import _ from "lodash";
 
 async function QueuesPage({ params }: { params: { clusterId: number } }) {

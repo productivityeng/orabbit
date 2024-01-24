@@ -21,6 +21,176 @@ definitions:
     - port
     - user
     type: object
+  db.ClusterModel:
+    properties:
+      CreatedAt:
+        type: string
+      DeletedAt:
+        type: string
+      Description:
+        type: string
+      Host:
+        type: string
+      Id:
+        type: integer
+      Name:
+        type: string
+      Password:
+        type: string
+      Port:
+        type: integer
+      Queues:
+        items:
+          $ref: '#/definitions/db.QueueModel'
+        type: array
+      UpdatedAt:
+        type: string
+      User:
+        type: string
+      Users:
+        items:
+          $ref: '#/definitions/db.UserModel'
+        type: array
+      VirtualHosts:
+        items:
+          $ref: '#/definitions/db.VirtualHostModel'
+        type: array
+    type: object
+  db.LockerQueueModel:
+    properties:
+      CreatedAt:
+        type: string
+      Enabled:
+        type: boolean
+      Id:
+        type: integer
+      Queue:
+        $ref: '#/definitions/db.QueueModel'
+      QueueId:
+        type: integer
+      Reason:
+        type: string
+      UpdatedAt:
+        type: string
+      UserDisabled:
+        type: string
+      UserResponsibleEmail:
+        type: string
+    type: object
+  db.LockerUserModel:
+    properties:
+      CreatedAt:
+        type: string
+      Enabled:
+        type: boolean
+      Id:
+        type: integer
+      Reason:
+        type: string
+      UpdatedAt:
+        type: string
+      User:
+        $ref: '#/definitions/db.UserModel'
+      UserDisabled:
+        type: string
+      UserId:
+        type: integer
+      UserResponsibleEmail:
+        type: string
+    type: object
+  db.QueueModel:
+    properties:
+      Arguments:
+        items:
+          type: integer
+        type: array
+      Cluster:
+        $ref: '#/definitions/db.ClusterModel'
+      ClusterId:
+        type: integer
+      CreatedAt:
+        type: string
+      DeletedAt:
+        type: string
+      Description:
+        type: string
+      Durable:
+        type: boolean
+      Id:
+        type: integer
+      LockerQueues:
+        items:
+          $ref: '#/definitions/db.LockerQueueModel'
+        type: array
+      Name:
+        type: string
+      Type:
+        $ref: '#/definitions/db.QueueType'
+      UpdatedAt:
+        type: string
+    type: object
+  db.QueueType:
+    enum:
+    - CLASSIC
+    - QUORUM
+    type: string
+    x-enum-varnames:
+    - QueueTypeClassic
+    - QueueTypeQuorum
+  db.UserModel:
+    properties:
+      Cluster:
+        $ref: '#/definitions/db.ClusterModel'
+      ClusterId:
+        type: integer
+      CreatedAt:
+        type: string
+      DeletedAt:
+        type: string
+      Id:
+        type: integer
+      LockerUser:
+        items:
+          $ref: '#/definitions/db.LockerUserModel'
+        type: array
+      PasswordHash:
+        type: string
+      UpdatedAt:
+        type: string
+      Username:
+        type: string
+    type: object
+  db.VirtualHostModel:
+    properties:
+      Cluster:
+        $ref: '#/definitions/db.ClusterModel'
+      ClusterId:
+        type: integer
+      CreatedAt:
+        type: string
+      DeletedAt:
+        type: string
+      Description:
+        type: string
+      Id:
+        type: integer
+      Name:
+        type: string
+      UpdatedAt:
+        type: string
+    type: object
+  dto.CreateLockerRequest:
+    properties:
+      reason:
+        type: string
+      responsible:
+        type: string
+    type: object
+  dto.DisableLockerRequest:
+    properties:
+      responsible:
+        type: string
+    type: object
   dto.ImportOrCreateUserRequest:
     properties:
       ClusterId:
@@ -34,6 +204,13 @@ definitions:
     required:
     - ClusterId
     - Username
+    type: object
+  dto.LockUserDto:
+    properties:
+      reason:
+        type: string
+      userId:
+        type: integer
     type: object
   dto.QueueImportRequest:
     properties:
@@ -57,40 +234,159 @@ definitions:
       UserId:
         type: integer
     type: object
-  entities.ClusterEntity:
-    properties:
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      description:
-        type: string
-      host:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      password:
-        type: string
-      port:
-        type: integer
-      updatedAt:
-        type: string
-      user:
-        type: string
-    type: object
-  gorm.DeletedAt:
-    properties:
-      time:
-        type: string
-      valid:
-        description: Valid is true if Time is not NULL
-        type: boolean
-    type: object
 info:
   contact: {}
 paths:
+  /{clusterId}/locker/{lockerType}/{artifactId}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a specific locker from a artificat in a cluster based
+        on lockerType and artifactId
+      parameters:
+      - description: Cluster id from where retrieve users
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      - description: Artifact name from where retrieve users
+        in: path
+        name: lockerType
+        required: true
+        type: string
+      - description: Artifact id from where retrieve users
+        in: path
+        name: artifactId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            type: Some
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Retrieve a specific locker from a artificat in a cluster based on lockerType
+        and artifactId
+      tags:
+      - Locker
+    post:
+      consumes:
+      - application/json
+      description: Create a locker for a specific artifact in a cluster
+      parameters:
+      - description: Request
+        in: body
+        name: CreateLockerRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateLockerRequest'
+      - description: Cluster id from where retrieve users
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      - description: Artifact name from where retrieve users
+        in: path
+        name: lockerType
+        required: true
+        type: string
+      - description: Artifact id from where retrieve users
+        in: path
+        name: artifactId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Create a locker for a specific artifact in a cluster
+      tags:
+      - Locker
+  /{clusterId}/locker/{lockerType}/{lockerId}:
+    delete:
+      consumes:
+      - application/json
+      description: Disable a specific locker from a artificat in a cluster based on
+        lockerType and artifactId
+      parameters:
+      - description: Request
+        in: body
+        name: DisableLockerRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DisableLockerRequest'
+      - description: Cluster id from where retrieve users
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      - description: Artifact name from where retrieve users
+        in: path
+        name: lockerType
+        required: true
+        type: string
+      - description: Id of the locker to be disable
+        in: path
+        name: lockerId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            type: Some
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Disable a specific locker from a artificat in a cluster based on lockerType
+        and artifactId
+      tags:
+      - Locker
+  /{clusterId}/queue/{queueId}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a queue from cluster
+      parameters:
+      - description: Cluster id
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      - description: Queue id
+        in: path
+        name: queueId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Retriave a queue from cluster
+      tags:
+      - Queue
   /{clusterId}/queue/import:
     post:
       consumes:
@@ -305,6 +601,30 @@ paths:
       summary: Retrieve a mirror user from broker
       tags:
       - User
+  /{clusterId}/user/{userId}/lock:
+    post:
+      consumes:
+      - application/json
+      description: Lock a user with a reason
+      parameters:
+      - description: Request
+        in: body
+        name: lockUserRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LockUserDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Lock a user
+      tags:
+      - User
   /{clusterId}/user/syncronize:
     post:
       consumes:
@@ -462,7 +782,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.ClusterEntity'
+            $ref: '#/definitions/db.ClusterModel'
       summary: Retrieve a single rabbitmq cluster
       tags:
       - Cluster

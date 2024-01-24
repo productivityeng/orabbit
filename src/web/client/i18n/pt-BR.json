@@ -38,6 +38,10 @@
       "Body": "Traga um novo cluster para o ecossistema e elimine instantaneamente toda a sobrecarga de administração em menos de 15 minutos. Todos as alteracões futuras deverão ser relizadas somente atraves do painel Orabbit, caso essa regra seja violada o seu time sera notificado."
     }
   },
+  "QueuePage": {
+    "TrackedQueues": "Filas rastreadas",
+    "TrackedQueuesDescription": "Filas acompanhadas pelo cluster. Pode haver filas no cluster  que não aparecem nesta lista"
+  },
   "Validations": {
     "ImportClustterForm": {
       "Description": "Description must have at least 1 character",

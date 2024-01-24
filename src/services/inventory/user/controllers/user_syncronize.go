@@ -123,7 +123,9 @@ func (userController *UserControllerImpl) parseRequestParams(context *gin.Contex
 }
 
 func (UserController *UserControllerImpl) verifyIfUserIsLocked(context *gin.Context,user *db.UserModel) (error){
-	_,err := UserController.DependencyLocator.PrismaClient.Locker.FindFirst(db.Locker.And(db.Locker.ArtifactName.Equals(user.Username),db.Locker.Type.Equals(db.LockerTypeUser))).Exec(context)
+	_,err := UserController.DependencyLocator.PrismaClient.LockerUser.FindFirst(db.LockerUser.And(db.LockerUser.UserID.Equals(user.ID),
+	db.LockerUser.Enabled.Equals(true))).Exec(context)
+	
 	if errors.Is(err, db.ErrNotFound) { 
 		log.WithContext(context).Info("No locker founded")
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

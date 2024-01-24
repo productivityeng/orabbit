@@ -37,10 +37,17 @@ func (q QueueControllerImpl) SyncronizeQueue(c *gin.Context) {
 
 	fields := log.Fields{"request": fmt.Sprintf("%+v", queueSyncronizeRequest), "clusterId": clusterId}
 
+	err = q.verifyIfQueueIsLocked(queueSyncronizeRequest.QueueId,c)
+	if err != nil { 
+		return
+	}
 
 	queueFromDb,err := q.getQueueById(c,queueSyncronizeRequest.QueueId)
+	if err != nil { return }
+
 	cluster,err := q.getClusterByid(c,clusterId)
 
+	if err != nil { return }
 	createQueueResut := queue.CreateQueueRequest{
 		RabbitAccess: models.GetRabbitMqAccess(cluster),
 		Queue:        queueFromDb.Name,
@@ -104,7 +111,9 @@ func (controller QueueControllerImpl) getClusterByid(c *gin.Context,clusterId in
 }
 
 func(controller QueueControllerImpl) getQueueById(c *gin.Context,queueId int) (*db.QueueModel, error) { 
-	queueFromDb,err := controller.DependencyLocator.PrismaClient.Queue.FindUnique(db.Queue.ID.Equals(queueId)).Exec(c)
+	queueFromDb,err := controller.DependencyLocator.PrismaClient.Queue.FindUnique(db.Queue.ID.Equals(queueId)).With(
+		db.Queue.LockerQueues.Fetch(),
+	).Exec(c)
 
 	if errors.Is(err, db.ErrNotFound) { 
 		log.WithContext(c).Error("Queue not found")

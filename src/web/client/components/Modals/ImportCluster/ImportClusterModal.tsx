@@ -49,7 +49,7 @@ function ImportClusterForm() {
     try {
       let creaedCluster = await importCluster(values);
       if (creaedCluster.Result) {
-        router.push(`/dashboard/${creaedCluster.Result.ID}`);
+        router.push(`/dashboard/${creaedCluster.Result.Id}`);
         toast.success("Cluster created!", { id: toastId });
         closeModal();
       } else {
@@ -67,6 +67,8 @@ function ImportClusterForm() {
           id: toastId,
         }
       );
+    } finally {
+      toast.dismiss(toastId);
     }
   };
   return (

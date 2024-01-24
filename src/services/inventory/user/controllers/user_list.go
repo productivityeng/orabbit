@@ -27,13 +27,8 @@ import (
 // @Router /{clusterId}/user [get]
 func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 
-	clusterIdParam := c.Param("clusterId")
-	clusterId, err := strconv.ParseInt(clusterIdParam, 10, 32)
-	if err != nil {
-		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to parse brokerId Param")
-		c.JSON(http.StatusBadRequest, "Error parsing brokerId from url route")
-		return
-	}
+	clusterId,err := userCtrl.parseUserParams(c)
+	if err != nil { return }
 
 	fields := log.Fields{"clusterId": clusterId}
 
@@ -54,24 +49,28 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 		Password: cluster.Password,
 	}})
 
+
 	if err != nil {
 		usersFromClusterError := errors.New("fail to retrieve users from rabbitmq cluster")
 		log.WithError(err).WithField("clusterId", clusterId).Error(usersFromClusterError)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": usersFromClusterError.Error()})
 	}
+
+	log.WithField("qtdUsersFromCluster", len(usersFromCluster)).Info("Users founded in cluster")
+
 	log.WithFields(fields).Info("Looking for rabbitmq users from ostern")
 
 	usersFromDb, err := userCtrl.DependencyLocator.PrismaClient.User.FindMany(db.User.ClusterID.Equals(cluster.ID)).Exec(c)
 
 	if err != nil {
-		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to retrieve users for the cluster")
+		log.WithError(err).WithField("clusterId", cluster).Error("Fail to retrieve users for the cluster")
 		c.JSON(http.StatusBadRequest, "Fail to retrieve users for the cluster")
 		return
 	}
 
 	log.WithFields(fields).Info("Preparing response")
 
-	var response contracts.GetUserResponseList
+	response := make(contracts.GetUserResponseList,0)
 
 	for _, userFromCluster := range usersFromCluster {
 		userResponse := contracts.GetUserResponse{
@@ -82,19 +81,22 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 			IsInDatabase: false,
 		}
 
-		userEqual,err := userCtrl.DependencyLocator.PrismaClient.User.FindUnique(db.User.UniqueUsernameClusterid(db.User.Username.Equals(userFromCluster.Name),db.User.ClusterID.Equals(cluster.ID))).Exec(c)
-
-		if errors.Is(err, db.ErrNotFound) {
-			continue
-		}
-		userResponse.Id = userEqual.ID
-		userResponse.IsInDatabase = true
+		userEqual,_ := userCtrl.DependencyLocator.PrismaClient.User.FindUnique(db.User.UniqueUsernameClusterid(db.User.Username.Equals(userFromCluster.Name),db.User.ClusterID.Equals(cluster.ID))).Exec(c)
 		
+		if userEqual != nil {
+			userResponse.Id = userEqual.ID
+			userResponse.IsInDatabase = true
+		}
+
 		response = append(response, userResponse)
+
+		
+		
+		
 	}
 
 	for _, userFromDb := range usersFromDb {
-		if response.UserInListByName(userFromDb.Username) == false {
+		if !response.UserInListByName(userFromDb.Username) {
 			response = append(response, contracts.GetUserResponse{
 				Id:           userFromDb.ID,
 				Username:     userFromDb.Username,
@@ -108,3 +110,17 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 	return
 }
+
+
+func (controller *UserControllerImpl) parseUserParams(c *gin.Context) (clusterId int,  err error) {
+	clusterIdParam := c.Param("clusterId")
+	clusterIdConv, err := strconv.ParseInt(clusterIdParam, 10, 32)
+	if err != nil {
+		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to parse clusterId Param")
+		c.JSON(http.StatusBadRequest, "Error parsing clusterId from url route")
+		return  0, err
+	}
+
+	return int(clusterIdConv), nil
+	
+}	

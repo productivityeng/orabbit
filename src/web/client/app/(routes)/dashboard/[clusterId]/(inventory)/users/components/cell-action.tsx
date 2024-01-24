@@ -62,9 +62,14 @@ function CellAction({ data }: CellActionProps) {
       Username: data.Username,
     });
     if (result.ErrorMessage) {
-      toast.error(<p>Erro ao importar ususario {data.Username}</p>, {
-        id: toastId,
-      });
+      toast.error(
+        <p>
+          Erro {result.ErrorMessage} ao importar ususario {data.Username}
+        </p>,
+        {
+          id: toastId,
+        }
+      );
       return;
     }
     toast.success(<p>Usuario {data.Username} importado com sucesso!</p>, {

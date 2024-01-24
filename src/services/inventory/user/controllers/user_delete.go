@@ -24,27 +24,34 @@ import (
 // @Router /{clusterId}/user/{userId} [delete]
 func (ctrl *UserControllerImpl) DeleteUser(c *gin.Context) {
 	
+	
 	clusterId, userId, err := ctrl.parseDeleteUserRequest(c)
 	if err != nil { 
 		return
 	}
+	log.WithField("userId", userId).Info("request parsed")
 
 	userFromDb,err := ctrl.getUser(c, userId)
 	if err != nil { 
 		return
 	}
 	
+	log.WithField("userFromDb", userFromDb).Info("userFromDb")
 
 	err = ctrl.verifyIfUserIsLocked(c,userFromDb)
 	if err != nil { 
 		return 
 	}
+
+	log.WithField("userId", userId).Info("user is not locked")
 	
 	cluster, err := ctrl.getCluster(c, clusterId)
 
 	if err != nil { 
 		return
 	}
+
+	log.WithField("cluster", cluster).Info("cluster found")
 
 	deleteUserRequest := user.DeleteUserRequest{
 		RabbitAccess: models.GetRabbitMqAccess(cluster),
@@ -56,6 +63,7 @@ func (ctrl *UserControllerImpl) DeleteUser(c *gin.Context) {
 		log.WithError(err).WithField("request", deleteUserRequest).Error("Erro ao deletar usuario no rabbit")
 		c.JSON(http.StatusInternalServerError, "Erro ao deletar usuario na base")
 	}
+	log.WithField("userId", userId).Info("user deleted")
 	c.JSON(http.StatusNoContent, "Deleted")
 	return
 }

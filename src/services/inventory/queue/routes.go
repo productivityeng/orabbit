@@ -18,6 +18,7 @@ func Routes(routes *gin.Engine, dependencyLocator *core.DependencyLocator) *gin.
 	userRouter.POST("/import", queueController.ImportQueueFromCluster)
 	userRouter.POST("/syncronize", queueController.SyncronizeQueue)
 	userRouter.DELETE("/remove", queueController.RemoveQueueFromCluster)
+	userRouter.GET("/:queueId", queueController.FindQueue)
 
 	return userRouter
 }

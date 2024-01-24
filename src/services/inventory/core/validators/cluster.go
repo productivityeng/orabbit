@@ -28,10 +28,10 @@ func NewClusterValidatorDefault(DependencyLocator *core.DependencyLocator, Overv
 func (val *clusterValidatorDefault) ValidateCreateRequest(request contracts.CreateClusterRequest, ctx context.Context) error {
 
 	var err error
-	err = val.validateIfClusterWithThisHostnameExists(request, ctx)
-	if err != nil {
-		return err
-	}
+	// err = val.validateIfClusterWithThisHostnameExists(request, ctx)
+	// if err != nil {
+	// 	return err
+	// }
 	err = val.OverviewManagement.CheckCredentials(rabbitmq.CheckCredentialsRequest{
 		Host:     request.Host,
 		Username: request.User,

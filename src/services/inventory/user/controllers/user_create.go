@@ -41,16 +41,20 @@ func (controller *UserControllerImpl) CreateUser(c *gin.Context) {
 
 	log.WithFields(fields).WithContext(c).Info("verifying if user already exists for this broker")
 	
-	_,err = controller.DependencyLocator.PrismaClient.User.FindUnique(db.User.UniqueUsernameClusterid(db.User.Username.Equals(importUserReuqest.Username), db.User.ClusterID.Equals(importUserReuqest.ClusterId))).Exec(c)
+	userFromDatabase,err := controller.DependencyLocator.PrismaClient.User.FindUnique(db.User.UniqueUsernameClusterid(db.User.Username.Equals(importUserReuqest.Username), db.User.ClusterID.Equals(importUserReuqest.ClusterId))).Exec(c)
 
-	if errors.Is(err,db.ErrNotFound) { 
+	if userFromDatabase != nil{ 
 		log.WithContext(c).Warn("User already exists in this cluster")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "[USER_ALREADY_EXISTS_IN_THIS_CLUSTERS]"})
 		return
-	} else if err != nil { 
-		log.WithError(err).WithContext(c).Error("Fail to verify if username already exists for this cluster")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	} else if err != nil  { 
+		if !errors.Is(err, db.ErrNotFound) {	
+			log.WithError(err).WithContext(c).Error("Fail to verify if username already exists for this cluster")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return 
+		}
+
+	
 	}
 	
 

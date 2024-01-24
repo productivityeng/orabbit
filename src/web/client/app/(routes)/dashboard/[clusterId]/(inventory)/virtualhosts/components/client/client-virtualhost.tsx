@@ -32,7 +32,7 @@ function VirtualHostsClient({ data }: VirtualHostsClientProps) {
     <div>
       <SimpleHeading
         title={t("QueuePage.TrackedQueues")}
-        description={t("QueuePage.rackedQueuesDescription")}
+        description={t("QueuePage.TrackedQueuesDescription")}
       />
       <DataTable
         searchKey="name"

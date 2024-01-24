@@ -143,6 +143,9 @@ export async function syncronizeQueueAction({
 }): Promise<FrontResponse<boolean>> {
   const createUserEndpoint = `${process.env
     .PRIVATE_INVENTORY_ENDPOINT!}/${ClusterId}/queue/syncronize`;
+  console.log(
+    `Sending request to sincronize queue ${QueueId} on cluster ${ClusterId}`
+  );
 
   let response = await fetch(createUserEndpoint, {
     body: JSON.stringify({
@@ -156,8 +159,14 @@ export async function syncronizeQueueAction({
     case 201:
     case 200:
       return { ErrorMessage: null, Result: true };
+    case 400:
+    case 500: {
+      let contentBadRequest = (await response.json()) as { error: string };
+      console.error(`Receiving error ${contentBadRequest.error}`);
+      return { ErrorMessage: contentBadRequest.error, Result: false };
+    }
     default:
-      throw await response.json();
+      return { ErrorMessage: `[UNKNOW_ERROR]`, Result: false };
   }
 }
 
@@ -188,6 +197,11 @@ export async function removeQueueFromClusterAction({
     case 201:
     case 200:
       return { ErrorMessage: null, Result: true };
+    case 400:
+      return {
+        ErrorMessage: await response.text(),
+        Result: false,
+      };
     default:
       return { ErrorMessage: `[UNKNOW_ERROR]`, Result: false };
   }

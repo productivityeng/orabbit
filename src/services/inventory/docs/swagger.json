@@ -132,7 +132,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.ClusterEntity"
+                            "$ref": "#/definitions/db.ClusterModel"
                         }
                     }
                 }
@@ -164,6 +164,181 @@
                         "schema": {
                             "type": "boolean"
                         }
+                    }
+                }
+            }
+        },
+        "/{clusterId}/locker/{lockerType}/{artifactId}": {
+            "get": {
+                "description": "Retrieve a specific locker from a artificat in a cluster based on lockerType and artifactId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Locker"
+                ],
+                "summary": "Retrieve a specific locker from a artificat in a cluster based on lockerType and artifactId",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve users",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Artifact name from where retrieve users",
+                        "name": "lockerType",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Artifact id from where retrieve users",
+                        "name": "artifactId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "Some"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a locker for a specific artifact in a cluster",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Locker"
+                ],
+                "summary": "Create a locker for a specific artifact in a cluster",
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "CreateLockerRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateLockerRequest"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve users",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Artifact name from where retrieve users",
+                        "name": "lockerType",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Artifact id from where retrieve users",
+                        "name": "artifactId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/{clusterId}/locker/{lockerType}/{lockerId}": {
+            "delete": {
+                "description": "Disable a specific locker from a artificat in a cluster based on lockerType and artifactId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Locker"
+                ],
+                "summary": "Disable a specific locker from a artificat in a cluster based on lockerType and artifactId",
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "DisableLockerRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DisableLockerRequest"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve users",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Artifact name from where retrieve users",
+                        "name": "lockerType",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Id of the locker to be disable",
+                        "name": "lockerId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "Some"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -320,6 +495,48 @@
                         "schema": {
                             "$ref": "#/definitions/dto.QueueSycronizeRequest"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/{clusterId}/queue/{queueId}": {
+            "get": {
+                "description": "Retrieve a queue from cluster",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Queue"
+                ],
+                "summary": "Retriave a queue from cluster",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Queue id",
+                        "name": "queueId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -523,6 +740,43 @@
                 }
             }
         },
+        "/{clusterId}/user/{userId}/lock": {
+            "post": {
+                "description": "Lock a user with a reason",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Lock a user",
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "lockUserRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LockUserDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/{clusterId}/virtualhost": {
             "get": {
                 "description": "Retrieve all virtual hosts from cluster and database",
@@ -627,6 +881,264 @@
                 }
             }
         },
+        "db.ClusterModel": {
+            "type": "object",
+            "properties": {
+                "CreatedAt": {
+                    "type": "string"
+                },
+                "DeletedAt": {
+                    "type": "string"
+                },
+                "Description": {
+                    "type": "string"
+                },
+                "Host": {
+                    "type": "string"
+                },
+                "Id": {
+                    "type": "integer"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Password": {
+                    "type": "string"
+                },
+                "Port": {
+                    "type": "integer"
+                },
+                "Queues": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.QueueModel"
+                    }
+                },
+                "UpdatedAt": {
+                    "type": "string"
+                },
+                "User": {
+                    "type": "string"
+                },
+                "Users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.UserModel"
+                    }
+                },
+                "VirtualHosts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.VirtualHostModel"
+                    }
+                }
+            }
+        },
+        "db.LockerQueueModel": {
+            "type": "object",
+            "properties": {
+                "CreatedAt": {
+                    "type": "string"
+                },
+                "Enabled": {
+                    "type": "boolean"
+                },
+                "Id": {
+                    "type": "integer"
+                },
+                "Queue": {
+                    "$ref": "#/definitions/db.QueueModel"
+                },
+                "QueueId": {
+                    "type": "integer"
+                },
+                "Reason": {
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "type": "string"
+                },
+                "UserDisabled": {
+                    "type": "string"
+                },
+                "UserResponsibleEmail": {
+                    "type": "string"
+                }
+            }
+        },
+        "db.LockerUserModel": {
+            "type": "object",
+            "properties": {
+                "CreatedAt": {
+                    "type": "string"
+                },
+                "Enabled": {
+                    "type": "boolean"
+                },
+                "Id": {
+                    "type": "integer"
+                },
+                "Reason": {
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "type": "string"
+                },
+                "User": {
+                    "$ref": "#/definitions/db.UserModel"
+                },
+                "UserDisabled": {
+                    "type": "string"
+                },
+                "UserId": {
+                    "type": "integer"
+                },
+                "UserResponsibleEmail": {
+                    "type": "string"
+                }
+            }
+        },
+        "db.QueueModel": {
+            "type": "object",
+            "properties": {
+                "Arguments": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "Cluster": {
+                    "$ref": "#/definitions/db.ClusterModel"
+                },
+                "ClusterId": {
+                    "type": "integer"
+                },
+                "CreatedAt": {
+                    "type": "string"
+                },
+                "DeletedAt": {
+                    "type": "string"
+                },
+                "Description": {
+                    "type": "string"
+                },
+                "Durable": {
+                    "type": "boolean"
+                },
+                "Id": {
+                    "type": "integer"
+                },
+                "LockerQueues": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.LockerQueueModel"
+                    }
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Type": {
+                    "$ref": "#/definitions/db.QueueType"
+                },
+                "UpdatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "db.QueueType": {
+            "type": "string",
+            "enum": [
+                "CLASSIC",
+                "QUORUM"
+            ],
+            "x-enum-varnames": [
+                "QueueTypeClassic",
+                "QueueTypeQuorum"
+            ]
+        },
+        "db.UserModel": {
+            "type": "object",
+            "properties": {
+                "Cluster": {
+                    "$ref": "#/definitions/db.ClusterModel"
+                },
+                "ClusterId": {
+                    "type": "integer"
+                },
+                "CreatedAt": {
+                    "type": "string"
+                },
+                "DeletedAt": {
+                    "type": "string"
+                },
+                "Id": {
+                    "type": "integer"
+                },
+                "LockerUser": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.LockerUserModel"
+                    }
+                },
+                "PasswordHash": {
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "type": "string"
+                },
+                "Username": {
+                    "type": "string"
+                }
+            }
+        },
+        "db.VirtualHostModel": {
+            "type": "object",
+            "properties": {
+                "Cluster": {
+                    "$ref": "#/definitions/db.ClusterModel"
+                },
+                "ClusterId": {
+                    "type": "integer"
+                },
+                "CreatedAt": {
+                    "type": "string"
+                },
+                "DeletedAt": {
+                    "type": "string"
+                },
+                "Description": {
+                    "type": "string"
+                },
+                "Id": {
+                    "type": "integer"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateLockerRequest": {
+            "type": "object",
+            "properties": {
+                "reason": {
+                    "type": "string"
+                },
+                "responsible": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.DisableLockerRequest": {
+            "type": "object",
+            "properties": {
+                "responsible": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.ImportOrCreateUserRequest": {
             "type": "object",
             "required": [
@@ -645,6 +1157,17 @@
                 },
                 "Username": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.LockUserDto": {
+            "type": "object",
+            "properties": {
+                "reason": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
                 }
             }
         },
@@ -680,53 +1203,6 @@
             "properties": {
                 "UserId": {
                     "type": "integer"
-                }
-            }
-        },
-        "entities.ClusterEntity": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "host": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "port": {
-                    "type": "integer"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "user": {
-                    "type": "string"
-                }
-            }
-        },
-        "gorm.DeletedAt": {
-            "type": "object",
-            "properties": {
-                "time": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if Time is not NULL",
-                    "type": "boolean"
                 }
             }
         }

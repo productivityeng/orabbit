@@ -1,6 +1,8 @@
+import { LockerModel } from "@/actions/locker";
+
 export type RabbitMqQueue = {
   ID: number;
-  ClusterID: number;
+  ClusterId: number;
   Type: string;
   Vhost: string;
   Arguments: Map<string, string>;
@@ -8,4 +10,5 @@ export type RabbitMqQueue = {
   IsInCluster: boolean;
   IsInDatabase: boolean;
   Durable: boolean;
+  Lockers: LockerModel[];
 };

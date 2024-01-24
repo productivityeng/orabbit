@@ -32,10 +32,20 @@ func (q QueueControllerImpl) RemoveQueueFromCluster(c *gin.Context) {
 	}
 
 	queueFromDb,err := q.getQueueById(c,queueRemoveRequest.QueueId)
+	if err != nil {
+		return
+	 }
+
 	cluster,err := q.getClusterByid(c,clusterId)
 
 	if err != nil {
 		return
+	}
+
+	err = q.verifyIfQueueIsLocked(queueFromDb.ID,c)
+	if err != nil {
+		return
+	
 	}
 
 	err = q.deleteQueue(c,cluster,queueFromDb)

@@ -16,19 +16,14 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { useTranslations } from "next-intl";
 import { extend } from "lodash";
-
-const FormSchema = z.object({
-  reason: z.string().min(10, {
-    message: "The reason must be at least 10 characters",
-  }),
-});
+import { LockItemFormSchema } from "@/schemas/locker-item-schemas";
 
 interface LockItemFormProps extends React.HTMLAttributes<HTMLFormElement> {
-  onFormSubmit: (data: z.infer<typeof FormSchema>) => void;
+  onFormSubmit: (data: z.infer<typeof LockItemFormSchema>) => Promise<void>;
 }
 function LockItemForm({ onFormSubmit, ...props }: LockItemFormProps) {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof LockItemFormSchema>>({
+    resolver: zodResolver(LockItemFormSchema),
     defaultValues: {},
   });
   const t = useTranslations();
@@ -38,7 +33,6 @@ function LockItemForm({ onFormSubmit, ...props }: LockItemFormProps) {
       <form onSubmit={form.handleSubmit(onFormSubmit)}>
         <FormField
           control={form.control}
-          
           name="reason"
           render={({ field }) => (
             <FormItem>
@@ -55,8 +49,13 @@ function LockItemForm({ onFormSubmit, ...props }: LockItemFormProps) {
             </FormItem>
           )}
         />
-        <Button data-testid="submit-button" size="sm" className="float-right" type="submit">
-          Submit
+        <Button
+          data-testid="submit-button"
+          size="sm"
+          className="float-right"
+          type="submit"
+        >
+          Enviar
         </Button>
       </form>
     </Form>
