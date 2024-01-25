@@ -104,7 +104,7 @@ function QueueForm({ initialData }: QueueFormProps) {
       <form
         role="form"
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col"
+        className="flex flex-col w-full justify-center items-center"
       >
         <p
           className={cn(
@@ -211,10 +211,7 @@ function QueueForm({ initialData }: QueueFormProps) {
           >
             Cancelar
           </Button>
-          <Button
-            className=""
-            disabled={!form.formState.isValid}
-          >
+          <Button className="" disabled={!form.formState.isValid}>
             {form.formState.isSubmitting && (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             )}

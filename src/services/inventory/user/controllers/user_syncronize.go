@@ -10,7 +10,6 @@ import (
 	"github.com/productivityeng/orabbit/cluster/models"
 	"github.com/productivityeng/orabbit/db"
 	user2 "github.com/productivityeng/orabbit/src/packages/rabbitmq/user"
-	"github.com/productivityeng/orabbit/user/dto"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -21,33 +20,31 @@ import (
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param ImportOrCreateUserRequest body dto.UserSyncronizeRequest true "Request"
-// @Success 201 {number} Syccess
+// @Success 201 {number} Success
+// @Param clusterId path int true "Cluster id from where retrieve users"
+// @Param userId path int true "User id registered"
 // @Failure 400
 // @Failure 500
-// @Router /{clusterId}/user/syncronize [post]
+// @Router /{clusterId}/user/{userId}/syncronize [post]
 func (entity *UserControllerImpl) SyncronizeUser(c *gin.Context)  {
-	clusterId, syncronizeUserRequest, err := entity.parseRequestParams(c)
+	userId, clusterId, err := entity.parseRequestParams(c)
 	if err != nil {
 		return
 	}
 
-	fields := log.Fields{"request": fmt.Sprintf("%+v", syncronizeUserRequest)}
-
-	log.WithFields(fields).Info("looking for cluster and user")
+	log.WithFields(log.Fields{
+		"userId":    userId,
+		"clusterId": clusterId,
+	}).Info("looking for cluster and user")
 
 	cluster,err := entity.getCluster(c, int(clusterId))
-	user,err := entity.getUser(c, syncronizeUserRequest.UserId)
-
-	if err != nil {
-		return
-	}
+	if err != nil { return}
+	
+	user,err := entity.getUser(c, userId)
+	if err != nil {return}
 	
 	err = entity.verifyIfUserIsLocked(c,user)
-
-	if err != nil { 
-		return
-	}
+	if err != nil { return }
 
 	createUserRequest := user2.CreateNewUserWithHashPasswordRequest{
 		RabbitAccess:     models.GetRabbitMqAccess(cluster),
@@ -63,7 +60,6 @@ func (entity *UserControllerImpl) SyncronizeUser(c *gin.Context)  {
 	}
 
 	c.JSON(http.StatusCreated, "Usuario criado no cluster")
-	return
 
 }
 
@@ -99,42 +95,41 @@ func (userController *UserControllerImpl) getCluster(context *gin.Context, clust
 	return cluster,nil
 }
 
-func (userController *UserControllerImpl) parseRequestParams(context *gin.Context) (int, *dto.UserSyncronizeRequest,  error) {
+func (userController *UserControllerImpl) parseRequestParams(context *gin.Context) (userId int,clusterId int, error error) {
 	clusterIdParam := context.Param("clusterId")
-	clusterId, err := strconv.ParseInt(clusterIdParam, 10, 32)
+	clusterIdConv, err := strconv.ParseInt(clusterIdParam, 10, 32)
 
 	if err != nil {
 		log.WithError(err).WithField("clusterId", clusterIdParam).Error("Fail to parse clusterId Param")
 		context.JSON(http.StatusBadRequest, "Error parsing clusterId from url route")
 	}
 
-	var syncronizeUserRequest dto.UserSyncronizeRequest
 
-	err = context.BindJSON(&syncronizeUserRequest)
+	userIdParam := context.Param("userId")
+	userIdConv, err := strconv.ParseInt(userIdParam, 10, 32)
 
 	if err != nil {
-		log.WithContext(context).WithError(err).Error("Fail to parse user request")
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return 0,nil,err
+		log.WithError(err).WithField("userId", userIdParam).Error("Fail to parse userId Param")
+		context.JSON(http.StatusBadRequest, "Error parsing userId from url route")
 	}
 
-	return int(clusterId), &syncronizeUserRequest,nil
+
+	return int(userIdConv), int(clusterIdConv), nil
 
 }
 
 func (UserController *UserControllerImpl) verifyIfUserIsLocked(context *gin.Context,user *db.UserModel) (error){
-	_,err := UserController.DependencyLocator.PrismaClient.LockerUser.FindFirst(db.LockerUser.And(db.LockerUser.UserID.Equals(user.ID),
+	locker,err := UserController.DependencyLocator.PrismaClient.LockerUser.FindFirst(db.LockerUser.And(db.LockerUser.UserID.Equals(user.ID),
 	db.LockerUser.Enabled.Equals(true))).Exec(context)
 	
 	if errors.Is(err, db.ErrNotFound) { 
 		log.WithContext(context).Info("No locker founded")
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return nil
 	} else if err != nil { 
 		log.WithContext(context).WithError(err).Error("Fail to find locker")
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
-	
+	log.WithField("locker",locker).Info("Locker founded")
 	context.JSON(http.StatusBadRequest, gin.H{"error": "User is locked"})
 	return errors.New("User is locked")
 }

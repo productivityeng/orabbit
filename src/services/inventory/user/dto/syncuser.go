@@ -7,10 +7,3 @@ type ImportOrCreateUserRequest struct {
 	Create    bool   `json:"Create" `
 }
 
-type GetUserResponse struct {
-	Id           int   `json:"Id"`
-	Username     string `json:"Username"`
-	PasswordHash string `json:"PasswordHash"`
-	ClusterId    int   `json:"ClusterId"`
-	LockedReason string `json:"LockedReason"`
-}

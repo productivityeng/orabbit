@@ -636,46 +636,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/{clusterId}/user/syncronize": {
-            "post": {
-                "description": "Cria um ususario que esteja na base do ostern e nao exista no cluster",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Sincronize um ususario no rabbitmq",
-                "parameters": [
-                    {
-                        "description": "Request",
-                        "name": "ImportOrCreateUserRequest",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UserSyncronizeRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "type": "number"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
         "/{clusterId}/user/{userId}": {
             "get": {
                 "description": "Recovery the details of a specific mirror user that is already imported from the cluster",
@@ -736,6 +696,13 @@ const docTemplate = `{
                         "name": "userId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where delete user",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -751,9 +718,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/{clusterId}/user/{userId}/lock": {
+        "/{clusterId}/user/{userId}/syncronize": {
             "post": {
-                "description": "Lock a user with a reason",
+                "description": "Cria um ususario que esteja na base do ostern e nao exista no cluster",
                 "consumes": [
                     "application/json"
                 ],
@@ -763,24 +730,32 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Lock a user",
+                "summary": "Sincronize um ususario no rabbitmq",
                 "parameters": [
                     {
-                        "description": "Request",
-                        "name": "lockUserRequest",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.LockUserDto"
-                        }
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve users",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "User id registered",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK"
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "number"
+                        }
                     },
-                    "404": {
-                        "description": "Not Found"
+                    "400": {
+                        "description": "Bad Request"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -1171,17 +1146,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.LockUserDto": {
-            "type": "object",
-            "properties": {
-                "reason": {
-                    "type": "string"
-                },
-                "userId": {
-                    "type": "integer"
-                }
-            }
-        },
         "dto.QueueImportRequest": {
             "type": "object",
             "properties": {
@@ -1205,14 +1169,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "QueueId": {
-                    "type": "integer"
-                }
-            }
-        },
-        "dto.UserSyncronizeRequest": {
-            "type": "object",
-            "properties": {
-                "UserId": {
                     "type": "integer"
                 }
             }

@@ -31,19 +31,39 @@ func (ctrl *LockerController) CreateLocker(c *gin.Context) {
 
 	if err != nil { return}
 
-	enabledLocker,err := ctrl.getEnabledLockerQueue(clusterId,lockerType,artifactId,c)
-	if !errors.Is(err,db.ErrNotFound){
-		c.JSON(http.StatusInternalServerError,gin.H{"message":"error retrieving locker"})
-		return
-	}
-	if enabledLocker != nil {
-		c.JSON(http.StatusConflict,gin.H{"message":"enabled locker already exists"})
-		return
 	
-	}
 
 	switch lockerType { 
 		case "queue": {
+			ctrl.handleCreateLockerForQueue(*createLockerRequest,clusterId,lockerType,artifactId,c)
+			return
+		}
+
+		case "user": { 
+			ctrl.handleCreateLockerForUser(*createLockerRequest,clusterId,lockerType,artifactId,c)
+			return
+		}
+
+		default:
+			c.JSON(http.StatusBadRequest,gin.H{"message":"invalid locker type"})
+				return
+
+		}
+	
+}
+
+
+func (ctrl *LockerController) handleCreateLockerForQueue(createLockerRequest dto.CreateLockerRequest,clusterId int,lockerType string,artifactId int,c *gin.Context) {
+			enabledLocker,err := ctrl.getEnabledLockerQueue(clusterId,lockerType,artifactId,c)
+			if !errors.Is(err,db.ErrNotFound){
+				c.JSON(http.StatusInternalServerError,gin.H{"message":"error retrieving locker"})
+				return 
+			}
+			if enabledLocker != nil {
+				c.JSON(http.StatusConflict,gin.H{"message":"enabled locker already exists"})
+				return 
+			
+			}
 			lockerQueue,err := ctrl.DependencyLocator.PrismaClient.LockerQueue.CreateOne(
 				db.LockerQueue.Queue.Link(db.Queue.ID.Equals(artifactId)),
 				db.LockerQueue.Enabled.Set(true),
@@ -53,37 +73,35 @@ func (ctrl *LockerController) CreateLocker(c *gin.Context) {
 
 			if err != nil { 
 				c.JSON(http.StatusInternalServerError,gin.H{"message":"error creating locker","error": err.Error()})
-				return
+				return 
 			}
-	
-
-			c.JSON(http.StatusOK,lockerQueue)
-		}
-
-	default:
-		c.JSON(http.StatusBadRequest,gin.H{"message":"invalid locker type"})
-			return
-
-	}
-	
+			c.JSON(http.StatusCreated,lockerQueue)
 }
 
-func (ctrl *LockerController) parseCreateLockerBody(c *gin.Context) (*dto.CreateLockerRequest,error){
-	var createLockerRequest dto.CreateLockerRequest
-	err := c.BindJSON(&createLockerRequest)
-	if err != nil {
-		c.JSON(http.StatusBadRequest,gin.H{"error":"error parsing request body"})
-		return nil,err
-	}
-	return &createLockerRequest,nil
+
+
+func (ctrl *LockerController) handleCreateLockerForUser(createLockerRequest dto.CreateLockerRequest,clusterId int,lockerType string,artifactId int,c *gin.Context) {
+			enabledLocker,err := ctrl.getEnabledLockerUser(clusterId,lockerType,artifactId,c)
+			if err != nil && !errors.Is(err,db.ErrNotFound){
+				c.JSON(http.StatusInternalServerError,gin.H{"message":"error retrieving locker","error": err.Error()})
+				return 
+			}
+			if enabledLocker != nil {
+				c.JSON(http.StatusConflict,gin.H{"message":"enabled locker already exists"})
+				return 
+			
+			}
+			lockerQueue,err := ctrl.DependencyLocator.PrismaClient.LockerUser.CreateOne(
+				db.LockerUser.User.Link(db.User.ID.Equals(artifactId)),
+				db.LockerUser.Enabled.Set(true),
+				db.LockerUser.Reason.Set(createLockerRequest.Reason),
+				db.LockerUser.UserResponsibleEmail.Set(createLockerRequest.Responsible),
+			).Exec(c)
+
+			if err != nil { 
+				c.JSON(http.StatusInternalServerError,gin.H{"message":"error creating locker","error": err.Error()})
+				return 
+			}
+			c.JSON(http.StatusCreated,lockerQueue)
 }
 
-func (ctrl *LockerController) parseDisableLockerBody(c *gin.Context) (*dto.DisableLockerRequest,error){
-	var disableLockerRequest dto.DisableLockerRequest
-	err := c.BindJSON(&disableLockerRequest)
-	if err != nil {
-		c.JSON(http.StatusBadRequest,gin.H{"error":"error parsing request body"})
-		return nil,err
-	}
-	return &disableLockerRequest,nil
-}

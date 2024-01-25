@@ -13,7 +13,6 @@ type UserController interface {
 	DeleteUser(c *gin.Context)
 	FindUser(c *gin.Context)
 	SyncronizeUser(c *gin.Context)
-	LockUser(c *gin.Context)
 }
 
 type UserControllerImpl struct {

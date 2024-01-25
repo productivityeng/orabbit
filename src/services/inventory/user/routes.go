@@ -17,11 +17,10 @@ func Routes(routes *gin.Engine, DependencyLocator *core.DependencyLocator) *gin.
 	userRouter := routes.Group("/:clusterId/user")
 	userRouter.GET("/", userController.ListUsersFromCluster)
 	userRouter.POST("/", userController.CreateUser)
-	userRouter.POST("/:userId/lock", userController.LockUser)
 	userRouter.DELETE("/:userId", userController.DeleteUser)
 	userRouter.GET("/:userId", userController.FindUser)
 	userRouter.GET("/find", userController.FindUser)
-	userRouter.POST("/syncronize", userController.SyncronizeUser)
+	userRouter.POST("/:userId/syncronize", userController.SyncronizeUser)
 
 	return userRouter
 }

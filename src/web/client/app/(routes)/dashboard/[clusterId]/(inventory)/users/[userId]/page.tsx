@@ -17,7 +17,7 @@ async function UserPage({
   }
 
   return (
-    <div>
+    <div className="w-full flex justify-center items-center">
       <UserForm initialData={existingUserResponse?.Result ?? null} />
     </div>
   );

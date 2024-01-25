@@ -1,7 +1,8 @@
 import { fetchRegisteredUsers, fetchUsersFromCluster } from "@/actions/users";
 import _ from "lodash";
 import React from "react";
-import UsersClient from "./components/client";
+import { UserTable } from "./components/user-table/user-table";
+import { RabbitMqUserTableColumnsDef } from "./components/user-table/columns";
 
 async function UsersPage({ params }: { params: { clusterId: number } }) {
   const users = await fetchUsersFromCluster(params.clusterId);
@@ -10,8 +11,11 @@ async function UsersPage({ params }: { params: { clusterId: number } }) {
   }
 
   return (
-    <div className="">
-      <UsersClient data={_.sortBy(users, (user) => user.Id)} />
+    <div className="flex flex-col pt-5">
+      <UserTable
+        data={_.sortBy(users, (user) => user.Id)}
+        columns={RabbitMqUserTableColumnsDef}
+      />
     </div>
   );
 }

@@ -1,13 +1,12 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import CellAction from "./cell-action";
-import CellMaintening from "./cell-maintening";
-import { RabbitMqUser } from "@/models/users";
-import LockItem from "@/components/lock-item/lock-item";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RabbitMqUser } from "@/models/users";
+import CellLocker from "./cell-locker";
+import CellMaintening from "./cell-maintening";
 
-export const UserColumn: ColumnDef<RabbitMqUser>[] = [
+export const RabbitMqUserTableColumnsDef: ColumnDef<RabbitMqUser>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -34,31 +33,23 @@ export const UserColumn: ColumnDef<RabbitMqUser>[] = [
   },
   {
     accessorKey: "Id",
-    header: "Id",
+    header: "ID",
   },
   {
     accessorKey: "Username",
     header: "Username",
   },
-
   {
-    accessorKey: "isRegistered",
-    header: () => <b>Is Registered</b>,
+    header: "Is Registered",
     cell: ({ row }) => <CellMaintening User={row.original} />,
   },
   {
-    id: "actions",
-    header: () => <b>Actions</b>,
-    cell: ({ row }) => (
-      <>
-        {" "}
-        <LockItem
-          isLocked={false}
-          lockType="User"
-          artifactName={row.original.Username}
-        />
-        <CellAction data={row.original} />
-      </>
-    ),
+    accessorKey: "Lockers",
+    header: () => <b>Locked</b>,
+    cell: ({ row }) => <CellLocker User={row.original} />,
+  },
+  {
+    accessorKey: "PasswordHash",
+    header: "PasswordHash",
   },
 ];

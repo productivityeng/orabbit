@@ -18,6 +18,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param userId path int true "User id registered"
+// @Param clusterId path int true "Cluster id from where delete user"
 // @Success 204
 // @Failure 404
 // @Failure 500
@@ -62,10 +63,10 @@ func (ctrl *UserControllerImpl) DeleteUser(c *gin.Context) {
 	if err != nil {
 		log.WithError(err).WithField("request", deleteUserRequest).Error("Erro ao deletar usuario no rabbit")
 		c.JSON(http.StatusInternalServerError, "Erro ao deletar usuario na base")
+		return
 	}
 	log.WithField("userId", userId).Info("user deleted")
 	c.JSON(http.StatusNoContent, "Deleted")
-	return
 }
 
 func (controller *UserControllerImpl) parseDeleteUserRequest(c *gin.Context) (clusterId int, userId int, err error) {

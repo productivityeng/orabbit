@@ -14,7 +14,6 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { CreateRabbitmqUserSchema } from "@/schemas/user-schemas";
 import { createUser } from "@/actions/users";
-import { RabbitMqUser } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Frown, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -23,6 +22,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { z } from "zod";
+import { RabbitMqUser } from "@/models/users";
 
 interface UserFormProps {
   initialData: RabbitMqUser | null;
@@ -40,7 +40,7 @@ function UserForm({ initialData }: UserFormProps) {
       clusterId: parseInt(params.clusterId.toString()),
       password: "",
       username: initialData?.Username,
-      create: false,
+      create: true,
     },
   });
 
@@ -90,7 +90,7 @@ function UserForm({ initialData }: UserFormProps) {
       <form
         role="form"
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col"
+        className="flex flex-col w-1/2"
       >
         <p
           className={cn(
@@ -104,7 +104,7 @@ function UserForm({ initialData }: UserFormProps) {
         </p>
 
         {!initialData && (
-          <div className="w-1/2 py-2">
+          <div className=" py-2">
             <FormField
               control={form.control}
               name="create"
@@ -121,6 +121,7 @@ function UserForm({ initialData }: UserFormProps) {
                   </div>
                   <FormControl>
                     <Switch
+                      disabled
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
@@ -130,7 +131,7 @@ function UserForm({ initialData }: UserFormProps) {
             />
           </div>
         )}
-        <div className="w-1/2">
+        <div>
           <FormField
             control={form.control}
             name="username"
@@ -152,7 +153,7 @@ function UserForm({ initialData }: UserFormProps) {
         </div>
 
         {(form.getValues().create || initialData) && (
-          <div className="w-1/2 py-2 transition-all duration-200">
+          <div className="py-2 transition-all duration-200">
             <FormField
               control={form.control}
               name="password"
@@ -173,7 +174,7 @@ function UserForm({ initialData }: UserFormProps) {
             />
           </div>
         )}
-        <div className="flex justify-end w-1/2 space-x-4 py-2">
+        <div className="flex justify-end  space-x-4 py-2">
           <Button
             variant="outline"
             type="button"

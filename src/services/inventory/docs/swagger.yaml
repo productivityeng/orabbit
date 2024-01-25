@@ -205,13 +205,6 @@ definitions:
     - ClusterId
     - Username
     type: object
-  dto.LockUserDto:
-    properties:
-      reason:
-        type: string
-      userId:
-        type: integer
-    type: object
   dto.QueueImportRequest:
     properties:
       QueueName:
@@ -227,11 +220,6 @@ definitions:
   dto.QueueSycronizeRequest:
     properties:
       QueueId:
-        type: integer
-    type: object
-  dto.UserSyncronizeRequest:
-    properties:
-      UserId:
         type: integer
     type: object
 info:
@@ -561,6 +549,11 @@ paths:
         name: userId
         required: true
         type: integer
+      - description: Cluster id from where delete user
+        in: path
+        name: clusterId
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -601,42 +594,22 @@ paths:
       summary: Retrieve a mirror user from broker
       tags:
       - User
-  /{clusterId}/user/{userId}/lock:
-    post:
-      consumes:
-      - application/json
-      description: Lock a user with a reason
-      parameters:
-      - description: Request
-        in: body
-        name: lockUserRequest
-        required: true
-        schema:
-          $ref: '#/definitions/dto.LockUserDto'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-        "404":
-          description: Not Found
-        "500":
-          description: Internal Server Error
-      summary: Lock a user
-      tags:
-      - User
-  /{clusterId}/user/syncronize:
+  /{clusterId}/user/{userId}/syncronize:
     post:
       consumes:
       - application/json
       description: Cria um ususario que esteja na base do ostern e nao exista no cluster
       parameters:
-      - description: Request
-        in: body
-        name: ImportOrCreateUserRequest
+      - description: Cluster id from where retrieve users
+        in: path
+        name: clusterId
         required: true
-        schema:
-          $ref: '#/definitions/dto.UserSyncronizeRequest'
+        type: integer
+      - description: User id registered
+        in: path
+        name: userId
+        required: true
+        type: integer
       produces:
       - application/json
       responses:

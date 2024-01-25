@@ -1,11 +1,13 @@
+import { LockerModel } from "@/actions/locker";
+
 export type RabbitMqUser = {
   Id: number;
-  BrokerId: number;
+  ClusterId: number;
   Username: string;
   PasswordHash: string;
   IsInCluster: boolean;
   IsInDatabase: boolean;
-  LockedReason: string;
+  Lockers: LockerModel[];
 };
 
 export type ImportRabbitMqUser = {

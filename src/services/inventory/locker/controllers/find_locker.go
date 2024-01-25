@@ -40,6 +40,17 @@ func (ctrl *LockerController) FindLocker(c *gin.Context) {
 			return
 		}
 
+		case "user": {
+			enabledLocker,err := ctrl.getEnabledLockerUser(clusterId,lockerType,artifactId,c)
+				if err != nil { 
+					c.JSON(http.StatusNotFound,gin.H{"message":"enabled locker not found"})
+					return
+				}
+
+				c.JSON(http.StatusOK,enabledLocker)
+				return
+		}
+
 		default: {
 			c.JSON(http.StatusBadRequest,gin.H{"message":"locker type not found"})
 		 }

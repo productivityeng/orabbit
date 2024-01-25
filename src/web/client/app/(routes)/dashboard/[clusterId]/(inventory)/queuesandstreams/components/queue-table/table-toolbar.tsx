@@ -57,10 +57,10 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
         return;
       }
       toast.success(<p>Filas sincronizadas</p>, { id: toastId });
+      router.refresh();
+      table.toggleAllRowsSelected(false);
     } catch (error) {
       toast.error(<p>Erro ao sincronizar filas</p>, { id: toastId });
-    } finally {
-      router.refresh();
     }
   };
 
@@ -73,10 +73,10 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
         selectedQueue.Name
       );
       toast.success(<p>Filas importadas</p>, { id: toastId });
+      router.refresh();
+      table.toggleAllRowsSelected(false);
     } catch (error) {
       toast.error(<p>Erro ao importar filas</p>, { id: toastId });
-    } finally {
-      router.refresh();
     }
   };
 
@@ -95,10 +95,10 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
         return;
       }
       toast.success(<p>Filas removidas</p>, { id: toastId });
+      router.refresh();
+      table.toggleAllRowsSelected(false);
     } catch (error) {
       toast.error(<p>Erro ao remover filas</p>, { id: toastId });
-    } finally {
-      router.refresh();
     }
   };
 
@@ -119,6 +119,8 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
       toast.success(`Fila ${selectedQueue.Name} trancada`, {
         id: toastId,
       });
+      router.refresh();
+      table.toggleAllRowsSelected(false);
     } catch (error) {
       toast.error(
         `Erro ${JSON.stringify(error)} ao trancar fila ${selectedQueue.Name}`,
@@ -126,14 +128,12 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
           id: toastId,
         }
       );
-    } finally {
-      router.refresh();
     }
   };
 
-  const IsImporDisabled = !isRowSelected || !!selectedQueue;
+  const IsImporDisabled = !isRowSelected || selectedQueue?.IsInDatabase;
 
-  const IsRemoveDisable = !isRowSelected || !selectedQueue?.IsInCluster;
+  const IsRemoveDisable = !isRowSelected || !selectedQueue?.IsInDatabase;
 
   const IsSyncronizeDisable =
     !isRowSelected ||
@@ -141,7 +141,8 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
     !selectedQueue?.IsInDatabase;
 
   const IsLockDisabled =
-    !selectedQueue?.IsInDatabase || GetActiveLocker(selectedQueue?.Lockers);
+    !selectedQueue?.IsInDatabase ||
+    GetActiveLocker(selectedQueue?.Lockers) != null;
 
   return (
     <div className="flex items-center justify-between">

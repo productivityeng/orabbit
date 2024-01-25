@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/db"
+	"github.com/productivityeng/orabbit/locker/dto"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -34,21 +35,11 @@ func (ctrl *LockerController) DisableLocker(c *gin.Context) {
 
 	switch lockerType {
 		case "queue": { 
-			_,err := ctrl.getLockerQueue(lockerId,c)
-			if errors.Is(err,db.ErrNotFound){ 
-				c.JSON(http.StatusNotFound,gin.H{"message":"locker not found"})
-				return
-	 		}else if err != nil { 
-				c.JSON(http.StatusInternalServerError,gin.H{"message":"error retrieving locker"})
-				return
-			}
-
-			locker,err := ctrl.disableLockerQueue(lockerId,lockerRequest.Responsible,c)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError,gin.H{"message":"error disabling locker","error":err.Error()})
-			}
-			log.WithFields(log.Fields{"locker":locker}).Info("Disabled locker")
-			c.JSON(http.StatusOK,locker)
+			ctrl.handleDisableLockerQueue(lockerId,*lockerRequest,c)
+			return
+		}
+		case "user": {
+			ctrl.handleDisableLockerUser(lockerId,*lockerRequest,c)
 			return
 		}
 
@@ -57,7 +48,43 @@ func (ctrl *LockerController) DisableLocker(c *gin.Context) {
 			return
 		 }
 	 }
-	 c.JSON(http.StatusBadRequest,gin.H{"message":"locker type not found"})
+}
+
+func (ctrl *LockerController) handleDisableLockerQueue(lockerId int,lockerRequest dto.DisableLockerRequest,c *gin.Context) {
+	_,err := ctrl.getLockerQueue(lockerId,c)
+	if errors.Is(err,db.ErrNotFound){ 
+		c.JSON(http.StatusNotFound,gin.H{"message":"locker not found"})
+		return
+	}else if err != nil { 
+		c.JSON(http.StatusInternalServerError,gin.H{"message":"error retrieving locker"})
+		return
+	}
+
+	locker,err := ctrl.disableLockerQueue(lockerId,lockerRequest.Responsible,c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{"message":"error disabling locker","error":err.Error()})
+	}
+	log.WithFields(log.Fields{"locker":locker}).Info("Disabled locker")
+	c.JSON(http.StatusOK,locker)
+}
+
+
+func (ctrl *LockerController) handleDisableLockerUser(lockerId int,lockerRequest dto.DisableLockerRequest,c *gin.Context) {
+	_,err := ctrl.getLockerUser(lockerId,c)
+	if errors.Is(err,db.ErrNotFound){ 
+		c.JSON(http.StatusNotFound,gin.H{"message":"locker not found"})
+		return
+	}else if err != nil { 
+		c.JSON(http.StatusInternalServerError,gin.H{"message":"error retrieving locker"})
+		return
+	}
+
+	locker,err := ctrl.disableLockerUser(lockerId,lockerRequest.Responsible,c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{"message":"error disabling locker","error":err.Error()})
+	}
+	log.WithFields(log.Fields{"locker":locker}).Info("Disabled locker")
+	c.JSON(http.StatusOK,locker)
 }
 
 

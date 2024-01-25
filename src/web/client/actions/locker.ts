@@ -48,15 +48,19 @@ export async function CreateLockerAction(
     method: "POST",
     body: JSON.stringify(locker),
   });
-  if (response.status != 200) {
+  if (response.status != 201) {
     console.error(
       `Error creating locker for ${lockerType} ${artifactId} from cluster ${clusterId}: ${
         response.statusText
       } with payload ${await response.text()}`
     );
-    return null;
+    return {
+      ErrorMessage: `Error creating locker for ${lockerType} ${artifactId} from cluster ${clusterId}: ${await response.json()}`,
+      Result: null,
+    };
   }
-  return (await response.json()) as LockManager;
+
+  return { ErrorMessage: null, Result: (await response.json()) as LockManager };
 }
 
 export async function RemoveLockerAction(
@@ -72,7 +76,7 @@ export async function RemoveLockerAction(
   const response = await fetch(removeLockerFromArtifactEndpoint, {
     method: "DELETE",
     body: JSON.stringify({
-      responsible: "victor@riskskipper.com",
+      responsible: "vVictor",
     }),
     cache: "no-store",
   });
@@ -82,7 +86,10 @@ export async function RemoveLockerAction(
         response.statusText
       } with payload ${await response.text()}`
     );
-    return null;
+    return {
+      ErrorMessage: `Error creating locker for ${lockerType} with lockerId ${lockerId} from cluster ${clusterId}: ${await response.text()}`,
+      Result: null,
+    };
   }
   const result = (await response.json()) as LockManager;
   console.log(
@@ -90,5 +97,8 @@ export async function RemoveLockerAction(
       result
     )} | status code ${response.status}`
   );
-  return result;
+  return {
+    ErrorMessage: null,
+    Result: result,
+  };
 }

@@ -143,7 +143,7 @@ export async function createUser(
  * @param userId Identificação Global do usuário
  * @returns
  */
-export async function deleteUserFromRabbit(
+export async function removeUserFromCluster(
   clusterId: number,
   userId: number
 ): Promise<FrontResponse<string | null>> {
@@ -184,19 +184,25 @@ export async function deleteUserFromRabbit(
   }
 }
 
+/**
+ * Remove o usuario da base do ostern com o cluster do rabbitmq.
+ * @param clusterId Identificação do Cluster do usuario
+ * @param userId Identificação Global do usuário
+ * @returns
+ */
 export async function SyncronizeUserAction(
   clusterId: number,
   userId: number
 ): Promise<FrontResponse<boolean>> {
   const syncronizeUserEndnpoint = `${process.env
-    .PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/user/syncronize`;
+    .PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/user/${userId}/syncronize`;
 
+  console.log(`Sending request to ${syncronizeUserEndnpoint}`);
   let response = await fetch(syncronizeUserEndnpoint, {
-    body: JSON.stringify({
-      UserId: userId,
-    }),
     method: "POST",
+    cache: "no-store",
   });
+  console.log(`Response from ${syncronizeUserEndnpoint} => ${response.status}`);
   switch (response.status) {
     case 201:
     case 204: {

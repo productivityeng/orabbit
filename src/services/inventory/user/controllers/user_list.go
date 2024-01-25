@@ -6,10 +6,10 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/productivityeng/orabbit/contracts"
 	"github.com/productivityeng/orabbit/db"
 	common_rabbit "github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
 	"github.com/productivityeng/orabbit/src/packages/rabbitmq/user"
+	"github.com/productivityeng/orabbit/user/dto"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -70,35 +70,45 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 
 	log.WithFields(fields).Info("Preparing response")
 
-	response := make(contracts.GetUserResponseList,0)
+	response := userCtrl.buildUserListResponse(usersFromCluster,usersFromDb,clusterId,c)
+
+	c.JSON(http.StatusOK, response)
+}
+
+// ListUsersFromCluster
+//Merge users from rabbitmq cluster and ostern database in a single response
+func (controller *UserControllerImpl) buildUserListResponse(usersFromCluster []user.ListUserResult,usersFromDb []db.UserModel,clusterId int,c *gin.Context) dto.GetUserResponseList {
+	response := make(dto.GetUserResponseList,0)
 
 	for _, userFromCluster := range usersFromCluster {
-		userResponse := contracts.GetUserResponse{
+		userResponse := dto.GetUserResponse{
+			ClusterId:   clusterId,
 			Username:     userFromCluster.Name,
 			PasswordHash: userFromCluster.PasswordHash,
 			Id:           0,
 			IsInCluster:  true,
 			IsInDatabase: false,
+			Lockers: 	make([]db.LockerUserModel,0),
 		}
 
-		userEqual,_ := userCtrl.DependencyLocator.PrismaClient.User.FindUnique(db.User.UniqueUsernameClusterid(db.User.Username.Equals(userFromCluster.Name),db.User.ClusterID.Equals(cluster.ID))).Exec(c)
+		userEqual,_ := controller.DependencyLocator.PrismaClient.User.FindUnique(db.User.UniqueUsernameClusterid(db.User.Username.Equals(userFromCluster.Name),db.User.ClusterID.Equals(clusterId))).
+		With(db.User.LockerUser.Fetch()).
+		Exec(c)
 		
 		if userEqual != nil {
 			userResponse.Id = userEqual.ID
 			userResponse.IsInDatabase = true
+			userResponse.Lockers = userEqual.LockerUser()
 		}
-
+		
 		response = append(response, userResponse)
-
-		
-		
-		
 	}
 
 	for _, userFromDb := range usersFromDb {
 		if !response.UserInListByName(userFromDb.Username) {
-			response = append(response, contracts.GetUserResponse{
+			response = append(response, dto.GetUserResponse{
 				Id:           userFromDb.ID,
+				ClusterId: clusterId,
 				Username:     userFromDb.Username,
 				PasswordHash: userFromDb.PasswordHash,
 				IsInCluster:  false,
@@ -107,8 +117,7 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, response)
-	return
+	return response
 }
 
 
