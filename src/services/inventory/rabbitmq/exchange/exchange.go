@@ -73,3 +73,41 @@ func (management ExchangeManagementImpl) CreateExchange(request contracts.Create
 	 }
 	return nil
 }
+
+func (management ExchangeManagementImpl) DeleteExchange(request contracts.DeleteExchangeRequest,c *gin.Context) (error) {
+	rmqc,err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.Username, request.Password)
+	if err != nil { 
+		return err
+	}
+	response,err := rmqc.DeleteExchange("/",request.Name)
+	if err != nil { 
+		logrus.WithContext(c).WithError(err).Error("Error trying to delete exchange")
+		return err
+	 }else {
+		logrus.WithContext(c).WithField("response", response).Info("Exchange deleted")
+	 }
+	 return nil
+}
+
+func (management ExchangeManagementImpl) GetExchangeByName(request contracts.GetExchangeRequest,c *gin.Context) (*dto.GetExchangeDto, error) {
+	rmqc,err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.Username, request.Password)
+	if err != nil { 
+		return nil,err
+	}
+	exchange,err := rmqc.GetExchange("/",request.Name)
+	if err != nil { 
+		logrus.WithContext(c).WithError(err).Error("Error trying to get exchange")
+		return nil,err
+	 }else {
+		logrus.WithContext(c).WithField("response", exchange).Info("Exchange retrieved")
+		return &dto.GetExchangeDto{ 
+			Name: exchange.Name,
+			VHost: exchange.Vhost,
+			Type: exchange.Type,
+			Durable: exchange.Durable,
+			Internal: exchange.Internal,
+			Arguments: exchange.Arguments,
+			IsInCluster: true,
+		},nil
+	}
+}

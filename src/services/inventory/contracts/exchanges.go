@@ -21,7 +21,19 @@ type CreateExchangeRequest struct {
 	Arguments map[string]interface{} `json:"Arguments"`
 }
 
+type GetExchangeRequest struct {
+	common.RabbitAccess
+	Name string `json:"Name"`
+ }
+
+type DeleteExchangeRequest struct {
+	common.RabbitAccess
+	Name string `json:"Name"`
+}
+
 type ExchangeManagement interface {
 	GetAllExchangesFromCluster(request ListExchangeRequest,c *gin.Context) ([]dto.GetExchangeDto, error)
 	CreateExchange(request CreateExchangeRequest) (error) 
+	DeleteExchange(request DeleteExchangeRequest,c *gin.Context) (error)
+	GetExchangeByName(request GetExchangeRequest,c *gin.Context) (*dto.GetExchangeDto, error)
 }

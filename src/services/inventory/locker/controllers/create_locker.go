@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/db"
 	"github.com/productivityeng/orabbit/locker/dto"
+	"github.com/sirupsen/logrus"
 )
 
 // CreateLocker
@@ -44,6 +45,11 @@ func (ctrl *LockerController) CreateLocker(c *gin.Context) {
 			return
 		}
 
+		case "exchange":{
+			ctrl.handleCreateLockerForExchange(*createLockerRequest,clusterId,lockerType,artifactId,c)
+			return
+		}
+
 		default:
 			c.JSON(http.StatusBadRequest,gin.H{"message":"invalid locker type"})
 				return
@@ -56,7 +62,7 @@ func (ctrl *LockerController) CreateLocker(c *gin.Context) {
 func (ctrl *LockerController) handleCreateLockerForQueue(createLockerRequest dto.CreateLockerRequest,clusterId int,lockerType string,artifactId int,c *gin.Context) {
 			enabledLocker,err := ctrl.getEnabledLockerQueue(clusterId,lockerType,artifactId,c)
 			if !errors.Is(err,db.ErrNotFound){
-				c.JSON(http.StatusInternalServerError,gin.H{"message":"error retrieving locker"})
+				c.JSON(http.StatusInternalServerError,gin.H{"message":"error retrieving locker for queue"})
 				return 
 			}
 			if enabledLocker != nil {
@@ -83,7 +89,7 @@ func (ctrl *LockerController) handleCreateLockerForQueue(createLockerRequest dto
 func (ctrl *LockerController) handleCreateLockerForUser(createLockerRequest dto.CreateLockerRequest,clusterId int,lockerType string,artifactId int,c *gin.Context) {
 			enabledLocker,err := ctrl.getEnabledLockerUser(clusterId,lockerType,artifactId,c)
 			if err != nil && !errors.Is(err,db.ErrNotFound){
-				c.JSON(http.StatusInternalServerError,gin.H{"message":"error retrieving locker","error": err.Error()})
+				c.JSON(http.StatusInternalServerError,gin.H{"message":"error retrieving locker for user","error": err.Error()})
 				return 
 			}
 			if enabledLocker != nil {
@@ -97,6 +103,32 @@ func (ctrl *LockerController) handleCreateLockerForUser(createLockerRequest dto.
 				db.LockerUser.Reason.Set(createLockerRequest.Reason),
 				db.LockerUser.UserResponsibleEmail.Set(createLockerRequest.Responsible),
 			).Exec(c)
+
+			if err != nil { 
+				c.JSON(http.StatusInternalServerError,gin.H{"message":"error creating locker","error": err.Error()})
+				return 
+			}
+			c.JSON(http.StatusCreated,lockerQueue)
+}
+
+func (ctrl *LockerController) handleCreateLockerForExchange(createLockerRequest dto.CreateLockerRequest,clusterId int,lockerType string,artifactId int,c *gin.Context) {
+			enabledLocker,err := ctrl.getEnabledLockerExhange(clusterId,lockerType,artifactId,c)
+			if err != nil && !errors.Is(err,db.ErrNotFound){
+				logrus.WithError(err).Error("error retrieving locker for exchange")
+				c.JSON(http.StatusInternalServerError,gin.H{"message":"error retrieving locker for exchange","error": err.Error()})
+				return 
+			}
+			if enabledLocker != nil {
+				c.JSON(http.StatusConflict,gin.H{"message":"enabled locker already exists"})
+				return 
+			
+			}
+			lockerQueue,err := ctrl.DependencyLocator.PrismaClient.LockerExchange.CreateOne(
+				db.LockerExchange.Exchange.Link(db.Exchange.ID.Equals(artifactId)),
+				db.LockerExchange.Enabled.Set(true),
+				db.LockerExchange.Reason.Set(createLockerRequest.Reason),
+				db.LockerExchange.UserResponsibleEmail.Set(createLockerRequest.Responsible),
+				).Exec(c)
 
 			if err != nil { 
 				c.JSON(http.StatusInternalServerError,gin.H{"message":"error creating locker","error": err.Error()})

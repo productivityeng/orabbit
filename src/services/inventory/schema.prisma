@@ -94,7 +94,7 @@ model Exchange {
 
     ClusterId Int @map("FK_CLUSTER_ID")
     Cluster Cluster @relation(fields: [ClusterId], references: [Id],onDelete: Cascade)
-    Name String @map("TX_NAME") 
+    Name String @map("TX_NAME")  @unique
     Internal Boolean @map("IS_INTERNAL")
     Durable Boolean @map("IS_DURABLE")
     Arguments Json @map("JS_ARGUMENTS")

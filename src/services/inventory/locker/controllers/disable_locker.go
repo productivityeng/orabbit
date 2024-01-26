@@ -43,6 +43,11 @@ func (ctrl *LockerController) DisableLocker(c *gin.Context) {
 			return
 		}
 
+		case "exchange": {
+			ctrl.handleDisableLockerExchange(lockerId,*lockerRequest,c)
+			return
+		}
+
 		default: {
 			c.JSON(http.StatusBadRequest,gin.H{"message":"locker type not found"})
 			return
@@ -86,6 +91,27 @@ func (ctrl *LockerController) handleDisableLockerUser(lockerId int,lockerRequest
 	log.WithFields(log.Fields{"locker":locker}).Info("Disabled locker")
 	c.JSON(http.StatusOK,locker)
 }
+
+
+func (ctrl *LockerController) handleDisableLockerExchange(lockerId int,lockerRequest dto.DisableLockerRequest,c *gin.Context) {
+	_,err := ctrl.getLockerExchange(lockerId,c)
+	if errors.Is(err,db.ErrNotFound){ 
+		c.JSON(http.StatusNotFound,gin.H{"message":"locker not found"})
+		return
+	}else if err != nil { 
+		c.JSON(http.StatusInternalServerError,gin.H{"message":"error retrieving locker"})
+		return
+	}
+
+	locker,err := ctrl.disableLockerExchange(lockerId,lockerRequest.Responsible,c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{"message":"error disabling locker","error":err.Error()})
+	}
+	log.WithFields(log.Fields{"locker":locker}).Info("Disabled locker")
+	c.JSON(http.StatusOK,locker)
+}
+
+
 
 
 

@@ -255,6 +255,11 @@ definitions:
       responsible:
         type: string
     type: object
+  dto.ImportExchangeRequest:
+    properties:
+      Name:
+        type: string
+    type: object
   dto.ImportOrCreateUserRequest:
     properties:
       ClusterId:
@@ -334,6 +339,59 @@ paths:
           schema:
             type: number
       summary: List all exchanges from cluster
+      tags:
+      - Exchange
+  /{clusterId}/exchange/{exchangeId}:
+    delete:
+      consumes:
+      - application/json
+      description: List all exchanges from cluster
+      parameters:
+      - description: Cluster id from where retrieve exchanges
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      - description: Exchange id from database that will be deleted from cluster
+        in: path
+        name: exchangeId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: number
+      summary: List all exchanges from cluster
+      tags:
+      - Exchange
+  /{clusterId}/exchange/import:
+    post:
+      consumes:
+      - application/json
+      description: Import an exchange from cluster
+      parameters:
+      - description: Cluster id from where retrieve exchanges
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      - description: Request
+        in: body
+        name: ImportExchangeRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ImportExchangeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: number
+      summary: Import an exchange from cluster
       tags:
       - Exchange
   /{clusterId}/locker/{lockerType}/{artifactId}:

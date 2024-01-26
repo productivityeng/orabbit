@@ -18,7 +18,13 @@ func NewLockerController(DependencyLocator *core.DependencyLocator) *LockerContr
 }
 
 
-
+func (ctrl *LockerController) getEnabledLockerExhange(clusterId int,lockerType string,artifactId int,c *gin.Context) (*db.LockerExchangeModel,error){
+	locker,err := ctrl.DependencyLocator.PrismaClient.LockerExchange.FindFirst(
+		db.LockerExchange.ExchangeID.Equals(artifactId),
+		db.LockerExchange.Enabled.Equals(true),
+	).Exec(c)
+	return locker,err
+}
 
 func (ctrl *LockerController) getEnabledLockerQueue(clusterId int,lockerType string,artifactId int,c *gin.Context) (*db.LockerQueueModel,error){
 	locker,err := ctrl.DependencyLocator.PrismaClient.LockerQueue.FindFirst(
@@ -34,7 +40,7 @@ func (ctrl *LockerController) getEnabledLockerUser(clusterId int,lockerType stri
 		db.LockerUser.Enabled.Equals(true),
 	).Exec(c)
 	if err != nil {
-		log.WithContext(c).WithError(err).Error("Error retrieving locker")
+		log.WithContext(c).WithError(err).Error("Error getting enabled locker user")
 	}
 	return locker,err
 }
@@ -50,6 +56,13 @@ func (ctrl *LockerController) getLockerQueue(lockerId int,c *gin.Context) (*db.L
 func (ctrl *LockerController) getLockerUser(lockerId int,c *gin.Context) (*db.LockerUserModel,error){
 	locker,err := ctrl.DependencyLocator.PrismaClient.LockerUser.FindUnique(
 		db.LockerUser.ID.Equals(lockerId),
+	).Exec(c)
+	return locker,err
+}
+
+func (ctrl *LockerController) getLockerExchange(lockerId int,c *gin.Context) (*db.LockerExchangeModel,error){
+	locker,err := ctrl.DependencyLocator.PrismaClient.LockerExchange.FindUnique(
+		db.LockerExchange.ID.Equals(lockerId),
 	).Exec(c)
 	return locker,err
 }
@@ -76,6 +89,20 @@ func (ctrl *LockerController) disableLockerUser(lockerId int,responsible string,
 	).Update(
 		db.LockerUser.UserDisabled.Set(responsible),
 		db.LockerUser.Enabled.Set(false),
+	).Exec(c)
+	if err != nil { return nil,err}
+	return updated,nil
+}
+
+
+func (ctrl *LockerController) disableLockerExchange(lockerId int,responsible string,c *gin.Context) (*db.LockerExchangeModel,error){
+	log.WithFields(log.Fields{"lockerId":lockerId,"responsible":responsible}).Info("Disabling locker")
+	updated,err := ctrl.DependencyLocator.PrismaClient.LockerExchange.FindUnique(
+		db.LockerExchange.ID.Equals(lockerId),
+		
+	).Update(
+		db.LockerExchange.UserDisabled.Set(responsible),
+		db.LockerExchange.Enabled.Set(false),
 	).Exec(c)
 	if err != nil { return nil,err}
 	return updated,nil

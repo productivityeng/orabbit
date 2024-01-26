@@ -47,12 +47,12 @@ func (ctrl *clusterControllerDefaultImp) CreateCluster(c *gin.Context) {
 	log.WithField("request", request).Info("Received request")
 	if err != nil { return }
 
-	log.WithField("request", request).Info("Validating request")
-	if err := ctrl.ClusterValidator.ValidateCreateRequest(*request, c); err != nil {
-		log.WithError(err).Error("Error validating request")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	// log.WithField("request", request).Info("Validating request")
+	// if err := ctrl.ClusterValidator.ValidateCreateRequest(*request, c); err != nil {
+	// 	log.WithError(err).Error("Error validating request")
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
 	log.WithField("request", request).Info("Creating cluster")
 

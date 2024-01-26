@@ -10,6 +10,7 @@ import (
 	"github.com/productivityeng/orabbit/queue"
 	"github.com/productivityeng/orabbit/user"
 	"github.com/productivityeng/orabbit/virtualhost"
+	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 
 	swaggerfiles "github.com/swaggo/files"
@@ -18,7 +19,10 @@ import (
 
 func main() {
 	DependencyLocator := core.NewDependencyLocator()
-
+	logrus.SetFormatter(&logrus.TextFormatter{
+		ForceColors: true,
+		ForceQuote: true,
+	})
 	gin.ForceConsoleColor()
 
 	r := gin.Default()

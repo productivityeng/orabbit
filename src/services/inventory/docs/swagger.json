@@ -239,6 +239,86 @@
                 }
             }
         },
+        "/{clusterId}/exchange/import": {
+            "post": {
+                "description": "Import an exchange from cluster",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exchange"
+                ],
+                "summary": "Import an exchange from cluster",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve exchanges",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request",
+                        "name": "ImportExchangeRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ImportExchangeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        },
+        "/{clusterId}/exchange/{exchangeId}": {
+            "delete": {
+                "description": "List all exchanges from cluster",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exchange"
+                ],
+                "summary": "List all exchanges from cluster",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve exchanges",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Exchange id from database that will be deleted from cluster",
+                        "name": "exchangeId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        },
         "/{clusterId}/locker/{lockerType}/{artifactId}": {
             "get": {
                 "description": "Retrieve a specific locker from a artificat in a cluster based on lockerType and artifactId",
@@ -1278,6 +1358,14 @@
             "type": "object",
             "properties": {
                 "responsible": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ImportExchangeRequest": {
+            "type": "object",
+            "properties": {
+                "Name": {
                     "type": "string"
                 }
             }

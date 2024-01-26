@@ -14,6 +14,8 @@ func Routes(routes *gin.Engine, dependencyLocator *core.DependencyLocator) *gin.
 	userRouter := routes.Group("/:clusterId/exchange")
 	userRouter.GET("/", exchangeController.ListAllExchanges)
 	userRouter.POST("/", exchangeController.CreateExchange)
+	userRouter.POST("/import", exchangeController.ImportExchange)
+	userRouter.DELETE("/:exchangeId", exchangeController.DeleteExchange)
 
 	return userRouter
 }

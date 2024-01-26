@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/productivityeng/orabbit/cluster/models"
 	"github.com/productivityeng/orabbit/contracts"
 	"github.com/productivityeng/orabbit/db"
+	"github.com/productivityeng/orabbit/exchange/dto"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -34,17 +36,86 @@ func (ctrl *ExchangeController) ListAllExchanges(c *gin.Context)  {
 
 	cluster_rabbitmq_access := models.GetRabbitMqAccess(cluster)
 
-	exchanges,err := ctrl.DependencyLocator.ExchangeManagement.GetAllExchangesFromCluster(contracts.ListExchangeRequest{
+	exchangesFromCluster,err := ctrl.DependencyLocator.ExchangeManagement.GetAllExchangesFromCluster(contracts.ListExchangeRequest{
 		RabbitAccess: cluster_rabbitmq_access,
 	},c)
 
 	if err != nil { 
-		log.WithContext(c).WithError(err).WithField("clusterId", clusterId).Error("Fail to retrieve exchanges")
-		c.JSON(http.StatusInternalServerError, "Fail to retrieve exchanges")
+		log.WithContext(c).WithError(err).WithField("clusterId", clusterId).Error("Fail to retrieve exchanges from cluster")
+		c.JSON(http.StatusInternalServerError, "Fail to retrieve exchanges from cluster")
 		return
 	}
 
-	c.JSON(http.StatusOK,exchanges)
+	exchangesFromDatabase, err := ctrl.DependencyLocator.PrismaClient.Exchange.FindMany(db.Exchange.ClusterID.Equals(clusterId)).With(
+		db.Exchange.Lockers.Fetch(),
+	).Exec(c)
+	if err != nil { 
+		log.WithContext(c).WithError(err).WithField("clusterId", clusterId).Error("Fail to retrieve exchanges from database")
+		c.JSON(http.StatusInternalServerError, "Fail to retrieve exchanges from database")
+		return
+	}
+
+	resultExchanges := make([]dto.GetExchangeDto,0)
+
+	loop_cluster: for _,exchangeFromCluster := range exchangesFromCluster { 
+		for _,exchangeFromDatabase := range exchangesFromDatabase { 
+			//if exchanges from cluster exists in database
+			if exchangeFromCluster.Name == exchangeFromDatabase.Name { 
+				resultExchanges = append(resultExchanges, dto.GetExchangeDto{
+					Name: exchangeFromCluster.Name,
+					Type: exchangeFromCluster.Type,
+					Durable: exchangeFromCluster.Durable,
+					Internal: exchangeFromCluster.Internal,
+					Arguments: exchangeFromCluster.Arguments,
+					ClusterId: exchangeFromDatabase.ClusterID,
+					Id: exchangeFromDatabase.ID,
+					IsInCluster: true,
+					IsInDatabase: true,
+					Lockers: exchangeFromDatabase.Lockers(),
+				})
+				continue loop_cluster
+			}
+		}
+
+		resultExchanges = append(resultExchanges, dto.GetExchangeDto{ 
+				Name: exchangeFromCluster.Name,
+				Type: exchangeFromCluster.Type,
+				Durable: exchangeFromCluster.Durable,
+				Internal: exchangeFromCluster.Internal,
+				Arguments: exchangeFromCluster.Arguments,
+				ClusterId: 0,
+				IsInCluster: true,
+				IsInDatabase: false,
+		})
+	}
+
+	loop_database: for _,exchangeFromDatabase := range exchangesFromDatabase { 
+		for _,exchangeInResult := range resultExchanges { 
+			if exchangeFromDatabase.Name == exchangeInResult.Name { 
+				continue loop_database
+			}
+		}
+
+
+		arguments := make(map[string]interface{})
+		err = json.Unmarshal(exchangeFromDatabase.Arguments,&arguments)
+		if err != nil {
+			log.WithContext(c).WithError(err).Error("Fail to unmarshal exchange arguments")
+		}
+		resultExchanges = append(resultExchanges, dto.GetExchangeDto{ 
+			Name: exchangeFromDatabase.Name,
+			Type: exchangeFromDatabase.Type,
+			Durable: exchangeFromDatabase.Durable,
+			Internal: exchangeFromDatabase.Internal,
+			Arguments: arguments,
+			ClusterId: exchangeFromDatabase.ClusterID,
+			IsInCluster: false,
+			IsInDatabase: true,
+			Lockers: exchangeFromDatabase.Lockers(),
+		})
+	}
+
+	c.JSON(http.StatusOK,resultExchanges)
 
 }
 
