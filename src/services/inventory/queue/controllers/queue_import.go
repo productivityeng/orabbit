@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/db"
 	"github.com/productivityeng/orabbit/queue/dto"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq/queue"
+	"github.com/productivityeng/orabbit/rabbitmq/common"
+	"github.com/productivityeng/orabbit/rabbitmq/queue"
 	log "github.com/sirupsen/logrus"
 )
 

@@ -1,10 +1,16 @@
 package core
 
-import "github.com/productivityeng/orabbit/db"
+import (
+	"github.com/productivityeng/orabbit/contracts"
+	"github.com/productivityeng/orabbit/db"
+	"github.com/productivityeng/orabbit/rabbitmq/exchange"
+)
 
 
 type DependencyLocator struct { 
 	PrismaClient *db.PrismaClient
+	ExchangeManagement contracts.ExchangeManagement
+
 }
 
 func NewDependencyLocator() (*DependencyLocator) { 
@@ -13,6 +19,7 @@ func NewDependencyLocator() (*DependencyLocator) {
 		panic(err)
 	}
 
-	return &DependencyLocator{ PrismaClient: client }
+	
+	return &DependencyLocator{ PrismaClient: client, ExchangeManagement: exchange.NewExchangeManagement()}
 
 }

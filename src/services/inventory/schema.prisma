@@ -23,6 +23,7 @@ model Cluster {
     Users User[]
     VirtualHosts VirtualHost[]
     Queues Queue[]
+    Exchanges Exchange[] 
 
     @@unique([Host, Port],name: "UNIQUE_NAME_HOST_PORT")
     @@map("TB_CLUSTER")
@@ -88,7 +89,38 @@ model User {
 }
 
 
+model Exchange {
+    Id Int @id @default(autoincrement()) @map("ID")
 
+    ClusterId Int @map("FK_CLUSTER_ID")
+    Cluster Cluster @relation(fields: [ClusterId], references: [Id],onDelete: Cascade)
+    Name String @map("TX_NAME") 
+    Internal Boolean @map("IS_INTERNAL")
+    Durable Boolean @map("IS_DURABLE")
+    Arguments Json @map("JS_ARGUMENTS")
+    Lockers LockerExchange[]
+    Type String @map("TX__TYPE")
+    
+    @@unique([ClusterId, Name],name: "UNIQUE_CLUSTERID_NAME")
+    @@map("TB_EXCHANGE")
+
+}
+
+
+model LockerExchange {
+    Id Int @id @default(autoincrement()) @map("ID")
+
+    ExchangeId Int @map("FK_EXCHANGE_ID")
+    Exchange Exchange @relation(fields: [ExchangeId], references: [Id],onDelete: Cascade)
+
+    Enabled Boolean @map("IS_ENABLED")
+    Reason String @map("TX_REASON")
+
+    CreatedAt DateTime @default(now()) @map("DT_CREATED_AT")
+    UpdatedAt DateTime @updatedAt @map("DT_UPDATED_AT")
+    UserResponsibleEmail String @map("TX_USER_RESPONSIBLE_EMAIL")
+    UserDisabled String? @map("TX_USER_DISABLED")
+}
 
 
 model LockerQueue {

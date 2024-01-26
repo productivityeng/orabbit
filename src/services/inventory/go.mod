@@ -4,8 +4,7 @@ go 1.20
 
 require (
 	github.com/joho/godotenv v1.5.1
-	github.com/productivityeng/orabbit/src/packages/common v0.0.0
-	github.com/productivityeng/orabbit/src/packages/rabbitmq v0.0.0
+	github.com/michaelklishin/rabbit-hole/v2 v2.16.0
 	github.com/shopspring/decimal v1.3.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/steebchen/prisma-client-go v0.31.5
@@ -17,17 +16,7 @@ require (
 	gorm.io/gorm v1.25.5
 )
 
-require (
-	github.com/chenzhuoyu/iasm v0.9.1 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect
-	github.com/michaelklishin/rabbit-hole/v2 v2.15.0 // indirect
-	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
-	github.com/urfave/cli/v2 v2.27.1 // indirect
-	github.com/xrash/smetrics v0.0.0-20231213231151-1d8dd44e695e // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
-	sigs.k8s.io/yaml v1.4.0 // indirect
-)
+require github.com/chenzhuoyu/iasm v0.9.1 // indirect
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
@@ -43,7 +32,7 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.17.0 // indirect
-	github.com/go-sql-driver/mysql v1.7.1
+	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
@@ -73,7 +62,3 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	golang.org/x/sys v0.16.0 // indirect
 )
-
-replace github.com/productivityeng/orabbit/src/packages/rabbitmq v0.0.0 => ../../packages/rabbitmq
-
-replace github.com/productivityeng/orabbit/src/packages/common v0.0.0 => ../../packages/common

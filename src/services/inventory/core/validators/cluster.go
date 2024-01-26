@@ -6,7 +6,6 @@ import (
 	"github.com/productivityeng/orabbit/contracts"
 	"github.com/productivityeng/orabbit/core/core"
 	"github.com/productivityeng/orabbit/db"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq"
 )
 
 type ClusterValidator interface {
@@ -14,13 +13,11 @@ type ClusterValidator interface {
 }
 
 type clusterValidatorDefault struct {
-	OverviewManagement rabbitmq.OverviewManagement
 	DependencyLocator  *core.DependencyLocator
 }
 
-func NewClusterValidatorDefault(DependencyLocator *core.DependencyLocator, OverviewManagement rabbitmq.OverviewManagement) *clusterValidatorDefault {
+func NewClusterValidatorDefault(DependencyLocator *core.DependencyLocator, ) *clusterValidatorDefault {
 	return &clusterValidatorDefault{
-		OverviewManagement: OverviewManagement,
 		DependencyLocator: DependencyLocator,
 	}
 }
@@ -28,16 +25,13 @@ func NewClusterValidatorDefault(DependencyLocator *core.DependencyLocator, Overv
 func (val *clusterValidatorDefault) ValidateCreateRequest(request contracts.CreateClusterRequest, ctx context.Context) error {
 
 	var err error
-	// err = val.validateIfClusterWithThisHostnameExists(request, ctx)
-	// if err != nil {
-	// 	return err
-	// }
-	err = val.OverviewManagement.CheckCredentials(rabbitmq.CheckCredentialsRequest{
-		Host:     request.Host,
-		Username: request.User,
-		Password: request.Password,
-		Port:     request.Port,
-	})
+
+
+	err = val.validateIfClusterWithThisHostnameExists(request, ctx)
+	if err != nil {
+		return err
+	}
+
 
 	return err
 }

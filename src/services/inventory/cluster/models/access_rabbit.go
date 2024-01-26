@@ -2,7 +2,7 @@ package models
 
 import (
 	"github.com/productivityeng/orabbit/db"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
+	"github.com/productivityeng/orabbit/rabbitmq/common"
 )
 
 

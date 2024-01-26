@@ -29,6 +29,10 @@ definitions:
         type: string
       Description:
         type: string
+      Exchanges:
+        items:
+          $ref: '#/definitions/db.ExchangeModel'
+        type: array
       Host:
         type: string
       Id:
@@ -55,6 +59,52 @@ definitions:
         items:
           $ref: '#/definitions/db.VirtualHostModel'
         type: array
+    type: object
+  db.ExchangeModel:
+    properties:
+      Arguments:
+        items:
+          type: integer
+        type: array
+      Cluster:
+        $ref: '#/definitions/db.ClusterModel'
+      ClusterId:
+        type: integer
+      Durable:
+        type: boolean
+      Id:
+        type: integer
+      Internal:
+        type: boolean
+      Lockers:
+        items:
+          $ref: '#/definitions/db.LockerExchangeModel'
+        type: array
+      Name:
+        type: string
+      Type:
+        type: string
+    type: object
+  db.LockerExchangeModel:
+    properties:
+      CreatedAt:
+        type: string
+      Enabled:
+        type: boolean
+      Exchange:
+        $ref: '#/definitions/db.ExchangeModel'
+      ExchangeId:
+        type: integer
+      Id:
+        type: integer
+      Reason:
+        type: string
+      UpdatedAt:
+        type: string
+      UserDisabled:
+        type: string
+      UserResponsibleEmail:
+        type: string
     type: object
   db.LockerQueueModel:
     properties:
@@ -179,6 +229,20 @@ definitions:
       UpdatedAt:
         type: string
     type: object
+  dto.CreateExchangeDto:
+    properties:
+      Arguments:
+        additionalProperties: true
+        type: object
+      Durable:
+        type: boolean
+      Internal:
+        type: boolean
+      Name:
+        type: string
+      Type:
+        type: string
+    type: object
   dto.CreateLockerRequest:
     properties:
       reason:
@@ -225,6 +289,53 @@ definitions:
 info:
   contact: {}
 paths:
+  /{clusterId}/exchange:
+    get:
+      consumes:
+      - application/json
+      description: List all exchanges from cluster
+      parameters:
+      - description: Cluster id from where retrieve exchanges
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: number
+      summary: List all exchanges from cluster
+      tags:
+      - Exchange
+    post:
+      consumes:
+      - application/json
+      description: List all exchanges from cluster
+      parameters:
+      - description: Cluster id from where retrieve exchanges
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      - description: Request
+        in: body
+        name: CreateExchangeDto
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateExchangeDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: number
+      summary: List all exchanges from cluster
+      tags:
+      - Exchange
   /{clusterId}/locker/{lockerType}/{artifactId}:
     get:
       consumes:

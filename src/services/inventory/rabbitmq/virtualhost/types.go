@@ -1,6 +1,7 @@
 package virtualhost
 
-import "github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
+import "github.com/productivityeng/orabbit/rabbitmq/common"
+
 
 type CreateVirtualHostRequest struct {
 	common.RabbitAccess

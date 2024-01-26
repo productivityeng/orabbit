@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/productivityeng/orabbit/src/packages/common"
+	"github.com/productivityeng/orabbit/rabbitmq/common"
 	log "github.com/sirupsen/logrus"
 )
 

@@ -7,8 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/db"
-	common_rabbit "github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq/user"
+	"github.com/productivityeng/orabbit/rabbitmq/common"
+	"github.com/productivityeng/orabbit/rabbitmq/user"
+	rabbitmq_user "github.com/productivityeng/orabbit/rabbitmq/user"
 	"github.com/productivityeng/orabbit/user/dto"
 	log "github.com/sirupsen/logrus"
 )
@@ -42,7 +43,7 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 
 	log.WithFields(fields).Info("Looking for rabbitmq users from cluster")
 
-	usersFromCluster, err := userCtrl.UserManagement.ListAllUser(user.ListAllUsersRequest{RabbitAccess: common_rabbit.RabbitAccess{
+	usersFromCluster, err := userCtrl.UserManagement.ListAllUser(rabbitmq_user.ListAllUsersRequest{RabbitAccess: common.RabbitAccess{
 		Host:     cluster.Host,
 		Port:     cluster.Port,
 		Username: cluster.User,

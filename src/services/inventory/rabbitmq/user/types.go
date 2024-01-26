@@ -1,6 +1,7 @@
 package user
 
-import "github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
+import "github.com/productivityeng/orabbit/rabbitmq/common"
+
 
 type GetUserHashRequest struct {
 	common.RabbitAccess

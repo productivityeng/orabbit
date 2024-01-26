@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/core/core"
 	"github.com/productivityeng/orabbit/db"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq/queue"
+	"github.com/productivityeng/orabbit/rabbitmq/queue"
 )
 
 func NewQueueController(DependencyLocator *core.DependencyLocator, management queue.QueueManagement,

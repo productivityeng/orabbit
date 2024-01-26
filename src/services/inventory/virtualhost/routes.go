@@ -3,7 +3,7 @@ package virtualhost
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/core/core"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq/virtualhost"
+	"github.com/productivityeng/orabbit/rabbitmq/virtualhost"
 	"github.com/productivityeng/orabbit/virtualhost/controllers"
 )
 

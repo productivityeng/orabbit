@@ -5,6 +5,7 @@ import (
 	"github.com/productivityeng/orabbit/cluster"
 	"github.com/productivityeng/orabbit/core/core"
 	"github.com/productivityeng/orabbit/docs"
+	"github.com/productivityeng/orabbit/exchange"
 	"github.com/productivityeng/orabbit/locker"
 	"github.com/productivityeng/orabbit/queue"
 	"github.com/productivityeng/orabbit/user"
@@ -28,6 +29,7 @@ func main() {
 	queue.Routes(r, DependencyLocator)
 	virtualhost.Routes(r, DependencyLocator)
 	locker.Routes(r, DependencyLocator)
+	exchange.Routes(r, DependencyLocator)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	log.Fatal(r.Run(":8082"))

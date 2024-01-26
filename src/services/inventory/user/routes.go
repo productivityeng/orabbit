@@ -3,7 +3,7 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/core/core"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq/user"
+	"github.com/productivityeng/orabbit/rabbitmq/user"
 	"github.com/productivityeng/orabbit/user/controllers"
 )
 

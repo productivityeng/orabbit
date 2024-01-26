@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq/common"
+	"github.com/productivityeng/orabbit/rabbitmq/common"
 	"github.com/sirupsen/logrus"
 )
 

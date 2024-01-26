@@ -5,16 +5,13 @@ import (
 	broker_controller "github.com/productivityeng/orabbit/cluster/controllers"
 	"github.com/productivityeng/orabbit/core/core"
 	"github.com/productivityeng/orabbit/core/validators"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq"
 )
 
 var clusterController broker_controller.ClusterController
 var clusterValidator validators.ClusterValidator
-var overviewManagement rabbitmq.OverviewManagement
 
 func Routes(routes *gin.Engine, DependencyLocator *core.DependencyLocator) {
-	overviewManagement = rabbitmq.NewOverviewManagementImpl()
-	clusterValidator = validators.NewClusterValidatorDefault(DependencyLocator, overviewManagement)
+	clusterValidator = validators.NewClusterValidatorDefault(DependencyLocator)
 	clusterController = broker_controller.NewClusterController(DependencyLocator, clusterValidator)
 
 	brokerResourcePath := "/:clusterId"

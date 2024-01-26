@@ -179,6 +179,77 @@ const docTemplate = `{
                 }
             }
         },
+        "/{clusterId}/exchange": {
+            "get": {
+                "description": "List all exchanges from cluster",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exchange"
+                ],
+                "summary": "List all exchanges from cluster",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve exchanges",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "List all exchanges from cluster",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exchange"
+                ],
+                "summary": "List all exchanges from cluster",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve exchanges",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request",
+                        "name": "CreateExchangeDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateExchangeDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        },
         "/{clusterId}/locker/{lockerType}/{artifactId}": {
             "get": {
                 "description": "Retrieve a specific locker from a artificat in a cluster based on lockerType and artifactId",
@@ -879,6 +950,12 @@ const docTemplate = `{
                 "Description": {
                     "type": "string"
                 },
+                "Exchanges": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.ExchangeModel"
+                    }
+                },
                 "Host": {
                     "type": "string"
                 },
@@ -917,6 +994,76 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/db.VirtualHostModel"
                     }
+                }
+            }
+        },
+        "db.ExchangeModel": {
+            "type": "object",
+            "properties": {
+                "Arguments": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "Cluster": {
+                    "$ref": "#/definitions/db.ClusterModel"
+                },
+                "ClusterId": {
+                    "type": "integer"
+                },
+                "Durable": {
+                    "type": "boolean"
+                },
+                "Id": {
+                    "type": "integer"
+                },
+                "Internal": {
+                    "type": "boolean"
+                },
+                "Lockers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.LockerExchangeModel"
+                    }
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Type": {
+                    "type": "string"
+                }
+            }
+        },
+        "db.LockerExchangeModel": {
+            "type": "object",
+            "properties": {
+                "CreatedAt": {
+                    "type": "string"
+                },
+                "Enabled": {
+                    "type": "boolean"
+                },
+                "Exchange": {
+                    "$ref": "#/definitions/db.ExchangeModel"
+                },
+                "ExchangeId": {
+                    "type": "integer"
+                },
+                "Id": {
+                    "type": "integer"
+                },
+                "Reason": {
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "type": "string"
+                },
+                "UserDisabled": {
+                    "type": "string"
+                },
+                "UserResponsibleEmail": {
+                    "type": "string"
                 }
             }
         },
@@ -1102,6 +1249,27 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "UpdatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateExchangeDto": {
+            "type": "object",
+            "properties": {
+                "Arguments": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "Durable": {
+                    "type": "boolean"
+                },
+                "Internal": {
+                    "type": "boolean"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Type": {
                     "type": "string"
                 }
             }

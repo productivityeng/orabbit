@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/core/core"
 	queue_controller "github.com/productivityeng/orabbit/queue/controllers"
-	"github.com/productivityeng/orabbit/src/packages/rabbitmq/queue"
+	"github.com/productivityeng/orabbit/rabbitmq/queue"
 )
 
 var queueController queue_controller.QueueController

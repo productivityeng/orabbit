@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/cluster/models"
 	"github.com/productivityeng/orabbit/db"
-	user2 "github.com/productivityeng/orabbit/src/packages/rabbitmq/user"
+	rabbitmq_user "github.com/productivityeng/orabbit/rabbitmq/user"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -46,7 +46,7 @@ func (entity *UserControllerImpl) SyncronizeUser(c *gin.Context)  {
 	err = entity.verifyIfUserIsLocked(c,user)
 	if err != nil { return }
 
-	createUserRequest := user2.CreateNewUserWithHashPasswordRequest{
+	createUserRequest :=  rabbitmq_user.CreateNewUserWithHashPasswordRequest{
 		RabbitAccess:     models.GetRabbitMqAccess(cluster),
 		UsernameToCreate: user.Username,
 		PasswordHash:     user.PasswordHash,
