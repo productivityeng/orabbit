@@ -31,6 +31,7 @@ import { RabbitMqExchange } from "@/models/exchange";
 import {
   importExchangeFromClusterAction,
   removeExchangeFromClusterAction,
+  syncronizeExchangeAction,
 } from "@/actions/exchanges";
 
 interface DataTableToolbarProps {
@@ -47,7 +48,27 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
     selectedExchange = table.getFilteredSelectedRowModel().rows[0].original;
   }
 
-  const onSyncronizeQueueClick = async () => {};
+  const onSyncronizeQueueClick = async () => {
+    if (!selectedExchange) return;
+    let toastId = toast.loading("Sincronizando fila...");
+    try {
+      let result = await syncronizeExchangeAction(
+        Number(clusterId),
+        selectedExchange.Id
+      );
+      if (result.Result) {
+        toast.success("Exchange sincronizada com sucesso", { id: toastId });
+        router.refresh();
+      } else {
+        toast.error(
+          `Falha ao sincronizar exchange com erro => ${result.ErrorMessage}`,
+          { id: toastId }
+        );
+      }
+    } catch (error) {
+      toast.error("Falha ao sincronizar exchange", { id: toastId });
+    }
+  };
 
   const onImportClick = async () => {
     if (!selectedExchange) return;

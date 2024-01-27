@@ -29,23 +29,29 @@ model Cluster {
     @@map("TB_CLUSTER")
 }
 
+
+
 model VirtualHost {
     Id Int @id @default(autoincrement())
     Name String @map("TX_NAME") @unique
     Description String @map("TX_DESCRIPTION")
+    DefaultQueueType QueueType @map("TY_DEFAULT_QUEUE_TYPE")
+    Tags Json @map("JS_TAGS")
+
+
     ClusterId Int @map("FK_CLUSTER_ID")
     Cluster Cluster @relation(fields: [ClusterId], references: [Id],onDelete: Cascade)
 
-    UpdatedAt DateTime @updatedAt @map("DT_UPDATED_AT")
-    CreatedAt DateTime @default(now()) @map("DT_CREATED_AT")
-    DeletedAt DateTime? @map("DT_DELETED_AT")
+    Lockers LockerVirtualHost[]
 
+    @@unique([Name, ClusterId],name: "UNIQUE_NAME_CLUSTERID")
     @@map("TB_VIRTUALHOST")
 }
 
 enum QueueType {
-    CLASSIC
-    QUORUM
+    classic
+    quorum
+    stream
 }
 
 model Queue {
@@ -107,6 +113,8 @@ model Exchange {
 }
 
 
+
+
 model LockerExchange {
     Id Int @id @default(autoincrement()) @map("ID")
 
@@ -159,3 +167,13 @@ model LockerUser {
     @@map("TB_LOCKER_USER")
 }
 
+model LockerVirtualHost {
+    Id Int @id @default(autoincrement()) @map("ID")
+    VirtualHostId Int @map("FK_VIRTUALHOST_ID")
+    VirtualHost VirtualHost @relation(fields: [VirtualHostId], references: [Id],onDelete: Cascade)
+
+    Enabled Boolean @map("IS_ENABLED")
+    Reason String @map("TX_REASON")
+    UserResponsibleEmail String @map("TX_USER_RESPONSIBLE_EMAIL")
+    UserDisabled String? @map("TX_USER_DISABLED")
+}

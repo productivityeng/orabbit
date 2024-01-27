@@ -16,6 +16,7 @@ func Routes(routes *gin.Engine, dependencyLocator *core.DependencyLocator) *gin.
 	userRouter.POST("/", exchangeController.CreateExchange)
 	userRouter.POST("/import", exchangeController.ImportExchange)
 	userRouter.DELETE("/:exchangeId", exchangeController.DeleteExchange)
+	userRouter.POST("/:exchangeId/syncronize", exchangeController.SyncronizeExchange)
 
 	return userRouter
 }

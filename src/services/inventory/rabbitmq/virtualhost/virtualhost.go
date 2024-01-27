@@ -2,6 +2,7 @@ package virtualhost
 
 import (
 	"fmt"
+
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
 	"github.com/sirupsen/logrus"
 )
@@ -9,6 +10,7 @@ import (
 type VirtualHostManagement interface {
 	CreateVirtualHost(request CreateVirtualHostRequest) error
 	ListVirtualHosts(request ListVirtualHostRequest) ([]rabbithole.VhostInfo, error)
+	GetVirtualHost(request GetVirtualHostRequest) (*rabbithole.VhostInfo, error)
 }
 
 type VirtualHostManagementImpl struct {
@@ -54,4 +56,21 @@ func (management VirtualHostManagementImpl) CreateVirtualHost(request CreateVirt
 
 	logrus.WithField("resp", resp).Info("Virtual Host criado com sucesso")
 	return nil
+}
+
+func (management VirtualHostManagementImpl) GetVirtualHost(request GetVirtualHostRequest) (*rabbithole.VhostInfo, error) {
+	rmqc, err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.RabbitAccess.Username, request.RabbitAccess.Password)
+	if err != nil {
+		logrus.WithError(err).Error(fmt.Sprintf("Ao criar client para o cluster %s com ususario %s", request.RabbitAccess.Host, request.RabbitAccess.Username))
+		return nil, err
+	}
+
+	vhost, err := rmqc.GetVhost(request.Name)
+
+	if err != nil {
+		logrus.WithError(err).Error(fmt.Sprintf("Erro ao remover usuario %s do cluster %s", request.Username, request.Host))
+		return nil, err
+	}
+
+	return vhost, nil
 }

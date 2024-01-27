@@ -330,6 +330,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/{clusterId}/exchange/{exchangeId}/syncronize": {
+            "post": {
+                "description": "Syncronize a exchange between cluster and database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exchange"
+                ],
+                "summary": "Syncronize a exchange between cluster and database",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve exchanges",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Exchange id from database that will be deleted from cluster",
+                        "name": "exchangeId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        },
         "/{clusterId}/locker/{lockerType}/{artifactId}": {
             "get": {
                 "description": "Retrieve a specific locker from a artificat in a cluster based on lockerType and artifactId",
@@ -947,9 +986,11 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
-            },
+            }
+        },
+        "/{clusterId}/virtualhost/import": {
             "post": {
-                "description": "Import or Create a new VirtualHost",
+                "description": "Import  a new VirtualHost",
                 "consumes": [
                     "application/json"
                 ],
@@ -959,7 +1000,7 @@ const docTemplate = `{
                 "tags": [
                     "VirtualHost"
                 ],
-                "summary": "Import or Create a new VirtualHost",
+                "summary": "Import a new VirtualHost",
                 "parameters": [
                     {
                         "type": "integer",
@@ -967,11 +1008,23 @@ const docTemplate = `{
                         "name": "clusterId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Request",
+                        "name": "ImportVirtualHostRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ImportVirtualHostRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     "201": {
                         "description": "Created"
@@ -1211,6 +1264,32 @@ const docTemplate = `{
                 }
             }
         },
+        "db.LockerVirtualHostModel": {
+            "type": "object",
+            "properties": {
+                "Enabled": {
+                    "type": "boolean"
+                },
+                "Id": {
+                    "type": "integer"
+                },
+                "Reason": {
+                    "type": "string"
+                },
+                "UserDisabled": {
+                    "type": "string"
+                },
+                "UserResponsibleEmail": {
+                    "type": "string"
+                },
+                "VirtualHost": {
+                    "$ref": "#/definitions/db.VirtualHostModel"
+                },
+                "VirtualHostId": {
+                    "type": "integer"
+                }
+            }
+        },
         "db.QueueModel": {
             "type": "object",
             "properties": {
@@ -1262,11 +1341,13 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "CLASSIC",
-                "QUORUM"
+                "QUORUM",
+                "STREAM"
             ],
             "x-enum-varnames": [
                 "QueueTypeClassic",
-                "QueueTypeQuorum"
+                "QueueTypeQuorum",
+                "QueueTypeStream"
             ]
         },
         "db.UserModel": {
@@ -1313,11 +1394,8 @@ const docTemplate = `{
                 "ClusterId": {
                     "type": "integer"
                 },
-                "CreatedAt": {
-                    "type": "string"
-                },
-                "DeletedAt": {
-                    "type": "string"
+                "DefaultQueueType": {
+                    "$ref": "#/definitions/db.QueueType"
                 },
                 "Description": {
                     "type": "string"
@@ -1325,11 +1403,20 @@ const docTemplate = `{
                 "Id": {
                     "type": "integer"
                 },
+                "Lockers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.LockerVirtualHostModel"
+                    }
+                },
                 "Name": {
                     "type": "string"
                 },
-                "UpdatedAt": {
-                    "type": "string"
+                "Tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
@@ -1398,6 +1485,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "Username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ImportVirtualHostRequest": {
+            "type": "object",
+            "required": [
+                "Name"
+            ],
+            "properties": {
+                "Name": {
                     "type": "string"
                 }
             }

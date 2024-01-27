@@ -1,24 +1,41 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/core/core"
-	"github.com/productivityeng/orabbit/rabbitmq/virtualhost"
+	"github.com/productivityeng/orabbit/virtualhost/dto"
+	"github.com/sirupsen/logrus"
 )
 
 type VirtualHostController interface {
 	ListVirtualHost(c *gin.Context)
-	ImportOrCreateVirtualHost(c *gin.Context)
+	Import(c *gin.Context)
 }
 
 type VirtualHostControllerImpl struct {
-	VirtualHostManagement virtualhost.VirtualHostManagement
 	DependencyLocator     *core.DependencyLocator	
 }
 
-func NewVirtualHostControllerImpl(VirtualHostManagement virtualhost.VirtualHostManagement,
+func NewVirtualHostControllerImpl(
 	DependencyLocator *core.DependencyLocator) VirtualHostControllerImpl {
 	return VirtualHostControllerImpl{
-		VirtualHostManagement: VirtualHostManagement,
+		DependencyLocator: DependencyLocator,
 	}
+}
+
+
+
+// parseImportVirtualHostBody parses the request body into a ImportVirtualHostRequest struct.
+// It takes a gin.Context as a parameter and returns a ImportVirtualHostRequest and an error.
+// If there is an error parsing the body, it logs the error and returns a bad request response.
+func (ctrl *VirtualHostControllerImpl) parseImportVirtualHostBody(c *gin.Context) (request dto.ImportVirtualHostRequest,err error){
+	err = c.ShouldBindJSON(&request)
+	if err != nil {
+		logrus.WithContext(c).WithError(err).Error("Fail to parse body")
+		c.JSON(http.StatusBadRequest, "Error parsing body")
+		return
+	}
+	return
 }

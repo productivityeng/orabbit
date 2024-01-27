@@ -110,3 +110,37 @@ export async function removeExchangeFromClusterAction(
       return { ErrorMessage: `[UNKNOW_ERROR]`, Result: false };
   }
 }
+
+export async function syncronizeExchangeAction(
+  clusterId: number,
+  exchangeId: number
+): Promise<FrontResponse<boolean>> {
+  const createUserEndpoint = `${process.env
+    .PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/exchange/${exchangeId}/syncronize`;
+  console.log(
+    `Sending request to syncronize exchange ${exchangeId} on cluster ${clusterId}`
+  );
+
+  let response = await fetch(createUserEndpoint, {
+    method: "POST",
+    cache: "no-store",
+  });
+
+  console.log(
+    `Received response ${response.status} from ${createUserEndpoint}`
+  );
+
+  switch (response.status) {
+    case 201:
+    case 200:
+      return { ErrorMessage: null, Result: true };
+    case 400:
+    case 500: {
+      let contentBadRequest = (await response.json()) as { error: string };
+      console.error(`Receiving error ${contentBadRequest.error}`);
+      return { ErrorMessage: contentBadRequest.error, Result: false };
+    }
+    default:
+      return { ErrorMessage: `[UNKNOW_ERROR]`, Result: false };
+  }
+}

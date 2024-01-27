@@ -103,6 +103,7 @@ func (ctrl *ExchangeController) ListAllExchanges(c *gin.Context)  {
 			log.WithContext(c).WithError(err).Error("Fail to unmarshal exchange arguments")
 		}
 		resultExchanges = append(resultExchanges, dto.GetExchangeDto{ 
+			Id: exchangeFromDatabase.ID,
 			Name: exchangeFromDatabase.Name,
 			Type: exchangeFromDatabase.Type,
 			Durable: exchangeFromDatabase.Durable,

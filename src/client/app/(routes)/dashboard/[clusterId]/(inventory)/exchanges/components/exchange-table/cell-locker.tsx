@@ -34,7 +34,7 @@ function CellLocker({ data }: CellLockerProps) {
   const onRemoveLocker = async () => {
     let toastId = toast.loading(`Removendo bloqueio da fila ${data.Name}...`);
     try {
-      await RemoveLockerAction(data.ClusterId, "queue", activeLocker?.Id!);
+      await RemoveLockerAction(data.ClusterId, "exchange", activeLocker?.Id!);
       toast.success(`Bloqueio removido com sucesso`, { id: toastId });
     } catch (error) {
       toast.error(`Erro ${JSON.stringify(error)} ao remover bloqueio`, {

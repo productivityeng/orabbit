@@ -12,3 +12,8 @@ type CreateVirtualHostRequest struct {
 type ListVirtualHostRequest struct {
 	common.RabbitAccess
 }
+
+type GetVirtualHostRequest struct { 
+	common.RabbitAccess
+	Name string
+}

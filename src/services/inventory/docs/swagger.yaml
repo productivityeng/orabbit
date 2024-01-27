@@ -148,6 +148,23 @@ definitions:
       UserResponsibleEmail:
         type: string
     type: object
+  db.LockerVirtualHostModel:
+    properties:
+      Enabled:
+        type: boolean
+      Id:
+        type: integer
+      Reason:
+        type: string
+      UserDisabled:
+        type: string
+      UserResponsibleEmail:
+        type: string
+      VirtualHost:
+        $ref: '#/definitions/db.VirtualHostModel'
+      VirtualHostId:
+        type: integer
+    type: object
   db.QueueModel:
     properties:
       Arguments:
@@ -183,10 +200,12 @@ definitions:
     enum:
     - CLASSIC
     - QUORUM
+    - STREAM
     type: string
     x-enum-varnames:
     - QueueTypeClassic
     - QueueTypeQuorum
+    - QueueTypeStream
   db.UserModel:
     properties:
       Cluster:
@@ -216,18 +235,22 @@ definitions:
         $ref: '#/definitions/db.ClusterModel'
       ClusterId:
         type: integer
-      CreatedAt:
-        type: string
-      DeletedAt:
-        type: string
+      DefaultQueueType:
+        $ref: '#/definitions/db.QueueType'
       Description:
         type: string
       Id:
         type: integer
+      Lockers:
+        items:
+          $ref: '#/definitions/db.LockerVirtualHostModel'
+        type: array
       Name:
         type: string
-      UpdatedAt:
-        type: string
+      Tags:
+        items:
+          type: integer
+        type: array
     type: object
   dto.CreateExchangeDto:
     properties:
@@ -273,6 +296,13 @@ definitions:
     required:
     - ClusterId
     - Username
+    type: object
+  dto.ImportVirtualHostRequest:
+    properties:
+      Name:
+        type: string
+    required:
+    - Name
     type: object
   dto.QueueImportRequest:
     properties:
@@ -365,6 +395,32 @@ paths:
           schema:
             type: number
       summary: List all exchanges from cluster
+      tags:
+      - Exchange
+  /{clusterId}/exchange/{exchangeId}/syncronize:
+    post:
+      consumes:
+      - application/json
+      description: Syncronize a exchange between cluster and database
+      parameters:
+      - description: Cluster id from where retrieve exchanges
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      - description: Exchange id from database that will be deleted from cluster
+        in: path
+        name: exchangeId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: number
+      summary: Syncronize a exchange between cluster and database
       tags:
       - Exchange
   /{clusterId}/exchange/import:
@@ -816,28 +872,37 @@ paths:
       summary: Retrieve all virtual hosts from cluster and database
       tags:
       - VirtualHost
+  /{clusterId}/virtualhost/import:
     post:
       consumes:
       - application/json
-      description: Import or Create a new VirtualHost
+      description: Import  a new VirtualHost
       parameters:
       - description: Cluster id from where retrieve virtualhost
         in: path
         name: clusterId
         required: true
         type: integer
+      - description: Request
+        in: body
+        name: ImportVirtualHostRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ImportVirtualHostRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: ok
+          schema:
+            type: string
         "201":
           description: Created
         "404":
           description: Not Found
         "500":
           description: Internal Server Error
-      summary: Import or Create a new VirtualHost
+      summary: Import a new VirtualHost
       tags:
       - VirtualHost
   /cluster:
