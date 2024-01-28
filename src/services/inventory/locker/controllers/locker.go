@@ -17,6 +17,13 @@ func NewLockerController(DependencyLocator *core.DependencyLocator) *LockerContr
 	return &LockerController{DependencyLocator: DependencyLocator}
 }
 
+func (ctrl *LockerController) getEnabledLockerVirtualHost(clusterId int,artifactId int,c *gin.Context) (*db.LockerVirtualHostModel,error){
+	locker,err := ctrl.DependencyLocator.PrismaClient.LockerVirtualHost.FindFirst(
+		db.LockerVirtualHost.VirtualHostID.Equals(artifactId),
+		db.LockerVirtualHost.Enabled.Equals(true),
+	).Exec(c)
+	return locker,err
+}
 
 func (ctrl *LockerController) getEnabledLockerExhange(clusterId int,lockerType string,artifactId int,c *gin.Context) (*db.LockerExchangeModel,error){
 	locker,err := ctrl.DependencyLocator.PrismaClient.LockerExchange.FindFirst(
@@ -67,6 +74,13 @@ func (ctrl *LockerController) getLockerExchange(lockerId int,c *gin.Context) (*d
 	return locker,err
 }
 
+func (ctrl *LockerController) getLockerVirtualHost(lockerId int,c *gin.Context) (*db.LockerVirtualHostModel,error){
+	locker,err := ctrl.DependencyLocator.PrismaClient.LockerVirtualHost.FindUnique(
+		db.LockerVirtualHost.ID.Equals(lockerId),
+	).Exec(c)
+	return locker,err
+}
+
 
 func (ctrl *LockerController) disableLockerQueue(lockerId int,responsible string,c *gin.Context) (*db.LockerQueueModel,error){
 	log.WithFields(log.Fields{"lockerId":lockerId,"responsible":responsible}).Info("Disabling locker")
@@ -103,6 +117,19 @@ func (ctrl *LockerController) disableLockerExchange(lockerId int,responsible str
 	).Update(
 		db.LockerExchange.UserDisabled.Set(responsible),
 		db.LockerExchange.Enabled.Set(false),
+	).Exec(c)
+	if err != nil { return nil,err}
+	return updated,nil
+}
+
+func (ctrl *LockerController) disableLockerVirtualHost(lockerId int,responsible string,c *gin.Context) (*db.LockerVirtualHostModel,error) {
+	log.WithFields(log.Fields{"lockerId":lockerId,"responsible":responsible}).Info("Disabling locker")
+	updated,err := ctrl.DependencyLocator.PrismaClient.LockerVirtualHost.FindUnique(
+		db.LockerVirtualHost.ID.Equals(lockerId),
+		
+	).Update(
+		db.LockerVirtualHost.UserDisabled.Set(responsible),
+		db.LockerVirtualHost.Enabled.Set(false),
 	).Exec(c)
 	if err != nil { return nil,err}
 	return updated,nil

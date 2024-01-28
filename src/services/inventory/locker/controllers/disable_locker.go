@@ -48,6 +48,11 @@ func (ctrl *LockerController) DisableLocker(c *gin.Context) {
 			return
 		}
 
+		case "virtualhost": { 
+			ctrl.handleDisableLockerVirtualHost(lockerId,*lockerRequest,c)
+			return
+		}
+
 		default: {
 			c.JSON(http.StatusBadRequest,gin.H{"message":"locker type not found"})
 			return
@@ -109,6 +114,33 @@ func (ctrl *LockerController) handleDisableLockerExchange(lockerId int,lockerReq
 	}
 	log.WithFields(log.Fields{"locker":locker}).Info("Disabled locker")
 	c.JSON(http.StatusOK,locker)
+}
+
+
+func (ctrl *LockerController) handleDisableLockerVirtualHost(lockerId int,lockerRequest dto.DisableLockerRequest,c *gin.Context) {
+	locker,err := ctrl.getLockerVirtualHost(lockerId,c)
+
+	if errors.Is(err,db.ErrNotFound){ 
+		c.JSON(http.StatusNotFound,gin.H{"message":"locker not found"})
+		return
+	}else if err != nil { 
+		c.JSON(http.StatusInternalServerError,gin.H{"message":"error retrieving locker"})
+		return
+	}
+
+	if locker.Enabled == false { 
+		c.JSON(http.StatusConflict,gin.H{"message":"locker already disabled"})
+		return
+	}
+
+	disabledLocker,err := ctrl.disableLockerVirtualHost(lockerId,lockerRequest.Responsible,c)
+	if err != nil { 
+		c.JSON(http.StatusInternalServerError,gin.H{"message":"error disabling locker","error":err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusNoContent,disabledLocker)
+
 }
 
 

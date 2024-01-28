@@ -1,5 +1,7 @@
 package dto
 
+import "github.com/productivityeng/orabbit/db"
+
 type GetVirtualHostDto struct {
 	Id           int  `json:"Id"`
 	ClusterId   int  `json:"ClusterId"`
@@ -9,6 +11,7 @@ type GetVirtualHostDto struct {
 	IsInCluster  bool `json:"IsInCluster"`
 	DefaultQueueType string `json:"DefaultQueueType"`
 	Tags []string `json:"Tags"`
+	Lockers []db.LockerVirtualHostModel `json:"Lockers"`
 }
 
 type ImportVirtualHostRequest struct { 

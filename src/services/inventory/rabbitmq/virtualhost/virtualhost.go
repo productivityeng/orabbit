@@ -11,6 +11,7 @@ type VirtualHostManagement interface {
 	CreateVirtualHost(request CreateVirtualHostRequest) error
 	ListVirtualHosts(request ListVirtualHostRequest) ([]rabbithole.VhostInfo, error)
 	GetVirtualHost(request GetVirtualHostRequest) (*rabbithole.VhostInfo, error)
+	DeleteVirtualHost(request DeleteVirtualHostRequest) error
 }
 
 type VirtualHostManagementImpl struct {
@@ -73,4 +74,22 @@ func (management VirtualHostManagementImpl) GetVirtualHost(request GetVirtualHos
 	}
 
 	return vhost, nil
+}
+
+func (management VirtualHostManagementImpl) DeleteVirtualHost(request DeleteVirtualHostRequest) error {
+	rmqc, err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.RabbitAccess.Username, request.RabbitAccess.Password)
+	if err != nil {
+		logrus.WithError(err).Error(fmt.Sprintf("Ao criar client para o cluster %s com ususario %s", request.RabbitAccess.Host, request.RabbitAccess.Username))
+		return err
+	}
+
+	resp, err := rmqc.DeleteVhost(request.Name)
+
+	if err != nil {
+		logrus.WithError(err).Error(fmt.Sprintf("Erro ao remover usuario %s do cluster %s", request.Username, request.Host))
+		return err
+	}
+
+	logrus.WithField("resp", resp).Info("Virtual Host removido com sucesso")
+	return nil
 }

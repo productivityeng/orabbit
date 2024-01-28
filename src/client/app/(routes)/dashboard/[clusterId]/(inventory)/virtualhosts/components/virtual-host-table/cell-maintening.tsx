@@ -1,17 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { RabbitMqExchange } from "@/models/exchange";
+import { RabbitMqVirtualHost } from "@/models/virtualhosts";
 import { BadgeCheck, Hammer, RefreshCcw } from "lucide-react";
 import React from "react";
-import { VirtualHosts } from "../../models/virtualhosts";
 
-interface CellVirtualHostMainteningProps {
-  VirtualHost: VirtualHosts;
+interface CellMainteningProps {
+  Data: RabbitMqVirtualHost;
 }
-function CellVirtualHostMaintening({
-  VirtualHost,
-}: CellVirtualHostMainteningProps) {
-  if (VirtualHost.IsInCluster && !VirtualHost.IsInDatabase) {
+function CellMaintening({ Data }: CellMainteningProps) {
+  if (Data.IsInCluster && !Data.IsInDatabase) {
     return (
       <Button size="sm" variant="destructive">
         {<Hammer className="w-4 h-4 fill-white mx-1" />}
@@ -20,7 +19,7 @@ function CellVirtualHostMaintening({
     );
   }
 
-  if (VirtualHost.IsInDatabase && VirtualHost.IsInCluster) {
+  if (Data.IsInDatabase && Data.IsInCluster) {
     return (
       <Button size="sm" variant="success">
         {<BadgeCheck className="w-4 h-4  mx-1" />}
@@ -29,7 +28,7 @@ function CellVirtualHostMaintening({
     );
   }
 
-  if (VirtualHost.IsInDatabase && !VirtualHost.IsInCluster) {
+  if (Data.IsInDatabase && !Data.IsInCluster) {
     return (
       <Button size="sm" variant="warn">
         {<RefreshCcw className="w-4 h-4  mx-1" />}
@@ -41,4 +40,4 @@ function CellVirtualHostMaintening({
   return <p>ERROR</p>;
 }
 
-export default CellVirtualHostMaintening;
+export default CellMaintening;

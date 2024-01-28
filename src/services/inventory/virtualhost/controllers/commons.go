@@ -22,6 +22,19 @@ func (ctrl VirtualHostControllerImpl) parseClusterIdParams(c *gin.Context) (int,
 	return int(clusterId), nil
 }
 
+
+
+func (ctrl VirtualHostControllerImpl) parseVirtualHostIdParams(c *gin.Context) (int, error) {
+	virtualHostIdParam := c.Param("virtualHostId")
+	virtualHostId, err := strconv.ParseInt(virtualHostIdParam, 10, 32)
+	if err != nil {
+		log.WithError(err).WithField("clusterId", virtualHostIdParam).Error("Fail to parse virtualHostId Param")
+		c.JSON(http.StatusBadRequest, "Error parsing virtualHostId from url route")
+		return 0, err
+	}
+	return int(virtualHostId), nil
+}
+
 func (ctrl VirtualHostControllerImpl) getClusterById(clusterId int, c *gin.Context) (*db.ClusterModel, error) {
 	cluster,err := ctrl.DependencyLocator.PrismaClient.Cluster.FindUnique(db.Cluster.ID.Equals(clusterId)).Exec(c)
 	if errors.Is(err, db.ErrNotFound) {

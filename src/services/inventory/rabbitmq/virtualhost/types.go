@@ -7,6 +7,8 @@ type CreateVirtualHostRequest struct {
 	common.RabbitAccess
 	Name        string
 	Description string
+	DefaultQueueType string
+	Tags []string
 }
 
 type ListVirtualHostRequest struct {
@@ -14,6 +16,11 @@ type ListVirtualHostRequest struct {
 }
 
 type GetVirtualHostRequest struct { 
+	common.RabbitAccess
+	Name string
+}
+
+type DeleteVirtualHostRequest struct { 
 	common.RabbitAccess
 	Name string
 }

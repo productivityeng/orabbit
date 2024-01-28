@@ -50,6 +50,11 @@ func (ctrl *LockerController) CreateLocker(c *gin.Context) {
 			return
 		}
 
+		case "virtualhost":{ 
+			ctrl.handleCreateLockerForVirtualHost(*createLockerRequest,clusterId,artifactId,c)
+			return
+		}
+
 		default:
 			c.JSON(http.StatusBadRequest,gin.H{"message":"invalid locker type"})
 				return
@@ -137,3 +142,29 @@ func (ctrl *LockerController) handleCreateLockerForExchange(createLockerRequest 
 			c.JSON(http.StatusCreated,lockerQueue)
 }
 
+func (ctrl *LockerController) handleCreateLockerForVirtualHost(createLockerRequest dto.CreateLockerRequest,clusterId int,artifactId int,c *gin.Context) {
+	enabledLocker,err := ctrl.getEnabledLockerVirtualHost(clusterId,artifactId,c)
+	if err != nil && !errors.Is(err,db.ErrNotFound){ 
+		c.JSON(http.StatusInternalServerError,gin.H{"message":"error retrieving locker for virtualhost","error": err.Error()})
+		return 
+	}
+
+	if enabledLocker != nil { 
+		c.JSON(http.StatusConflict,gin.H{"message":"enabled locker already exists"})
+		return 
+	}
+
+	lockerVirtualHost,err := ctrl.DependencyLocator.PrismaClient.LockerVirtualHost.CreateOne(
+		db.LockerVirtualHost.VirtualHost.Link(db.VirtualHost.ID.Equals(artifactId)),
+		db.LockerVirtualHost.Enabled.Set(true),
+		db.LockerVirtualHost.Reason.Set(createLockerRequest.Reason),
+		db.LockerVirtualHost.UserResponsibleEmail.Set(createLockerRequest.Responsible),
+	).Exec(c)
+
+	if err != nil { 
+		c.JSON(http.StatusInternalServerError,gin.H{"message":"error creating locker","error": err.Error()})
+		return 
+	}
+
+	c.JSON(http.StatusCreated,lockerVirtualHost)
+}

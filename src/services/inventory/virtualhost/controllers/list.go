@@ -45,7 +45,9 @@ func (controller VirtualHostControllerImpl) ListVirtualHost(c *gin.Context) {
 	}
 
 
-	vhostsFromDatabase, err := controller.DependencyLocator.PrismaClient.VirtualHost.FindMany(db.VirtualHost.ClusterID.Equals(clusterId)).Exec(c)
+	vhostsFromDatabase, err := controller.DependencyLocator.PrismaClient.VirtualHost.FindMany(db.VirtualHost.ClusterID.Equals(clusterId)).With(
+		db.VirtualHost.Lockers.Fetch(),
+	).Exec(c)
 	if err != nil {
 		log.WithError(err).Error("Erro ao obter a lista de VirtualHosts do banco de dados")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -72,6 +74,8 @@ func (ctrl *VirtualHostControllerImpl) buildListVirtualHostResponse(vhostFromClu
 					IsInDatabase: true,
 					IsInCluster:  true,
 					Tags: 	   vhostFromCluster.Tags,
+					DefaultQueueType: vhostFromCluster.DefaultQueueType,
+					Lockers: vhostFromDatabase.Lockers(),
 				})
 				continue loop_cluster
 			}
@@ -84,6 +88,8 @@ func (ctrl *VirtualHostControllerImpl) buildListVirtualHostResponse(vhostFromClu
 			IsInCluster: true,
 			IsInDatabase: false,
 			Tags: 	   vhostFromCluster.Tags,
+			DefaultQueueType: vhostFromCluster.DefaultQueueType,
+			Lockers: make([]db.LockerVirtualHostModel,0),
 		})
 	}
 
@@ -103,8 +109,9 @@ func (ctrl *VirtualHostControllerImpl) buildListVirtualHostResponse(vhostFromClu
 			IsInCluster: false,
 			IsInDatabase: true,
 			Tags: tags_array,
-			
-		})
+			DefaultQueueType: vhostFromDatabase.DefaultQueueType.String(),
+			Lockers: vhostFromDatabase.Lockers(),
+		})	
 	}
 
 	return response

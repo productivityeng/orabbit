@@ -1037,6 +1037,96 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/{clusterId}/virtualhost/{virtualHostId}": {
+            "delete": {
+                "description": "Delete a virtualhost from cluster",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "VirtualHost"
+                ],
+                "summary": "Delete a virtualhost from cluster",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve virtualhost",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "VirtualHost id from database to delete",
+                        "name": "virtualHostId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/{clusterId}/virtualhost/{virtualHostId}/syncronize": {
+            "post": {
+                "description": "Syncronize a virtualhost from database with cluster",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "VirtualHost"
+                ],
+                "summary": "Syncronize a virtualhost from database with cluster",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cluster id from where retrieve virtualhost",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "VirtualHost id from database to delete",
+                        "name": "virtualHostId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1340,9 +1430,9 @@ const docTemplate = `{
         "db.QueueType": {
             "type": "string",
             "enum": [
-                "CLASSIC",
-                "QUORUM",
-                "STREAM"
+                "classic",
+                "quorum",
+                "stream"
             ],
             "x-enum-varnames": [
                 "QueueTypeClassic",

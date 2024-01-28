@@ -198,9 +198,9 @@ definitions:
     type: object
   db.QueueType:
     enum:
-    - CLASSIC
-    - QUORUM
-    - STREAM
+    - classic
+    - quorum
+    - stream
     type: string
     x-enum-varnames:
     - QueueTypeClassic
@@ -870,6 +870,66 @@ paths:
         "500":
           description: Internal Server Error
       summary: Retrieve all virtual hosts from cluster and database
+      tags:
+      - VirtualHost
+  /{clusterId}/virtualhost/{virtualHostId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a virtualhost from cluster
+      parameters:
+      - description: Cluster id from where retrieve virtualhost
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      - description: VirtualHost id from database to delete
+        in: path
+        name: virtualHostId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete a virtualhost from cluster
+      tags:
+      - VirtualHost
+  /{clusterId}/virtualhost/{virtualHostId}/syncronize:
+    post:
+      consumes:
+      - application/json
+      description: Syncronize a virtualhost from database with cluster
+      parameters:
+      - description: Cluster id from where retrieve virtualhost
+        in: path
+        name: clusterId
+        required: true
+        type: integer
+      - description: VirtualHost id from database to delete
+        in: path
+        name: virtualHostId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "201":
+          description: Created
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Syncronize a virtualhost from database with cluster
       tags:
       - VirtualHost
   /{clusterId}/virtualhost/import:
