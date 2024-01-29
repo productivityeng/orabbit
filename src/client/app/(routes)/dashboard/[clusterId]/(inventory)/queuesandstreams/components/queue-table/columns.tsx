@@ -50,6 +50,10 @@ export const RabbitMqQueueColumn: ColumnDef<RabbitMqQueue>[] = [
     header: "Type",
   },
   {
+    accessorKey: "VHost",
+    header: "Virtual Host",
+  },
+  {
     accessorKey: "Lockers",
     header: () => <b>Locked</b>,
     cell: ({ row }) => <CellLocker RabbitMqQueue={row.original} />,

@@ -9,6 +9,7 @@ import (
 	"github.com/productivityeng/orabbit/db"
 	"github.com/productivityeng/orabbit/queue/dto"
 	"github.com/productivityeng/orabbit/rabbitmq/queue"
+	"github.com/productivityeng/orabbit/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -35,6 +36,9 @@ func (q QueueControllerImpl) RemoveQueueFromCluster(c *gin.Context) {
 	if err != nil {
 		return
 	 }
+
+	err = utils.VerifyIfVirtualHostIsLockedById(q.DependencyLocator.PrismaClient, queueFromDb.VirtualHostID,c)
+	if err != nil { return }
 
 	cluster,err := q.getClusterByid(c,clusterId)
 

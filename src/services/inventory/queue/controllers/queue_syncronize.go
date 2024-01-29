@@ -113,6 +113,7 @@ func (controller QueueControllerImpl) getClusterByid(c *gin.Context,clusterId in
 func(controller QueueControllerImpl) getQueueById(c *gin.Context,queueId int) (*db.QueueModel, error) { 
 	queueFromDb,err := controller.DependencyLocator.PrismaClient.Queue.FindUnique(db.Queue.ID.Equals(queueId)).With(
 		db.Queue.LockerQueues.Fetch(),
+		db.Queue.VirtualHost.Fetch(),
 	).Exec(c)
 
 	if errors.Is(err, db.ErrNotFound) { 

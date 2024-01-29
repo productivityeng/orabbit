@@ -13,18 +13,38 @@ import { log } from "console";
  */
 export async function ImportQueueFromClusterAction(
   clusterId: number,
+  VirtualHostName: string,
   queueName: string
 ) {
   const importQueueFromClusterEndpoint = `${process.env
     .PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/queue/import`;
+  const body = JSON.stringify({
+    QueueName: queueName,
+    VirtualHostName: VirtualHostName,
+  });
 
-  await fetch(importQueueFromClusterEndpoint, {
+  console.info(
+    `Sending request to ${importQueueFromClusterEndpoint} with body ${body}`
+  );
+
+  let result = await fetch(importQueueFromClusterEndpoint, {
     method: "POST",
     cache: "no-store",
-    body: JSON.stringify({
-      QueueName: queueName,
-    }),
+    body,
   });
+  console.info(`Receiving response ${result.status} `);
+  switch (result.status) {
+    case 201:
+    case 200:
+      return { ErrorMessage: null, Result: true };
+    case 400:
+    case 500: {
+      const bodyResponse = (await result.json()) as { error: string };
+      return { ErrorMessage: bodyResponse.error, Result: false };
+    }
+    default:
+      return { ErrorMessage: `[UNKNOW_ERROR]`, Result: false };
+  }
 }
 
 export async function fetchQeueusFromCluster(

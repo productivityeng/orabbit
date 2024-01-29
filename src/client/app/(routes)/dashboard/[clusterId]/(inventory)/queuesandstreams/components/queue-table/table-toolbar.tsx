@@ -68,13 +68,20 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
     if (!selectedQueue) return;
     let toastId = toast.loading(<p>Importando filas selecionadas ...</p>);
     try {
-      await ImportQueueFromClusterAction(
+      let result = await ImportQueueFromClusterAction(
         selectedQueue.ClusterId,
+        selectedQueue.VHost,
         selectedQueue.Name
       );
-      toast.success(<p>Filas importadas</p>, { id: toastId });
-      router.refresh();
-      table.toggleAllRowsSelected(false);
+      if (result.Result) {
+        toast.success(<p>Filas importadas</p>, { id: toastId });
+        router.refresh();
+        table.toggleAllRowsSelected(false);
+      } else {
+        toast.error(<p>Erro ao importar fila: {result.ErrorMessage} </p>, {
+          id: toastId,
+        });
+      }
     } catch (error) {
       toast.error(<p>Erro ao importar filas</p>, { id: toastId });
     }

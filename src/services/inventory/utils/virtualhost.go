@@ -28,7 +28,7 @@ func VerifyIfVirtualHostIsLockedById(prismaClient *db.PrismaClient, virtualHostI
 	}
 	
 	if result != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("VirtualHost %s is locked by %s", result.VirtualHost().Name,result.UserResponsibleEmail)})
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("VirtualHost of this queue is locked by %s",result.UserResponsibleEmail)})
 		return errors.New("VirtualHost is locked")
 	}
 

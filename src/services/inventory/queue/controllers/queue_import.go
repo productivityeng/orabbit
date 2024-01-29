@@ -12,6 +12,7 @@ import (
 	"github.com/productivityeng/orabbit/queue/dto"
 	"github.com/productivityeng/orabbit/rabbitmq/common"
 	"github.com/productivityeng/orabbit/rabbitmq/queue"
+	"github.com/productivityeng/orabbit/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -56,6 +57,7 @@ func (q QueueControllerImpl) ImportQueueFromCluster(c *gin.Context) {
 		return
 	}
 
+
 	virtualHost,err :=q.DependencyLocator.PrismaClient.VirtualHost.FindUnique(db.VirtualHost.Name.Equals(queueFromCluster.Vhost)).Exec(c)
 	if errors.Is(err, db.ErrNotFound) { 
 		c.JSON(http.StatusConflict, gin.H{"error": fmt.Sprintf("VirtualHost %s is not registered in database",queueFromCluster.Vhost)})
@@ -64,12 +66,17 @@ func (q QueueControllerImpl) ImportQueueFromCluster(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	
 
 	if queueFromCluster == nil {
 		log.WithFields(fields).Warn("Queue not found in cluster")
 		c.JSON(http.StatusNotFound, gin.H{"error": "[QUEUE_NOTFOUND_INCLUSTER]"})
 		return
 	}
+
+
+	err = utils.VerifyIfVirtualHostIsLockedById(q.DependencyLocator.PrismaClient, virtualHost.ID,c)
+	if err != nil { return }
 
 	argumentsJson,err:=  json.Marshal(queueFromCluster.Arguments)
 	if err != nil { 

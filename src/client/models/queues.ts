@@ -4,7 +4,7 @@ export type RabbitMqQueue = {
   ID: number;
   ClusterId: number;
   Type: string;
-  Vhost: string;
+  VHost: string;
   Arguments: Map<string, string>;
   Name: string;
   IsInCluster: boolean;
