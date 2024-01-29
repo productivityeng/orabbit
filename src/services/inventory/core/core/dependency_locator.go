@@ -3,9 +3,9 @@ package core
 import (
 	"github.com/productivityeng/orabbit/contracts"
 	"github.com/productivityeng/orabbit/db"
-	"github.com/productivityeng/orabbit/rabbitmq/exchange"
-	"github.com/productivityeng/orabbit/rabbitmq/user"
-	"github.com/productivityeng/orabbit/rabbitmq/virtualhost"
+	"github.com/productivityeng/orabbit/pkg/rabbitmq/exchange"
+	"github.com/productivityeng/orabbit/pkg/rabbitmq/user"
+	"github.com/productivityeng/orabbit/pkg/rabbitmq/virtualhost"
 )
 
 

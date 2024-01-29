@@ -1,6 +1,7 @@
 package contracts
 
-import "github.com/productivityeng/orabbit/rabbitmq/common"
+import "github.com/productivityeng/orabbit/pkg/rabbitmq/common"
+
 
 
 

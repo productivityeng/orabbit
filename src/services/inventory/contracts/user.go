@@ -4,7 +4,7 @@ import (
 	"context"
 
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
-	"github.com/productivityeng/orabbit/rabbitmq/common"
+	"github.com/productivityeng/orabbit/pkg/rabbitmq/common"
 )
 
 

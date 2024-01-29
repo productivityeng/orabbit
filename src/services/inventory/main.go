@@ -2,14 +2,14 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/productivityeng/orabbit/cluster"
+	"github.com/productivityeng/orabbit/controllers/cluster"
+	"github.com/productivityeng/orabbit/controllers/exchange"
+	"github.com/productivityeng/orabbit/controllers/locker"
+	"github.com/productivityeng/orabbit/controllers/queue"
+	"github.com/productivityeng/orabbit/controllers/user"
+	"github.com/productivityeng/orabbit/controllers/virtualhost"
 	"github.com/productivityeng/orabbit/core/core"
 	"github.com/productivityeng/orabbit/docs"
-	"github.com/productivityeng/orabbit/exchange"
-	"github.com/productivityeng/orabbit/locker"
-	"github.com/productivityeng/orabbit/queue"
-	"github.com/productivityeng/orabbit/user"
-	"github.com/productivityeng/orabbit/virtualhost"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 

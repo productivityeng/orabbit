@@ -2,8 +2,8 @@ package contracts
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/productivityeng/orabbit/exchange/dto"
-	"github.com/productivityeng/orabbit/rabbitmq/common"
+	"github.com/productivityeng/orabbit/controllers/exchange/dto"
+	"github.com/productivityeng/orabbit/pkg/rabbitmq/common"
 )
 
 
