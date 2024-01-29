@@ -43,6 +43,8 @@ model VirtualHost {
     Cluster Cluster @relation(fields: [ClusterId], references: [Id],onDelete: Cascade)
 
     Lockers LockerVirtualHost[]
+    Queues Queue[]
+    Exchanges Exchange[]
 
     @@unique([Name, ClusterId],name: "UNIQUE_NAME_CLUSTERID")
     @@map("TB_VIRTUALHOST")
@@ -64,7 +66,8 @@ model Queue {
 
     ClusterId Int @map("FK_CLUSTER_ID")
     Cluster Cluster @relation(fields: [ClusterId], references: [Id],onDelete: Cascade)
-
+    VirtualHostId Int @map("FK_VIRTUALHOST_ID")
+    VirtualHost VirtualHost @relation(fields: [VirtualHostId], references: [Id],onDelete: Cascade)
 
     UpdatedAt DateTime @updatedAt @map("DT_UPDATED_AT")
     CreatedAt DateTime @default(now()) @map("DT_CREATED_AT")
@@ -72,6 +75,7 @@ model Queue {
 
     LockerQueues LockerQueue[]
 
+    @@unique([Name,VirtualHostId],name: "UNIQUE_NAME_VIRTUALHOSTID")
     @@unique([Name, ClusterId],name: "UNIQUE_NAME_CLUSTERID")
     @@map("TB_QUEUE")
 }
@@ -82,6 +86,7 @@ model User {
     PasswordHash String @map("TX_PASSWORD_HASH")
     ClusterId Int @map("FK_CLUSTER_ID")
     Cluster Cluster @relation(fields: [ClusterId], references: [Id],onDelete: Cascade)
+    
 
     UpdatedAt DateTime @updatedAt @map("DT_UPDATED_AT")
     CreatedAt DateTime @default(now()) @map("DT_CREATED_AT")
@@ -100,6 +105,8 @@ model Exchange {
 
     ClusterId Int @map("FK_CLUSTER_ID")
     Cluster Cluster @relation(fields: [ClusterId], references: [Id],onDelete: Cascade)
+    VirtualHostId Int @map("FK_VIRTUALHOST_ID")
+    VirtualHost VirtualHost @relation(fields: [VirtualHostId], references: [Id],onDelete: Cascade)
     Name String @map("TX_NAME")  @unique
     Internal Boolean @map("IS_INTERNAL")
     Durable Boolean @map("IS_DURABLE")

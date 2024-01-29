@@ -88,6 +88,7 @@ func (ctrl *ExchangeController) saveExchangeInDatabase(requestBody dto.CreateExc
 
 	exchangeSaved,err := ctrl.DependencyLocator.PrismaClient.Exchange.UpsertOne(constraint_upset).Create(
 		db.Exchange.Cluster.Link(db.Cluster.ID.Equals(clusterId)),
+		db.Exchange.VirtualHost.Link(db.VirtualHost.ID.Equals(requestBody.VirtualHostId)),
 		db.Exchange.Name.Set(requestBody.Name),
 		db.Exchange.Internal.Set(requestBody.Internal),
 		db.Exchange.Durable.Set(requestBody.Durable),

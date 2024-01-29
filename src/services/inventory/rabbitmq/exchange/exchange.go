@@ -96,7 +96,7 @@ func (management ExchangeManagementImpl) GetExchangeByName(request contracts.Get
 	}
 	exchange,err := rmqc.GetExchange("/",request.Name)
 	if err != nil { 
-		logrus.WithContext(c).WithError(err).Error("Error trying to get exchange")
+		logrus.WithContext(c).WithField("exchange",exchange).WithError(err).Error("Error trying to get exchange")
 		return nil,err
 	 }else {
 		logrus.WithContext(c).WithField("response", exchange).Info("Exchange retrieved")

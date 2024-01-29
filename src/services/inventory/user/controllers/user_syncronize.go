@@ -8,8 +8,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/cluster/models"
+	"github.com/productivityeng/orabbit/contracts"
 	"github.com/productivityeng/orabbit/db"
-	rabbitmq_user "github.com/productivityeng/orabbit/rabbitmq/user"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -46,12 +46,12 @@ func (entity *UserControllerImpl) SyncronizeUser(c *gin.Context)  {
 	err = entity.verifyIfUserIsLocked(c,user)
 	if err != nil { return }
 
-	createUserRequest :=  rabbitmq_user.CreateNewUserWithHashPasswordRequest{
+	createUserRequest :=  contracts.CreateNewUserWithHashPasswordRequest{
 		RabbitAccess:     models.GetRabbitMqAccess(cluster),
 		UsernameToCreate: user.Username,
 		PasswordHash:     user.PasswordHash,
 	}
-	_, err = entity.UserManagement.CreateNewUserWithHashPassword(createUserRequest, c)
+	_, err = entity.DependencyLocator.UserManagement.CreateNewUserWithHashPassword(createUserRequest, c)
 
 	if err != nil {
 		log.WithContext(c).WithField("request", createUserRequest).WithError(err).Error("Erro ao criar usuario no cluster")

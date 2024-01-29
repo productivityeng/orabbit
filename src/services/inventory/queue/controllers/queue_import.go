@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -32,8 +33,6 @@ func (q QueueControllerImpl) ImportQueueFromCluster(c *gin.Context) {
 	clusterId, queueImportRequest, err := q.parseImportQueueFromCluster(c)
 	if err != nil { return}
 
-	
-
 	fields := log.Fields{"request": fmt.Sprintf("%+v", queueImportRequest)}
 
 	log.WithFields(fields).Info("looking for broker")
@@ -51,7 +50,17 @@ func (q QueueControllerImpl) ImportQueueFromCluster(c *gin.Context) {
 		},
 		Queue: queueImportRequest.QueueName,
 	})
+
 	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	virtualHost,err :=q.DependencyLocator.PrismaClient.VirtualHost.FindUnique(db.VirtualHost.Name.Equals(queueFromCluster.Vhost)).Exec(c)
+	if errors.Is(err, db.ErrNotFound) { 
+		c.JSON(http.StatusConflict, gin.H{"error": fmt.Sprintf("VirtualHost %s is not registered in database",queueFromCluster.Vhost)})
+		return
+	}else if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -79,6 +88,7 @@ func (q QueueControllerImpl) ImportQueueFromCluster(c *gin.Context) {
 		db.Queue.Arguments.Set(argumentsJson),
 		db.Queue.Type.Set(db.ParseQueueType(queueFromCluster.Type)),
 		db.Queue.Cluster.Link(db.Cluster.ID.Equals(clusterId)),
+		db.Queue.VirtualHost.Link(db.VirtualHost.ID.Equals(virtualHost.ID)),
 	).Update(
 		db.Queue.Name.Set(queueFromCluster.Name),
 		db.Queue.Description.Set(queueFromCluster.Name),

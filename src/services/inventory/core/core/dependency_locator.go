@@ -4,6 +4,7 @@ import (
 	"github.com/productivityeng/orabbit/contracts"
 	"github.com/productivityeng/orabbit/db"
 	"github.com/productivityeng/orabbit/rabbitmq/exchange"
+	"github.com/productivityeng/orabbit/rabbitmq/user"
 	"github.com/productivityeng/orabbit/rabbitmq/virtualhost"
 )
 
@@ -12,7 +13,7 @@ type DependencyLocator struct {
 	PrismaClient *db.PrismaClient
 	ExchangeManagement contracts.ExchangeManagement
 	VirtualHostManagement virtualhost.VirtualHostManagement
-
+	UserManagement contracts.UserManagement
 }
 
 func NewDependencyLocator() (*DependencyLocator) { 
@@ -23,6 +24,6 @@ func NewDependencyLocator() (*DependencyLocator) {
 
 	
 	return &DependencyLocator{ PrismaClient: client, ExchangeManagement: exchange.NewExchangeManagement(),
-	VirtualHostManagement: virtualhost.NewirtualHostManagement(),}
+	VirtualHostManagement: virtualhost.NewirtualHostManagement(),UserManagement: user.NewUserManagement(),}
 
 }

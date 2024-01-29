@@ -6,10 +6,9 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/productivityeng/orabbit/contracts"
 	"github.com/productivityeng/orabbit/db"
 	"github.com/productivityeng/orabbit/rabbitmq/common"
-	"github.com/productivityeng/orabbit/rabbitmq/user"
-	rabbitmq_user "github.com/productivityeng/orabbit/rabbitmq/user"
 	"github.com/productivityeng/orabbit/user/dto"
 	log "github.com/sirupsen/logrus"
 )
@@ -43,7 +42,7 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 
 	log.WithFields(fields).Info("Looking for rabbitmq users from cluster")
 
-	usersFromCluster, err := userCtrl.UserManagement.ListAllUser(rabbitmq_user.ListAllUsersRequest{RabbitAccess: common.RabbitAccess{
+	usersFromCluster, err := userCtrl.DependencyLocator.UserManagement.ListAllUser(contracts.ListAllUsersRequest{RabbitAccess: common.RabbitAccess{
 		Host:     cluster.Host,
 		Port:     cluster.Port,
 		Username: cluster.User,
@@ -78,7 +77,7 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 
 // ListUsersFromCluster
 //Merge users from rabbitmq cluster and ostern database in a single response
-func (controller *UserControllerImpl) buildUserListResponse(usersFromCluster []user.ListUserResult,usersFromDb []db.UserModel,clusterId int,c *gin.Context) dto.GetUserResponseList {
+func (controller *UserControllerImpl) buildUserListResponse(usersFromCluster []contracts.ListUserResult,usersFromDb []db.UserModel,clusterId int,c *gin.Context) dto.GetUserResponseList {
 	response := make(dto.GetUserResponseList,0)
 
 	for _, userFromCluster := range usersFromCluster {

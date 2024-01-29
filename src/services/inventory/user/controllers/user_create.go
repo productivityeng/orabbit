@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/productivityeng/orabbit/cluster/models"
 	"github.com/productivityeng/orabbit/contracts"
 	"github.com/productivityeng/orabbit/db"
 	"github.com/productivityeng/orabbit/user/dto"
@@ -58,17 +59,13 @@ func (controller *UserControllerImpl) CreateUser(c *gin.Context) {
 	}
 	
 
+	access := models.GetRabbitMqAccess(cluster)
 
 	var passwordHash string
 	if importUserReuqest.Create {
 		log.WithFields(fields).Info("User want to create a new user")
-		result, err := controller.UserManagement.CreateNewUser(contracts.CreateNewUserRequest{
-			RabbitAccess: contracts.RabbitAccess{
-				Host:     cluster.Host,
-				Port:     cluster.Port,
-				Username: cluster.User,
-				Password: cluster.Password,
-			},
+		result, err := controller.DependencyLocator.UserManagement.CreateNewUser(contracts.CreateNewUserRequest{
+			RabbitAccess: access,
 			UserToCreate:            importUserReuqest.Username,
 			PasswordOfUsertToCreate: importUserReuqest.Password,
 		}, c)
@@ -82,13 +79,10 @@ func (controller *UserControllerImpl) CreateUser(c *gin.Context) {
 	} else {
 		log.WithFields(fields).Info("broker founded")
 		log.WithFields(fields).Info("looking for passwordhash")
-		passwordHash, err = controller.UserManagement.GetUserHash(contracts.GetUserHashRequest{
-			RabbitAccess: contracts.RabbitAccess{
-				Host:     cluster.Host,
-				Port:     cluster.Port,
-				Username: cluster.User,
-				Password: cluster.Password,
-			},
+
+		access := models.GetRabbitMqAccess(cluster)
+		passwordHash, err = controller.DependencyLocator.UserManagement.GetUserHash(contracts.GetUserHashRequest{
+			RabbitAccess:access,
 			UserToRetrieveHash: importUserReuqest.Username,
 		}, c)
 

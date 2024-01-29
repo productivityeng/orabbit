@@ -3,7 +3,6 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/core/core"
-	"github.com/productivityeng/orabbit/rabbitmq/user"
 )
 
 type UserController interface {
@@ -17,13 +16,10 @@ type UserController interface {
 
 type UserControllerImpl struct {
 	DependencyLocator *core.DependencyLocator 
-	UserManagement    user.UserManagement
 }
 
-func NewUserController(DependencyLocator *core.DependencyLocator,
-	userManagement user.UserManagement) *UserControllerImpl {
-	return &UserControllerImpl{DependencyLocator: DependencyLocator,
-		UserManagement:    userManagement}
+func NewUserController(DependencyLocator *core.DependencyLocator) *UserControllerImpl {
+	return &UserControllerImpl{DependencyLocator: DependencyLocator}
 }
 
 func (entity *UserControllerImpl) GetEntity(c *gin.Context) {

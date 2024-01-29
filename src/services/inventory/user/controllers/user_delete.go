@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/cluster/models"
-	rabbitmq_user "github.com/productivityeng/orabbit/rabbitmq/user"
+	"github.com/productivityeng/orabbit/contracts"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -54,11 +54,11 @@ func (ctrl *UserControllerImpl) DeleteUser(c *gin.Context) {
 
 	log.WithField("cluster", cluster).Info("cluster found")
 
-	deleteUserRequest := rabbitmq_user.DeleteUserRequest{
+	deleteUserRequest := contracts.DeleteUserRequest{
 		RabbitAccess: models.GetRabbitMqAccess(cluster),
 		Username:     userFromDb.Username,
 	}
-	err = ctrl.UserManagement.DeleteUser(deleteUserRequest, c)
+	err = ctrl.DependencyLocator.UserManagement.DeleteUser(deleteUserRequest, c)
 
 	if err != nil {
 		log.WithError(err).WithField("request", deleteUserRequest).Error("Erro ao deletar usuario no rabbit")
