@@ -7,12 +7,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/productivityeng/orabbit/contracts"
 	"github.com/productivityeng/orabbit/core/core"
-	"github.com/productivityeng/orabbit/core/validators"
 	"github.com/productivityeng/orabbit/db"
 	"github.com/productivityeng/orabbit/models"
 	"github.com/productivityeng/orabbit/pkg/rabbitmq/virtualhost"
 	log "github.com/sirupsen/logrus"
 )
+
+
 
 type ClusterController interface {
 	GetCluster(c *gin.Context)
@@ -25,11 +26,10 @@ type ClusterController interface {
 
 type clusterControllerDefaultImp struct {
 	DependencyLocator *core.DependencyLocator
-	ClusterValidator  validators.ClusterValidator
 }
 
-func NewClusterController(DependencyLocator *core.DependencyLocator, ClusterValidator validators.ClusterValidator) *clusterControllerDefaultImp {
-	return &clusterControllerDefaultImp{DependencyLocator,  ClusterValidator}
+func NewClusterController(DependencyLocator *core.DependencyLocator) *clusterControllerDefaultImp {
+	return &clusterControllerDefaultImp{DependencyLocator}
 }
 
 // @BasePath /

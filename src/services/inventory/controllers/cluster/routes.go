@@ -4,15 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	broker_controller "github.com/productivityeng/orabbit/controllers/cluster/resources"
 	"github.com/productivityeng/orabbit/core/core"
-	"github.com/productivityeng/orabbit/core/validators"
 )
 
 var clusterController broker_controller.ClusterController
-var clusterValidator validators.ClusterValidator
 
 func Routes(routes *gin.Engine, DependencyLocator *core.DependencyLocator) {
-	clusterValidator = validators.NewClusterValidatorDefault(DependencyLocator)
-	clusterController = broker_controller.NewClusterController(DependencyLocator, clusterValidator)
+	clusterController = broker_controller.NewClusterController(DependencyLocator)
 
 	brokerResourcePath := "/:clusterId"
 	clusterRoutes := routes.Group("/cluster")

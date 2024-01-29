@@ -1,4 +1,0 @@
-1. Importacao dos artefatos padrao com locker na importao do cluster
-2. Verificar se o virtual host nao esta com locker antes de efeturar as alteracoes
-3. Definir o registro dos bindings
-4. Definir o registro das permissoes do usuario
