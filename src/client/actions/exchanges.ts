@@ -35,20 +35,26 @@ export async function fetchExchangesFromCluster(
  */
 export async function importExchangeFromClusterAction(
   clusterId: number,
-  exchangeName: string
+  exchangeName: string,
+  VirtualHostName: string
 ) {
   console.info(`Importing exchange ${exchangeName} from cluster ${clusterId}`);
 
   const importExchangeFromClusterEndpoint = `${process.env
     .PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/exchange/import`;
-
-  console.info(`Sending request to ${importExchangeFromClusterEndpoint}`);
+  const body = JSON.stringify({
+    Name: exchangeName,
+    VirtualHostName: VirtualHostName,
+  });
+  console.info(
+    `Sending request to ${importExchangeFromClusterEndpoint} with body ${JSON.stringify(
+      body
+    )}`
+  );
   let result = await fetch(importExchangeFromClusterEndpoint, {
     method: "POST",
     cache: "no-store",
-    body: JSON.stringify({
-      Name: exchangeName,
-    }),
+    body: body,
   });
 
   console.info(

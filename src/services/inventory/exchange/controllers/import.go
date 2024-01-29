@@ -10,6 +10,7 @@ import (
 	"github.com/productivityeng/orabbit/contracts"
 	"github.com/productivityeng/orabbit/db"
 	"github.com/productivityeng/orabbit/exchange/dto"
+	"github.com/productivityeng/orabbit/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -40,6 +41,19 @@ func (ctrl *ExchangeController) ImportExchange(c *gin.Context)  {
 	err = ctrl.verifyIfExchangesIsAlreadyInDatabase(requestBody.Name,c)
 	if err != nil { return }
 
+	virtualHost,err := ctrl.DependencyLocator.PrismaClient.VirtualHost.FindUnique(db.VirtualHost.Name.Equals(requestBody.VirtualHostName)).Exec(c)
+	if errors.Is(err, db.ErrNotFound) { 
+		c.JSON(http.StatusBadRequest, gin.H{"error": "VirtualHost not found"})
+		return 
+	}else if err != nil { 
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to retrieve virtual host"})
+		return 
+	}
+
+	err = utils.VerifyIfVirtualHostIsLockedById(ctrl.DependencyLocator.PrismaClient, virtualHost.ID,c)
+	if err != nil { return }
+
+
 	rabbit_access := models.GetRabbitMqAccess(cluster)
 	
 	exchange,err :=ctrl.DependencyLocator.ExchangeManagement.GetExchangeByName(contracts.GetExchangeRequest{
@@ -49,7 +63,7 @@ func (ctrl *ExchangeController) ImportExchange(c *gin.Context)  {
 
 	if err != nil { 
 		log.WithContext(c).WithError(err).Error("Fail to retrieve exchange from cluster")
-		c.JSON(http.StatusInternalServerError, "Fail to retrieve exchange from cluster")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to retrieve exchange from cluster"})
 		return
 	}
 

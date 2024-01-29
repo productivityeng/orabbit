@@ -9,6 +9,7 @@ import (
 	"github.com/productivityeng/orabbit/cluster/models"
 	"github.com/productivityeng/orabbit/db"
 	"github.com/productivityeng/orabbit/rabbitmq/virtualhost"
+	"github.com/productivityeng/orabbit/utils"
 	"github.com/productivityeng/orabbit/virtualhost/dto"
 	"github.com/sirupsen/logrus"
 )
@@ -38,7 +39,7 @@ func (controller VirtualHostControllerImpl) Syncronize(c *gin.Context) {
 	if err != nil { return }
 	logrus.WithContext(c).WithField("virtualHostId",virtualHostId).Info("Parsed virtualHostId param")
 
-	err = controller.verifyIfVirtualHostIsLocked(virtualHostId,c)
+	err = utils.VerifyIfVirtualHostIsLockedById(controller.DependencyLocator.PrismaClient, virtualHostId,c)
 	if err != nil { return }
 	logrus.WithContext(c).WithField("virtualHostId",virtualHostId).Info("VirtualHost is not locked")
 	

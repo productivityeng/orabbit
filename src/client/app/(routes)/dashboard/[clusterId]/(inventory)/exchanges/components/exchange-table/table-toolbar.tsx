@@ -76,13 +76,16 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
     try {
       let result = await importExchangeFromClusterAction(
         Number(clusterId),
-        selectedExchange.Name
+        selectedExchange.Name,
+        selectedExchange.VHost
       );
       if (result.Result) {
         toast.success("Exchange importada com sucesso", { id: toastId });
         router.refresh();
       } else {
-        toast.error("Falha ao importar exchange", { id: toastId });
+        toast.error(`Falha ao importar exchange: ${result.ErrorMessage}`, {
+          id: toastId,
+        });
       }
     } catch (error) {
       toast.error("Falha ao importar exchange", { id: toastId });

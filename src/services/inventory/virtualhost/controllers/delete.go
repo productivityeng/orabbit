@@ -9,6 +9,7 @@ import (
 	"github.com/productivityeng/orabbit/cluster/models"
 	"github.com/productivityeng/orabbit/db"
 	"github.com/productivityeng/orabbit/rabbitmq/virtualhost"
+	"github.com/productivityeng/orabbit/utils"
 	"github.com/productivityeng/orabbit/virtualhost/dto"
 	log "github.com/sirupsen/logrus"
 )
@@ -32,7 +33,7 @@ func (controller VirtualHostControllerImpl) DeleteVirtualHost(c *gin.Context) {
 	virtualHostId,err := controller.parseVirtualHostIdParams(c)
 	if err != nil { return }
 
-	err = controller.verifyIfVirtualHostIsLocked(virtualHostId,c)
+	err = utils.VerifyIfVirtualHostIsLockedById(controller.DependencyLocator.PrismaClient, virtualHostId,c)
 	if err != nil { return }
 
 	cluster,err := controller.DependencyLocator.PrismaClient.Cluster.FindUnique(db.Cluster.ID.Equals(clusterId)).Exec(c)
