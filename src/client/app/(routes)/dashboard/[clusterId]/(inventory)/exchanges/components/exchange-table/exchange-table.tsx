@@ -53,7 +53,7 @@ export function ExchangeTable<TData, TValue>({
     initialState: {
       pagination: {
         pageIndex: 0,
-        pageSize: 15,
+        pageSize: 10,
       },
     },
   });

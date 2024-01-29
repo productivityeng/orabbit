@@ -1,5 +1,5 @@
-go 1.20
+go 1.21
 
-use (
-	services/inventory
-)
+toolchain go1.21.5
+
+use services/inventory

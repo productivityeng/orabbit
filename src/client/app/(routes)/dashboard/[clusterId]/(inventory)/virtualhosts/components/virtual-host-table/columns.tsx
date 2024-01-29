@@ -40,6 +40,7 @@ export const RabbitMqVirtualHostColumnDef: ColumnDef<RabbitMqVirtualHost>[] = [
     accessorKey: "Name",
     header: "Name",
   },
+
   {
     accessorKey: "Lockers",
     header: () => <b>Locked</b>,

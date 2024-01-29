@@ -47,6 +47,10 @@ export const RabbitMqExchangeColumnDef: ColumnDef<RabbitMqExchange>[] = [
     header: "Name",
   },
   {
+    accessorKey: "VHost",
+    header: "Virtual Host",
+  },
+  {
     accessorKey: "Type",
     header: "Type",
   },

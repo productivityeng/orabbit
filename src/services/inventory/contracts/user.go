@@ -13,7 +13,7 @@ type UserManagement interface {
 	GetUserByName(request GetUserByNameRequest, ctx context.Context) (*rabbithole.UserInfo, error)
 	CreateNewUser(request CreateNewUserRequest, ctx context.Context) (*CreateNewUserResult, error)
 	CreateNewUserWithHashPassword(request CreateNewUserWithHashPasswordRequest, ctx context.Context) (*CreateNewUserResult, error)
-	ListAllUser(request ListAllUsersRequest) ([]ListUserResult, error)
+	ListAllUser(request ListAllUsersRequest) ([]rabbithole.UserInfo, error)
 	DeleteUser(request DeleteUserRequest, ctx context.Context) error
 }
 

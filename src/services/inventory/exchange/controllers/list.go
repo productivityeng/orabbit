@@ -48,6 +48,7 @@ func (ctrl *ExchangeController) ListAllExchanges(c *gin.Context)  {
 
 	exchangesFromDatabase, err := ctrl.DependencyLocator.PrismaClient.Exchange.FindMany(db.Exchange.ClusterID.Equals(clusterId)).With(
 		db.Exchange.Lockers.Fetch(),
+		db.Exchange.VirtualHost.Fetch(),
 	).Exec(c)
 	if err != nil { 
 		log.WithContext(c).WithError(err).WithField("clusterId", clusterId).Error("Fail to retrieve exchanges from database")
@@ -72,6 +73,7 @@ func (ctrl *ExchangeController) ListAllExchanges(c *gin.Context)  {
 					IsInCluster: true,
 					IsInDatabase: true,
 					Lockers: exchangeFromDatabase.Lockers(),
+					VHost: exchangeFromDatabase.VirtualHost().Name,
 				})
 				continue loop_cluster
 			}
@@ -83,6 +85,7 @@ func (ctrl *ExchangeController) ListAllExchanges(c *gin.Context)  {
 				Durable: exchangeFromCluster.Durable,
 				Internal: exchangeFromCluster.Internal,
 				Arguments: exchangeFromCluster.Arguments,
+				VHost: exchangeFromCluster.VHost,
 				ClusterId: 0,
 				IsInCluster: true,
 				IsInDatabase: false,
@@ -113,6 +116,7 @@ func (ctrl *ExchangeController) ListAllExchanges(c *gin.Context)  {
 			IsInCluster: false,
 			IsInDatabase: true,
 			Lockers: exchangeFromDatabase.Lockers(),
+			VHost: exchangeFromDatabase.VirtualHost().Name,
 		})
 	}
 

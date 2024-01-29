@@ -71,7 +71,7 @@ func (management *UserManagementImpl) DeleteUser(request contracts.DeleteUserReq
 	return nil
 }
 
-func (management *UserManagementImpl) ListAllUser(request contracts.ListAllUsersRequest) ([]contracts.ListUserResult, error) {
+func (management *UserManagementImpl) ListAllUser(request contracts.ListAllUsersRequest) ([]rabbithole.UserInfo, error) {
 	rmqc, err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.Username, request.Password)
 	if err != nil {
 		logrus.WithError(err).Error("Error trying to connect to cluster")
@@ -79,14 +79,7 @@ func (management *UserManagementImpl) ListAllUser(request contracts.ListAllUsers
 	}
 
 	users, err := rmqc.ListUsers()
-	var result []contracts.ListUserResult
-	for _, user := range users {
-		result = append(result, contracts.ListUserResult{
-			PasswordHash: user.PasswordHash,
-			Name:         user.Name,
-		})
-	}
-	return result, nil
+	return users, err
 }
 
 func (management *UserManagementImpl) GetUserHash(request contracts.GetUserHashRequest, ctx context.Context) (string, error) {

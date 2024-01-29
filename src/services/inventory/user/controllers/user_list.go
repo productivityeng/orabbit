@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
 	"github.com/productivityeng/orabbit/contracts"
 	"github.com/productivityeng/orabbit/db"
 	"github.com/productivityeng/orabbit/rabbitmq/common"
@@ -77,7 +78,7 @@ func (userCtrl *UserControllerImpl) ListUsersFromCluster(c *gin.Context) {
 
 // ListUsersFromCluster
 //Merge users from rabbitmq cluster and ostern database in a single response
-func (controller *UserControllerImpl) buildUserListResponse(usersFromCluster []contracts.ListUserResult,usersFromDb []db.UserModel,clusterId int,c *gin.Context) dto.GetUserResponseList {
+func (controller *UserControllerImpl) buildUserListResponse(usersFromCluster []rabbithole.UserInfo,usersFromDb []db.UserModel,clusterId int,c *gin.Context) dto.GetUserResponseList {
 	response := make(dto.GetUserResponseList,0)
 
 	for _, userFromCluster := range usersFromCluster {
@@ -91,14 +92,14 @@ func (controller *UserControllerImpl) buildUserListResponse(usersFromCluster []c
 			Lockers: 	make([]db.LockerUserModel,0),
 		}
 
-		userEqual,_ := controller.DependencyLocator.PrismaClient.User.FindUnique(db.User.UniqueUsernameClusterid(db.User.Username.Equals(userFromCluster.Name),db.User.ClusterID.Equals(clusterId))).
+		userEqualFromCluster,_ := controller.DependencyLocator.PrismaClient.User.FindUnique(db.User.UniqueUsernameClusterid(db.User.Username.Equals(userFromCluster.Name),db.User.ClusterID.Equals(clusterId))).
 		With(db.User.LockerUser.Fetch()).
 		Exec(c)
 		
-		if userEqual != nil {
-			userResponse.Id = userEqual.ID
+		if userEqualFromCluster != nil {
+			userResponse.Id = userEqualFromCluster.ID
 			userResponse.IsInDatabase = true
-			userResponse.Lockers = userEqual.LockerUser()
+			userResponse.Lockers = userEqualFromCluster.LockerUser()
 		}
 		
 		response = append(response, userResponse)
