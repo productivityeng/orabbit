@@ -5,48 +5,18 @@ import (
 	"fmt"
 
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
-	"github.com/productivityeng/orabbit/pkg/rabbitmq/common"
+	"github.com/productivityeng/orabbit/contracts"
 	"github.com/sirupsen/logrus"
 )
-
-type ListQueuesRequest struct {
-	common.RabbitAccess
-}
-
-type GetQueueRequest struct {
-	common.RabbitAccess
-	Queue string
-}
-
-type DeleteQueueRequest struct {
-	common.RabbitAccess
-	Queue string
-}
-
-type CreateQueueRequest struct {
-	common.RabbitAccess
-	Queue     string
-	Vhost     string
-	Type      string
-	Durable   bool
-	Arguments map[string]interface{}
-}
-
-func NewQueueManagement() QueueManagement {
-	return &QueueManagementImpl{}
-}
-
-type QueueManagement interface {
-	GetAllQueuesFromCluster(request ListQueuesRequest) ([]rabbithole.QueueInfo, error)
-	GetQueueFromCluster(request GetQueueRequest) (*rabbithole.DetailedQueueInfo, error)
-	CreateQueue(request CreateQueueRequest) (*rabbithole.DetailedQueueInfo, error)
-	DeleteQueue(request DeleteQueueRequest) error
-}
 
 type QueueManagementImpl struct {
 }
 
-func (q QueueManagementImpl) GetAllQueuesFromCluster(request ListQueuesRequest) ([]rabbithole.QueueInfo, error) {
+func NewQueueManagement() contracts.QueueManagement {
+	return &QueueManagementImpl{}
+}
+
+func (q QueueManagementImpl) GetAllQueuesFromCluster(request contracts.ListQueuesRequest) ([]rabbithole.QueueInfo, error) {
 	rmqc, err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.Username, request.Password)
 	if err != nil {
 		logrus.WithError(err).Error("Error trying to connect to cluster")
@@ -62,7 +32,7 @@ func (q QueueManagementImpl) GetAllQueuesFromCluster(request ListQueuesRequest) 
 	return queues, nil
 }
 
-func (q QueueManagementImpl) GetQueueFromCluster(request GetQueueRequest) (*rabbithole.DetailedQueueInfo, error) {
+func (q QueueManagementImpl) GetQueueFromCluster(request contracts.GetQueueRequest) (*rabbithole.DetailedQueueInfo, error) {
 	rmqc, err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.Username, request.Password)
 	if err != nil {
 		logrus.WithError(err).Error("Error trying to connect to cluster")
@@ -81,7 +51,7 @@ func (q QueueManagementImpl) GetQueueFromCluster(request GetQueueRequest) (*rabb
 	return queue, nil
 }
 
-func (q QueueManagementImpl) CreateQueue(request CreateQueueRequest) (*rabbithole.DetailedQueueInfo, error) {
+func (q QueueManagementImpl) CreateQueue(request contracts.CreateQueueRequest) (*rabbithole.DetailedQueueInfo, error) {
 
 	logrus.WithField("request", request).Info("Declaring queue ...")
 	rmqc, err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.Username, request.Password)
@@ -100,13 +70,13 @@ func (q QueueManagementImpl) CreateQueue(request CreateQueueRequest) (*rabbithol
 		return nil,err
 	}
 
-	return q.GetQueueFromCluster(GetQueueRequest{
+	return q.GetQueueFromCluster(contracts.GetQueueRequest{
 		RabbitAccess: request.RabbitAccess,
 		Queue:        request.Queue,
 	})
 }
 
-func (q QueueManagementImpl) DeleteQueue(request DeleteQueueRequest) error {
+func (q QueueManagementImpl) DeleteQueue(request contracts.DeleteQueueRequest) error {
 	logrus.WithField("request", request).Info("Declaring queue ...")
 	rmqc, err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.Username, request.Password)
 	if err != nil {
@@ -116,4 +86,19 @@ func (q QueueManagementImpl) DeleteQueue(request DeleteQueueRequest) error {
 
 	_, err = rmqc.DeleteQueue("/", request.Queue)
 	return err
+}
+
+func (q QueueManagementImpl) GetQueueBindingsFromCluster(request contracts.GetQueueBindingsRequest) ([]rabbithole.BindingInfo, error) {
+	rmqc, err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.Username, request.Password)
+	if err != nil {
+		logrus.WithError(err).Error("Error trying to connect to cluster")
+		return nil, errors.New("[CLUSTER_CONNECT_FAIL]")
+	}
+
+	bindings, err := rmqc.ListQueueBindings(request.VirtualHostName, request.Name)
+	if err != nil {
+		logrus.WithError(err).Error("Error trying to list queue bindings from cluster")
+		return nil, errors.New("[CLUSTER_LISTQUEUEBINDINGS_FAIL]")
+	}
+	return bindings, nil
 }

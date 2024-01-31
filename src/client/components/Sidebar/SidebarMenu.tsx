@@ -169,16 +169,7 @@ function SidebarMenu() {
     <div className="space-y-5">
       <div className="space-y-2">
         <div className="flex flex-col space-y-4 ">
-          {SelectedClusterId ? (
-            <MenuItems />
-          ) : (
-            <div className="flex flex-col justify-center items-center">
-              <div className="text-center bg-slate-600/20 mx-4 py-2 rounded-md w-[90%]">
-                Selecione um cluster
-              </div>{" "}
-              <ArrowBigDown className="h-16 w-16" />
-            </div>
-          )}
+          {SelectedClusterId ? <MenuItems /> : null}
         </div>
       </div>
     </div>

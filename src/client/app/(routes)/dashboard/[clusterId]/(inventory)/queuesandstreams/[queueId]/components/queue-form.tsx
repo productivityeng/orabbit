@@ -69,7 +69,7 @@ function QueueForm({ initialData }: QueueFormProps) {
         setCreationError(response.ErrorMessage!);
         toast.error(
           <>
-            {t("ImportClusterForm.FailToCreate")}{" "}
+            {"ImportClusterForm.FailToCreate"}
             <Frown className="fill-yellow-500" />
           </>,
           {
@@ -81,7 +81,7 @@ function QueueForm({ initialData }: QueueFormProps) {
       console.error(error);
       toast.error(
         <>
-          {t("ImportClusterForm.FailToCreate")}{" "}
+          {"ImportClusterForm.FailToCreate"}
           <Frown className="fill-yellow-500" />
         </>,
         {
@@ -112,7 +112,7 @@ function QueueForm({ initialData }: QueueFormProps) {
             }
           )}
         >
-          {t(creationError)}
+          {creationError}
         </p>
 
         {!initialData && (
@@ -147,17 +147,18 @@ function QueueForm({ initialData }: QueueFormProps) {
             name="QueueName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel> {t("ImportClusterForm.Queue.Label")}</FormLabel>
+                <FormLabel> Nome</FormLabel>
                 <FormControl>
                   <Input
                     className="col-span-3"
                     {...field}
                     type="text"
-                    placeholder={t("ImportClusterForm.Queue.Placeholder")}
+                    placeholder="Nome da fila"
                   />
                 </FormControl>
                 <FormDescription>
-                  {t("ImportClusterForm.Queue.Description")}
+                  Nome da fila a ser
+                  {action == "Criar" ? "criada" : "importada"}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -169,7 +170,7 @@ function QueueForm({ initialData }: QueueFormProps) {
             control={form.control}
             render={({ field }) => (
               <FormItem className="col-span-2 md:col-span-1">
-                <FormLabel> {t("ImportClusterForm.Type.Label")}</FormLabel>
+                <FormLabel> Tipo da fila</FormLabel>
                 <Select
                   disabled={form.formState.isLoading}
                   onValueChange={field.onChange}
@@ -180,7 +181,7 @@ function QueueForm({ initialData }: QueueFormProps) {
                     <SelectTrigger className="bg-background">
                       <SelectValue
                         defaultValue={field.value}
-                        placeholder={t("ImportClusterForm.Type.Placeholder")}
+                        placeholder={"Selecione o tipo da fila"}
                       />
                     </SelectTrigger>
                   </FormControl>
@@ -193,7 +194,8 @@ function QueueForm({ initialData }: QueueFormProps) {
                   </SelectContent>
                 </Select>
                 <FormDescription>
-                  {t("ImportClusterForm.Type.Description")}
+                  Tipo da fila a ser
+                  {action == "Criar" ? "criada" : "importada"}
                 </FormDescription>
                 <FormMessage />
               </FormItem>

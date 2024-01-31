@@ -48,7 +48,7 @@ export function SelectCluster({
           className="w-full justify-between text-center text-slate-400 bg-slate-700 border-0 hover:bg-rabbit hover:text-slate-100 duration-200 ease-in-out"
         >
           <p className="truncate">
-            {SelectedCluster?.Name ?? "Não encontrado " + "..."}
+            {SelectedCluster?.Name ?? "Selecione um cluster..."}
           </p>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>

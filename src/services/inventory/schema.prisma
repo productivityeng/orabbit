@@ -7,6 +7,7 @@ generator db {
     provider = "go run github.com/steebchen/prisma-client-go"
 }
 
+// Represents a cluster 
 model Cluster {
     Id Int @id @default(autoincrement()) @map("ID")
     Name String @map("TX_NAME")
@@ -30,7 +31,7 @@ model Cluster {
 }
 
 
-
+// Represents a virtual host in RabbitMQ
 model VirtualHost {
     Id Int @id @default(autoincrement())
     Name String @map("TX_NAME") @unique
@@ -45,17 +46,21 @@ model VirtualHost {
     Lockers LockerVirtualHost[]
     Queues Queue[]
     Exchanges Exchange[]
+    BindingExchangeToExchanges BindingExchangeToExchange[]
+    BindingExchangeToQueue BindingExchangeToQueue[]
 
     @@unique([Name, ClusterId],name: "UNIQUE_NAME_CLUSTERID")
     @@map("TB_VIRTUALHOST")
 }
 
+// Represents the type of a queue
 enum QueueType {
     classic
     quorum
     stream
 }
 
+// Represents a queue in RabbitMQ
 model Queue {
     Id Int @id @default(autoincrement()) @map("ID")
     Name String @map("TX_NAME") @unique()
@@ -75,11 +80,15 @@ model Queue {
 
     LockerQueues LockerQueue[]
 
+    ExchangeToQueueBindingsDestination BindingExchangeToQueue[] @relation("exchange-to-queue-destination")
+
+
     @@unique([Name,VirtualHostId],name: "UNIQUE_NAME_VIRTUALHOSTID")
     @@unique([Name, ClusterId],name: "UNIQUE_NAME_CLUSTERID")
     @@map("TB_QUEUE")
 }
 
+// Represents a user in RabbitMQ
 model User {
     Id      Int     @id @default(autoincrement()) @map("ID")
     Username String  @unique @map("TX_USERNAME")
@@ -99,7 +108,7 @@ model User {
     @@unique([Id, ClusterId],name: "UNIQUE_ID_CLUSTERID")
 }
 
-
+// Represents a exchange in RabbitMQ
 model Exchange {
     Id Int @id @default(autoincrement()) @map("ID")
 
@@ -113,7 +122,12 @@ model Exchange {
     Arguments Json @map("JS_ARGUMENTS")
     Lockers LockerExchange[]
     Type String @map("TX__TYPE")
-    
+
+    ExchangeToExchangeBindingsSources BindingExchangeToExchange[] @relation("exchange-source")
+    ExchangeToExchangeBindingsDestination BindingExchangeToExchange[] @relation("exchange-destionation")
+
+    ExchangeToQueueBindingsSources BindingExchangeToQueue[] @relation("exchange-to-queue-source")
+
     @@unique([ClusterId, Name],name: "UNIQUE_CLUSTERID_NAME")
     @@map("TB_EXCHANGE")
 
@@ -121,7 +135,7 @@ model Exchange {
 
 
 
-
+// Block a specific exchange for prevent any changes
 model LockerExchange {
     Id Int @id @default(autoincrement()) @map("ID")
 
@@ -137,7 +151,7 @@ model LockerExchange {
     UserDisabled String? @map("TX_USER_DISABLED")
 }
 
-
+// Block a specific queue for prevent any changes
 model LockerQueue {
     Id Int @id @default(autoincrement()) @map("ID")
 
@@ -156,6 +170,7 @@ model LockerQueue {
     @@map("TB_LOCKER_QUEUE")
 }
 
+// Block a specific user for prevent any changes
 model LockerUser {
     Id Int @id @default(autoincrement()) @map("ID")
 
@@ -174,6 +189,7 @@ model LockerUser {
     @@map("TB_LOCKER_USER")
 }
 
+// Block a specific virtual host for prevent any changes
 model LockerVirtualHost {
     Id Int @id @default(autoincrement()) @map("ID")
     VirtualHostId Int @map("FK_VIRTUALHOST_ID")
@@ -183,4 +199,43 @@ model LockerVirtualHost {
     Reason String @map("TX_REASON")
     UserResponsibleEmail String @map("TX_USER_RESPONSIBLE_EMAIL")
     UserDisabled String? @map("TX_USER_DISABLED")
+}
+
+model BindingExchangeToQueue {
+    Id Int @id @default(autoincrement()) @map("ID")
+
+    VirtualHostId Int @map("FK_VIRTUALHOST_ID")
+    VirtualHost VirtualHost @relation(fields: [VirtualHostId], references: [Id],onDelete: Cascade)
+
+    SourceExchangeId Int @map("FK_SOURCE_EXCHANGE_ID")
+    SourceExchange Exchange @relation("exchange-to-queue-source",fields: [SourceExchangeId], references: [Id],onDelete: Cascade)
+
+    DestinationQueueId Int @map("FK_DESTINATION_QUEUE_ID")
+    DestinationQueue Queue @relation("exchange-to-queue-destination",fields: [DestinationQueueId], references: [Id],onDelete: Cascade)
+
+    RoutingKey String @map("TX_ROUTING_KEY") 
+    Arguments Json @map("JS_ARGUMENTS")
+
+    @@unique([SourceExchangeId, DestinationQueueId, VirtualHostId,RoutingKey],name: "UNIQUE_SOURCE_DESTINATION_VIRTUALHOST")
+    @@map("TB_BINDING_EXCHANGE_TO_QUEUE")
+}
+
+model BindingExchangeToExchange {
+    Id Int @id @default(autoincrement()) @map("ID")
+
+    VirtualHostId Int @map("FK_VIRTUALHOST_ID")
+    VirtualHost VirtualHost @relation(fields: [VirtualHostId], references: [Id],onDelete: Cascade)
+
+    SourceExchangeId Int @map("FK_SOURCE_EXCHANGE_ID")
+    SourceExchange Exchange @relation("exchange-source",fields: [SourceExchangeId], references: [Id],onDelete: Cascade)
+
+    DestinationExchangeId Int @map("FK_DESTINATION_EXCHANGE_ID")
+    DestinationExchange Exchange @relation("exchange-destionation",fields: [DestinationExchangeId], references: [Id],onDelete: Cascade)
+
+    RoutingKey String @map("TX_ROUTING_KEY") 
+
+    Arguments Json @map("JS_ARGUMENTS")
+
+    @@unique([SourceExchangeId, DestinationExchangeId, VirtualHostId,RoutingKey],name: "UNIQUE_SOURCE_DESTINATION_VIRTUALHOST")
+    @@map("TB_BINDING_EXCHANGE_TO_EXCHANGE")
 }

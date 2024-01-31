@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
 	"github.com/productivityeng/orabbit/contracts"
-	"github.com/productivityeng/orabbit/controllers/exchange/dto"
+	"github.com/productivityeng/orabbit/pkg/exchange/dto"
 	"github.com/sirupsen/logrus"
 )
 
@@ -94,7 +94,7 @@ func (management ExchangeManagementImpl) GetExchangeByName(request contracts.Get
 	if err != nil { 
 		return nil,err
 	}
-	exchange,err := rmqc.GetExchange("/",request.Name)
+	exchange,err := rmqc.GetExchange(request.VirtualHostName,request.Name)
 	if err != nil { 
 		logrus.WithContext(c).WithField("exchange",exchange).WithError(err).Error("Error trying to get exchange")
 		return nil,err

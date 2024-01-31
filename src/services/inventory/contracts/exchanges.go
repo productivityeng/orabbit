@@ -2,7 +2,7 @@ package contracts
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/productivityeng/orabbit/controllers/exchange/dto"
+	"github.com/productivityeng/orabbit/pkg/exchange/dto"
 	"github.com/productivityeng/orabbit/pkg/rabbitmq/common"
 )
 
@@ -24,6 +24,7 @@ type CreateExchangeRequest struct {
 type GetExchangeRequest struct {
 	common.RabbitAccess
 	Name string `json:"Name"`
+	VirtualHostName string `json:"VirtualHostName"`
  }
 
 type DeleteExchangeRequest struct {
