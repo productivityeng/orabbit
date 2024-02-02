@@ -15,6 +15,7 @@ func GetQueueById(DependencyLocator *core.DependencyLocator, c *gin.Context,queu
 	queueFromDb,err := DependencyLocator.PrismaClient.Queue.FindUnique(db.Queue.ID.Equals(queueId)).With(
 		db.Queue.LockerQueues.Fetch(),
 		db.Queue.VirtualHost.Fetch(),
+		db.Queue.Cluster.Fetch(),
 	).Exec(c)
 
 	if errors.Is(err, db.ErrNotFound) { 
@@ -28,3 +29,4 @@ func GetQueueById(DependencyLocator *core.DependencyLocator, c *gin.Context,queu
 	}
 	return queueFromDb,nil
 }
+

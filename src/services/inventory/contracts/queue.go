@@ -35,6 +35,15 @@ type GetQueueBindingsRequest struct {
 	VirtualHostName string
 }
 
+type CreateQueueBindingRequest struct { 
+	common.RabbitAccess
+	QueueName string
+	ExchangeName string
+	RoutingKey string
+	Arguments map[string]interface{}
+	VHost string
+}
+
 
 
 type QueueManagement interface {
@@ -43,4 +52,5 @@ type QueueManagement interface {
 	CreateQueue(request CreateQueueRequest) (*rabbithole.DetailedQueueInfo, error)
 	DeleteQueue(request DeleteQueueRequest) error
 	GetQueueBindingsFromCluster(request GetQueueBindingsRequest) ([]rabbithole.BindingInfo, error)
+	CreateQueueBinding(request CreateQueueBindingRequest) error
 }

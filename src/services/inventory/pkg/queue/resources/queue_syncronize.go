@@ -77,7 +77,8 @@ func (q QueueControllerImpl) SyncronizeQueue(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	err = functions.ImportQueueBindings(q.DependencyLocator,cluster,queueFromDb.ID,queueFromDb.Name,virtualHostFromQueue.ID,c)
+
+	err = functions.RecreateAllBindingInCluster(q.DependencyLocator,queueFromDb.ID,c)
 	
 	if err != nil { 
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

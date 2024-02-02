@@ -102,3 +102,27 @@ func (q QueueManagementImpl) GetQueueBindingsFromCluster(request contracts.GetQu
 	}
 	return bindings, nil
 }
+
+func (q QueueManagementImpl) CreateQueueBinding(request contracts.CreateQueueBindingRequest) error {
+	rmqc, err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.Username, request.Password)
+	if err != nil { 
+		logrus.WithError(err).Error("Error trying to connect to cluster")
+		return errors.New("[CLUSTER_CONNECT_FAIL]")
+	}
+	bindingInfo := rabbithole.BindingInfo{
+		Source: request.ExchangeName,
+		Vhost:  request.VHost,
+		Destination: request.QueueName,
+		DestinationType: "queue",
+		RoutingKey: request.RoutingKey,
+		Arguments: request.Arguments,
+	}
+	result,err :=rmqc.DeclareBinding(request.VHost,bindingInfo)
+	if err != nil { 
+		logrus.WithError(err).Error("Error trying to create queue binding")
+		return errors.New("[CLUSTER_CREATEQUEUEBINDING_FAIL]")
+	}
+
+	logrus.WithField("result", result).Info("Queue binding created")
+	return nil
+}
