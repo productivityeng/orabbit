@@ -13,6 +13,7 @@ type ListQueuesRequest struct {
 type GetQueueRequest struct {
 	common.RabbitAccess
 	Queue string
+	VirtualHostName string
 }
 
 type DeleteQueueRequest struct {

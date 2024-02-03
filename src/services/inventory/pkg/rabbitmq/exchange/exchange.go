@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
 	"github.com/productivityeng/orabbit/contracts"
-	"github.com/productivityeng/orabbit/pkg/exchange/dto"
+	"github.com/productivityeng/orabbit/pkg/controllers/exchange/dto"
 	"github.com/sirupsen/logrus"
 )
 
@@ -110,4 +110,40 @@ func (management ExchangeManagementImpl) GetExchangeByName(request contracts.Get
 			IsInCluster: true,
 		},nil
 	}
+}
+
+func (management ExchangeManagementImpl) CreateExchangeBindings(request contracts.CreateExchangeBindingRequest,c *gin.Context) (error) {
+	rmqc,err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.Username, request.Password)
+	if err != nil { return err}
+
+	bindingInfo := rabbithole.BindingInfo{ 
+		Source: request.ExchangeName,
+		Destination: request.Destinationname,
+		DestinationType: request.BindingType,
+		RoutingKey: request.RoutingKey,
+		Arguments: request.Arguments,
+		Vhost: request.VHost,
+	}
+
+	createdBinding,err := rmqc.DeclareBinding(request.VHost,bindingInfo)
+	if err != nil { 
+		logrus.WithContext(c).WithError(err).Error("Error trying to create binding")
+		return err
+	 }else {
+		logrus.WithContext(c).WithField("binding",createdBinding).Info("Binding created")
+		return nil
+	 }
+}
+
+func (management ExchangeManagementImpl) GetExchangeBindings(request contracts.GetExchangeBindings,c *gin.Context) ([]rabbithole.BindingInfo,error) {
+	rmqc,err := rabbithole.NewClient(fmt.Sprintf("http://%s:%d", request.Host, request.Port), request.Username, request.Password)
+	if err != nil { return nil,err}
+
+	bindings,err := rmqc.ListExchangeBindingsWithSource(request.VHost,request.ExchangeName)
+
+	if err != nil { 
+		logrus.WithContext(c).WithError(err).Error("Error trying to list bindings")
+		return nil,err
+	}
+	return bindings,nil
 }

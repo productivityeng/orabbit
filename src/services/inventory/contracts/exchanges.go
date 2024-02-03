@@ -2,7 +2,8 @@ package contracts
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/productivityeng/orabbit/pkg/exchange/dto"
+	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
+	"github.com/productivityeng/orabbit/pkg/controllers/exchange/dto"
 	"github.com/productivityeng/orabbit/pkg/rabbitmq/common"
 )
 
@@ -32,9 +33,28 @@ type DeleteExchangeRequest struct {
 	Name string `json:"Name"`
 }
 
+type GetExchangeBindings struct {
+	common.RabbitAccess
+	ExchangeName string `json:"ExchangeName"`
+	VHost string `json:"VHost"`
+}
+
+type CreateExchangeBindingRequest struct { 
+	common.RabbitAccess
+	Destinationname string
+	BindingType string
+	ExchangeName string
+	RoutingKey string
+	Arguments map[string]interface{}
+	VHost string
+}
+
 type ExchangeManagement interface {
 	GetAllExchangesFromCluster(request ListExchangeRequest,c *gin.Context) ([]dto.GetExchangeDto, error)
 	CreateExchange(request CreateExchangeRequest) (error) 
 	DeleteExchange(request DeleteExchangeRequest,c *gin.Context) (error)
 	GetExchangeByName(request GetExchangeRequest,c *gin.Context) (*dto.GetExchangeDto, error)
+	CreateExchangeBindings(request CreateExchangeBindingRequest,c *gin.Context) (error)
+	GetExchangeBindings(request GetExchangeBindings,c *gin.Context) ([]rabbithole.BindingInfo,error)
+
 }
