@@ -26,17 +26,16 @@ import { DataTableToolbar } from "./table-toolbar";
 import { RabbitMqQueue } from "@/models/queues";
 import { RabbitMqUser } from "@/models/users";
 
-interface QueueTableProps<TValue> {
-  columns: ColumnDef<RabbitMqUser, TValue>[];
+interface QueueTableProps {
+  columns: ColumnDef<RabbitMqUser>[];
   data: RabbitMqUser[];
 }
 
-export function UserTable<RabbitMqUser, TValue>({
+export function UserTable({
   columns,
   data,
-}: QueueTableProps<TValue>) {
+}: QueueTableProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     data,
@@ -86,6 +85,9 @@ export function UserTable<RabbitMqUser, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
+                  itemID="user-table-row"
+                  data-testid="user-table-row"
+                  id={row.original.Id?.toString()}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >

@@ -39,7 +39,6 @@ interface DataTableToolbarProps {
 }
 
 export function DataTableToolbar({ table }: DataTableToolbarProps) {
-  const { clusterId } = useParams() as { clusterId: string };
   const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
   const router = useRouter();
 
@@ -211,6 +210,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
         <Button
           size="sm"
           disabled={IsImporDisabled}
+          data-testid="import-user-button"
           onClick={onImportUserClick}
         >
           <FileStack className="w-4 h-4 mr-2" /> Importar
@@ -218,6 +218,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
         <Button
           onClick={onSyncronizeUserClick}
           size="sm"
+          data-testid="syncronize-user-button"
           disabled={IsSyncronizeDisable}
           className="h-8"
         >
@@ -226,6 +227,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
         <LockItem
           Disabled={IsLockDisabled}
           onLockItem={onLockItem}
+          data-testid="lock-user-button"
           Label={`fila ${selectUser?.Username}`}
           Lockers={selectUser?.Lockers}
         />
@@ -235,6 +237,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
           size="sm"
           variant="destructive"
           disabled={IsRemoveDisable}
+          data-testid="remove-user-button"
           className="h-8"
         >
           <XCircle className="w-4 h-4 mr-2" /> Remover

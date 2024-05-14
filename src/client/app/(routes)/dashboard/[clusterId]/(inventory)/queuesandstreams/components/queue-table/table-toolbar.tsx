@@ -5,6 +5,7 @@ import { Table } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
+  Compass,
   Delete,
   FileStack,
   LockIcon,
@@ -27,6 +28,7 @@ import { CreateLockerAction } from "@/actions/locker";
 import { z } from "zod";
 import { LockItemFormSchema } from "@/schemas/locker-item-schemas";
 import { GetActiveLocker } from "@/lib/utils";
+import Link from "next/link";
 
 interface DataTableToolbarProps {
   table: Table<RabbitMqQueue>;
@@ -151,6 +153,8 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
     !selectedQueue?.IsInDatabase ||
     GetActiveLocker(selectedQueue?.Lockers) != null;
 
+  const IsManageDisable = !selectedQueue?.IsInDatabase;
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
@@ -176,6 +180,19 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
         >
           <RefreshCcwDot className="w-4 h-4 mr-2" /> Sincronizar
         </Button>
+        <Link
+          href={`/dashboard/${clusterId}/queuesandstreams/${selectedQueue?.ID}`}
+        >
+          <Button
+            disabled={IsManageDisable}
+            size="sm"
+            className="h-8 bg-sky-500 text-white"
+          >
+            <Compass className="w-4 h-4 mr-2" />
+            Gerenciar
+          </Button>
+        </Link>
+
         <LockItem
           Disabled={IsLockDisabled}
           onLockItem={onLockItem}

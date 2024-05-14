@@ -26,7 +26,6 @@ func (ctrl *ExchangeController) parseCreateExchangeBody(c *gin.Context) (request
 	return
 }
 
-
 // parseImportExchangeBody parses the request body into a ImportExchangeRequest struct.
 // It takes a gin.Context as a parameter and returns a ImportExchangeRequest and an error.
 // If there is an error parsing the body, it logs the error and returns a bad request response.
@@ -39,9 +38,6 @@ func (ctrl *ExchangeController) parseImportExchangeBody(c *gin.Context) (request
 	}
 	return
 }
-
-
-
 
 // createExchangeInCluster creates an exchange in the specified cluster.
 // It takes a cluster model, a create exchange request body, and a Gin context as parameters.

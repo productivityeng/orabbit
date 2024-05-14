@@ -17,11 +17,8 @@ async function UserPage({
 
   return (
     <div>
-      {fetchedQueue?.ErrorMessage != null ? (
-        <p>Queue not found</p>
-      ) : (
-        <QueueForm initialData={fetchedQueue?.Result ?? null} />
-      )}
+      {JSON.stringify(fetchedQueue)}
+      <QueueForm initialData={fetchedQueue?.Result ?? null} />
     </div>
   );
 }

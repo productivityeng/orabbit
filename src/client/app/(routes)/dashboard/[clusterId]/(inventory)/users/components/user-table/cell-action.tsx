@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Edit, Files, RefreshCw, SettingsIcon } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { RabbitMqUser } from "@/models/users";
 
@@ -17,8 +16,6 @@ interface CellActionProps {
 }
 
 function CellAction({ data }: CellActionProps) {
-  const router = useRouter();
-  const params = useParams();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 

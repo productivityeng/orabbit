@@ -164,6 +164,7 @@ function QueueForm({ initialData }: QueueFormProps) {
               </FormItem>
             )}
           />
+          <FormField control={form.control} name="" />
 
           <FormField
             name="Type"

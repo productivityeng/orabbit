@@ -19,8 +19,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
-import { FileStack } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DataTableToolbar } from "./table-toolbar";
 import { RabbitMqQueue } from "@/models/queues";

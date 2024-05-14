@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { RabbitMqQueue } from "@/models/queues";
 import { RabbitMqUser } from "@/models/users";
 import { BadgeCheck, Frown, Hammer, RefreshCcw } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "react-hot-toast";
 
