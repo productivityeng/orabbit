@@ -10,13 +10,10 @@ import { act } from "react-dom/test-utils";
 import { UserTableContext, UserTableContextProps } from "./user-table-context";
 
 
-
-
 jest.mock('next/navigation', () => ({
     useRouter: () => ({
         query: { clusterId: '200' }
     }),
-  
 }));
 
 describe('UserTable render state', () => {
@@ -160,6 +157,38 @@ describe('UserTable render state', () => {
                 fireEvent.click(removeUserButton);
             });
             expect(removeUserFromClusterMock).toHaveBeenCalled();
+    });
+
+    it('should call import user when user is not tracked', async () => {
+        const onImportUserMock = jest.fn();
+        const {findByTestId} = render(
+            <UserTableContext.Provider 
+            value={{ onImportUser: onImportUserMock }}><UserTable data={[{
+                Id: 1,
+                Username: 'test',
+                PasswordHash: 'test',
+                Lockers: [],
+                ClusterId: 200,
+                IsInCluster: true,
+                IsInDatabase: false
+            }]} columns={RabbitMqUserTableColumnsDef} /></UserTableContext.Provider>
+        );
+
+        const userCheckbox = await findByTestId(`user-table-checkbox-${1}`);
+        const importUserButton = await findByTestId("import-user-button");
+
+
+        expect(importUserButton).toHaveProperty('disabled', true);
+
+        expect(userCheckbox).toBeDefined()
+        act(() => {
+            fireEvent.click(userCheckbox);
+        });
+        expect(importUserButton).toHaveProperty('disabled', false);
+        act(()=>{
+            fireEvent.click(importUserButton);
+        });
+        expect(onImportUserMock).toHaveBeenCalled();
     });
 
 });

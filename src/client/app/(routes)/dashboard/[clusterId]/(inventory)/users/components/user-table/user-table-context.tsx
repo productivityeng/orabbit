@@ -3,8 +3,9 @@ import { RabbitMqUser } from "@/models/users";
 import React from "react";
 
 export interface UserTableContextProps {
-    onSyncronizeUser(user:RabbitMqUser): Promise<void>;
-    onRemoveUser(user:RabbitMqUser): Promise<void>;
+    onSyncronizeUser?(user:RabbitMqUser): Promise<void>;
+    onRemoveUser?(user:RabbitMqUser): Promise<void>;
+    onImportUser?(user:RabbitMqUser): Promise<void>;
 }
 export const UserTableContext = React.createContext<UserTableContextProps>({    
     onSyncronizeUser: async (user:RabbitMqUser) => {
@@ -12,5 +13,8 @@ export const UserTableContext = React.createContext<UserTableContextProps>({
     },
     onRemoveUser: async (user:RabbitMqUser) => {
         throw new Error("RemoveUserAction not implemented");
+    },
+    onImportUser: async (user:RabbitMqUser) => {
+        throw new Error("ImportUserAction not implemented");
     }
 });

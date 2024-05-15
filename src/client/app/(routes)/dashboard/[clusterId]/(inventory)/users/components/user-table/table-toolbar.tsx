@@ -18,10 +18,6 @@ import { z } from "zod";
 import { LockItemFormSchema } from "@/schemas/locker-item-schemas";
 import { GetActiveLocker } from "@/lib/utils";
 import { RabbitMqUser } from "@/models/users";
-import {
-  importUserFromCluster,
-  removeUserFromCluster,
-} from "@/actions/users";
 import { useContext } from "react";
 import { UserTableContext } from "./user-table-context";
 
@@ -31,7 +27,7 @@ interface DataTableToolbarProps {
 
 export function DataTableToolbar({ table }: DataTableToolbarProps) {
   const router = useRouter();
-  const {onSyncronizeUser,onRemoveUser} = useContext(UserTableContext);
+  const {onSyncronizeUser,onRemoveUser,onImportUser} = useContext(UserTableContext);
   const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
 
   let selectUser: RabbitMqUser | null = null;
@@ -40,39 +36,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
   }
 
 
-  const onImportUserClick = async () => {
-    if (!selectUser) return;
-    const toastId = toast.loading(`Importando usuario ${selectUser.Username}`);
 
-    try {
-      let result = await importUserFromCluster({
-        ClusterId: selectUser.ClusterId,
-        Username: selectUser.Username,
-        Create: false,
-      });
-      if (result.Result) {
-        toast.success(`Usuario ${selectUser.Username} importado com sucesso`, {
-          id: toastId,
-        });
-        table.toggleAllRowsSelected(false);
-        router.refresh();
-      } else {
-        toast.error(
-          `Error ao importar usuario ${selectUser.Username} => ${result.ErrorMessage}`,
-          {
-            id: toastId,
-          }
-        );
-      }
-    } catch (error) {
-      toast.error(
-        `Error ao importar usuario ${selectUser.Username} => ${error}`,
-        {
-          id: toastId,
-        }
-      );
-    }
-  };
 
   const onLockItem = async (data: z.infer<typeof LockItemFormSchema>) => {
     if (!selectUser) return;
@@ -135,7 +99,12 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
           size="sm"
           disabled={IsImporDisabled}
           data-testid="import-user-button"
-          onClick={onImportUserClick}
+          onClick={async () => {
+            const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
+            if (!isRowSelected) return;
+            const selectUser = table.getFilteredSelectedRowModel().rows[0].original;
+            await onImportUser?.(selectUser);
+          }}
         >
           <FileStack className="w-4 h-4 mr-2" /> Importar
         </Button>
@@ -144,7 +113,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
             const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
             if (!isRowSelected) return;
             const selectUser = table.getFilteredSelectedRowModel().rows[0].original;
-            await onSyncronizeUser(selectUser);
+            await onSyncronizeUser?.(selectUser);
           }}
           size="sm"
           data-testid="syncronize-user-button"
@@ -165,7 +134,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
             const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
             if (!isRowSelected) return;
             const selectUser = table.getFilteredSelectedRowModel().rows[0].original;
-            await onRemoveUser(selectUser);
+            await onRemoveUser?.(selectUser);
           
           }}
           size="sm"

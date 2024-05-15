@@ -1,5 +1,5 @@
 "use client";
-import { SyncronizeUserAction, fetchUsersFromCluster, removeUserFromCluster } from "@/actions/users";
+import { SyncronizeUserAction, fetchUsersFromCluster, importUserFromCluster, removeUserFromCluster } from "@/actions/users";
 import _ from "lodash";
 import React from "react";
 import { UserTable } from "./components/user-table/user-table";
@@ -92,10 +92,42 @@ function UsersPage() {
       );
     }
   };
+
+  async function  onImportUserHandler(user:RabbitMqUser){
+    const toastId = toast.loading(`Importando usuario ${user.Username}`);
+    try {
+      let result = await importUserFromCluster({
+        ClusterId: user.ClusterId,
+        Username: user.Username,
+        Create: false,
+      });
+      if (result.Result) {
+        toast.success(`Usuario ${user.Username} importado com sucesso`, {
+          id: toastId,
+        });
+        router.refresh();
+      } else {
+        toast.error(
+          `Error ao importar usuario ${user.Username} => ${result.ErrorMessage}`,
+          {
+            id: toastId,
+          }
+        );
+      }
+    } catch (error) {
+      toast.error(
+        `Error ao importar usuario ${user.Username} => ${error}`,
+        {
+          id: toastId,
+        }
+      );
+    }
+  };
   
   return ( <UserTableContext.Provider value={{
       onSyncronizeUser: onSyncronizeUserClick,
-      onRemoveUser: onRemoveUserHandler
+      onRemoveUser: onRemoveUserHandler,
+      onImportUser: onImportUserHandler
   }}> 
     <div className="flex flex-col pt-5">
       <UserTable
