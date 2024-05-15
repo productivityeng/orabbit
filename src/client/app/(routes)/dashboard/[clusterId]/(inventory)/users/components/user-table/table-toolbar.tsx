@@ -31,7 +31,7 @@ interface DataTableToolbarProps {
 
 export function DataTableToolbar({ table }: DataTableToolbarProps) {
   const router = useRouter();
-  const {onSyncronizeUserClick} = useContext(UserTableContext);
+  const {onSyncronizeUser,onRemoveUser} = useContext(UserTableContext);
   const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
 
   let selectUser: RabbitMqUser | null = null;
@@ -67,38 +67,6 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
     } catch (error) {
       toast.error(
         `Error ao importar usuario ${selectUser.Username} => ${error}`,
-        {
-          id: toastId,
-        }
-      );
-    }
-  };
-
-  const onRemoveUserClick = async () => {
-    if (!selectUser) return;
-    const toastId = toast.loading(`Removendo usuario ${selectUser.Username}`);
-
-    try {
-      let result = await removeUserFromCluster(
-        selectUser.ClusterId,
-        selectUser.Id
-      );
-      if (result.Result) {
-        toast.success(`Usuario ${selectUser.Username} removido com sucesso`, {
-          id: toastId,
-        });
-        router.refresh();
-      } else {
-        toast.error(
-          `Error ao remover usuario ${selectUser.Username} => ${result.ErrorMessage}`,
-          {
-            id: toastId,
-          }
-        );
-      }
-    } catch (error) {
-      toast.error(
-        `Error ao remover usuario ${selectUser.Username} => ${error}`,
         {
           id: toastId,
         }
@@ -176,7 +144,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
             const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
             if (!isRowSelected) return;
             const selectUser = table.getFilteredSelectedRowModel().rows[0].original;
-            await onSyncronizeUserClick(selectUser);
+            await onSyncronizeUser(selectUser);
           }}
           size="sm"
           data-testid="syncronize-user-button"
@@ -193,7 +161,13 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
         />
 
         <Button
-          onClick={onRemoveUserClick}
+          onClick={async () => {
+            const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
+            if (!isRowSelected) return;
+            const selectUser = table.getFilteredSelectedRowModel().rows[0].original;
+            await onRemoveUser(selectUser);
+          
+          }}
           size="sm"
           variant="destructive"
           disabled={IsRemoveDisable}

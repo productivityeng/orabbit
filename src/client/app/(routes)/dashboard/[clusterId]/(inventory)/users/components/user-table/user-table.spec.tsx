@@ -100,14 +100,11 @@ describe('UserTable render state', () => {
     it('should sync user when sync button is clicked', async () => {
         
         const SyncronizeUserActionMock = jest.fn();
-        jest.mock('@/actions/users', () => ({
-            ...jest.requireActual('@/actions/users'),
-            SyncronizeUserAction: SyncronizeUserActionMock,
-        }));
      
         const {findByTestId} = render(
         
-        <UserTableContext.Provider value={{ onSyncronizeUserClick: SyncronizeUserActionMock }}>
+        <UserTableContext.Provider 
+        value={{ onSyncronizeUser: SyncronizeUserActionMock,onRemoveUser: jest.fn() }}>
         <UserTable data={[{
             Id: 1,
             Username: 'test',
@@ -131,6 +128,38 @@ describe('UserTable render state', () => {
         });
         expect(SyncronizeUserActionMock).toHaveBeenCalled();
        
+    });
+
+    it('should remove user when remove button is clicked', async () => {
+            
+            const removeUserFromClusterMock = jest.fn();
+   
+            const {findByTestId} = render(
+            
+            <UserTableContext.Provider 
+            value={{ onRemoveUser: removeUserFromClusterMock,onSyncronizeUser: jest.fn() }}>
+            <UserTable data={[{
+                Id: 1,
+                Username: 'test',
+                PasswordHash: 'test',
+                Lockers: [],
+                ClusterId: 200,
+                IsInCluster: true,
+                IsInDatabase: true
+            }]} columns={RabbitMqUserTableColumnsDef} /> </UserTableContext.Provider>);
+            const userCheckbox = await findByTestId(`user-table-checkbox-${1}`);
+            const removeUserButton = await findByTestId("remove-user-button");
+    
+            expect(removeUserButton).toHaveProperty('disabled', true);
+            expect(userCheckbox).toBeDefined()
+            act(() => {
+                fireEvent.click(userCheckbox);
+            });
+            expect(removeUserButton).toHaveProperty('disabled', false);
+            act(()=>{
+                fireEvent.click(removeUserButton);
+            });
+            expect(removeUserFromClusterMock).toHaveBeenCalled();
     });
 
 });

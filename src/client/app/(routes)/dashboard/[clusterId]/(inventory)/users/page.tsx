@@ -1,5 +1,5 @@
 "use client";
-import { SyncronizeUserAction, fetchUsersFromCluster } from "@/actions/users";
+import { SyncronizeUserAction, fetchUsersFromCluster, removeUserFromCluster } from "@/actions/users";
 import _ from "lodash";
 import React from "react";
 import { UserTable } from "./components/user-table/user-table";
@@ -24,7 +24,7 @@ function UsersPage() {
   }
 
 
-  const onSyncronizeUserClick = async (user:RabbitMqUser) => {
+  async function onSyncronizeUserClick(user:RabbitMqUser){
     
     const toastId = toast.loading(
       `Sincronizando usuarios`
@@ -61,9 +61,41 @@ function UsersPage() {
       );
     }
   };
+
+  async function onRemoveUserHandler (user:RabbitMqUser){
+    const toastId = toast.loading(`Removendo usuario ${user.Username}`);
+    try {
+
+      let result = await removeUserFromCluster(
+        user.ClusterId,
+        user.Id
+      );
+      if (result.Result) {
+        toast.success(`Usuario ${user.Username} removido com sucesso`, {
+          id: toastId,
+        });
+        await refetch();
+      } else {
+        toast.error(
+          `Error ao remover usuario ${user.Username} => ${result.ErrorMessage}`,
+          {
+            id: toastId,
+          }
+        );
+      }
+    } catch (error) {
+      toast.error(
+        `Error ao remover usuario ${user.Username} => ${error}`,
+        {
+          id: toastId,
+        }
+      );
+    }
+  };
   
   return ( <UserTableContext.Provider value={{
-      onSyncronizeUserClick: onSyncronizeUserClick
+      onSyncronizeUser: onSyncronizeUserClick,
+      onRemoveUser: onRemoveUserHandler
   }}> 
     <div className="flex flex-col pt-5">
       <UserTable

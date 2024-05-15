@@ -59,42 +59,6 @@ export function UserTable({
   });
 
 
-  const onSyncronizeUserClick = async (user:RabbitMqUser) => {
-    
-    const toastId = toast.loading(
-      `Sincronizando usuarios`
-    );
-
-    try {
-      let result = await SyncronizeUserAction(
-        user.ClusterId,
-        user.Id
-      );
-      if (result.Result) {
-        toast.success(
-          `Usuario ${user.Username} sincronizado com sucesso`,
-          {
-            id: toastId,
-          }
-        );
-        router.refresh();
-      } else {
-        toast.error(
-          `Error ao sincronizar usuario ${user.Username} => ${result.ErrorMessage}`,
-          {
-            id: toastId,
-          }
-        );
-      }
-    } catch (error) {
-      toast.error(
-        `Error ao sincronizar usuario ${user.Username} => ${error}`,
-        {
-          id: toastId,
-        }
-      );
-    }
-  };
 
   return (
    
