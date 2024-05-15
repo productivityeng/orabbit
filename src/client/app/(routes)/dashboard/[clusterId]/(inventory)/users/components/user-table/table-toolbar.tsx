@@ -5,22 +5,12 @@ import { Table } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  Delete,
   FileStack,
-  LockIcon,
   RefreshCcwDot,
-  RemoveFormatting,
   XCircle,
 } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
-import { RabbitMqQueue } from "@/models/queues";
-import {
-  ImportQueueFromClusterAction,
-  removeQueueFromClusterAction,
-  syncronizeQueueAction,
-} from "@/actions/queue";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { some } from "lodash";
 import LockItem from "@/components/lock-item/lock-item";
 import _ from "lodash";
 import { CreateLockerAction } from "@/actions/locker";
@@ -29,60 +19,26 @@ import { LockItemFormSchema } from "@/schemas/locker-item-schemas";
 import { GetActiveLocker } from "@/lib/utils";
 import { RabbitMqUser } from "@/models/users";
 import {
-  SyncronizeUserAction,
   importUserFromCluster,
   removeUserFromCluster,
 } from "@/actions/users";
+import { useContext } from "react";
+import { UserTableContext } from "./user-table-context";
 
 interface DataTableToolbarProps {
   table: Table<RabbitMqUser>;
 }
 
 export function DataTableToolbar({ table }: DataTableToolbarProps) {
-  const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
   const router = useRouter();
+  const {onSyncronizeUserClick} = useContext(UserTableContext);
+  const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
 
   let selectUser: RabbitMqUser | null = null;
   if (isRowSelected) {
     selectUser = table.getFilteredSelectedRowModel().rows[0].original;
   }
 
-  const onSyncronizeUserClick = async () => {
-    if (!selectUser) return;
-    const toastId = toast.loading(
-      `Sincronizando usuario ${selectUser.Username}`
-    );
-
-    try {
-      let result = await SyncronizeUserAction(
-        selectUser.ClusterId,
-        selectUser.Id
-      );
-      if (result.Result) {
-        toast.success(
-          `Usuario ${selectUser.Username} sincronizado com sucesso`,
-          {
-            id: toastId,
-          }
-        );
-        router.refresh();
-      } else {
-        toast.error(
-          `Error ao sincronizar usuario ${selectUser.Username} => ${result.ErrorMessage}`,
-          {
-            id: toastId,
-          }
-        );
-      }
-    } catch (error) {
-      toast.error(
-        `Error ao sincronizar usuario ${selectUser.Username} => ${error}`,
-        {
-          id: toastId,
-        }
-      );
-    }
-  };
 
   const onImportUserClick = async () => {
     if (!selectUser) return;
@@ -216,7 +172,12 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
           <FileStack className="w-4 h-4 mr-2" /> Importar
         </Button>
         <Button
-          onClick={onSyncronizeUserClick}
+          onClick={async () => {
+            const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
+            if (!isRowSelected) return;
+            const selectUser = table.getFilteredSelectedRowModel().rows[0].original;
+            await onSyncronizeUserClick(selectUser);
+          }}
           size="sm"
           data-testid="syncronize-user-button"
           disabled={IsSyncronizeDisable}
@@ -227,7 +188,6 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
         <LockItem
           Disabled={IsLockDisabled}
           onLockItem={onLockItem}
-          data-testid="lock-user-button"
           Label={`fila ${selectUser?.Username}`}
           Lockers={selectUser?.Lockers}
         />

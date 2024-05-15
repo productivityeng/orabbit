@@ -23,6 +23,7 @@ export const RabbitMqUserTableColumnsDef: ColumnDef<RabbitMqUser>[] = [
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
+        data-testid={`user-table-checkbox-${row.original.Id}`}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
         className="translate-y-[2px]"

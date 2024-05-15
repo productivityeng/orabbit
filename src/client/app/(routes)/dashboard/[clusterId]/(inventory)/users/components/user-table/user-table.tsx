@@ -19,12 +19,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
-import { FileStack } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DataTableToolbar } from "./table-toolbar";
-import { RabbitMqQueue } from "@/models/queues";
 import { RabbitMqUser } from "@/models/users";
+import { UserTableContext } from "./user-table-context";
+import toast from "react-hot-toast";
+import { SyncronizeUserAction } from "@/actions/users";
+import { useRouter } from "next/navigation";
 
 interface QueueTableProps {
   columns: ColumnDef<RabbitMqUser>[];
@@ -36,6 +37,7 @@ export function UserTable({
   data,
 }: QueueTableProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const router = useRouter();
 
   const table = useReactTable({
     data,
@@ -56,7 +58,46 @@ export function UserTable({
     },
   });
 
+
+  const onSyncronizeUserClick = async (user:RabbitMqUser) => {
+    
+    const toastId = toast.loading(
+      `Sincronizando usuarios`
+    );
+
+    try {
+      let result = await SyncronizeUserAction(
+        user.ClusterId,
+        user.Id
+      );
+      if (result.Result) {
+        toast.success(
+          `Usuario ${user.Username} sincronizado com sucesso`,
+          {
+            id: toastId,
+          }
+        );
+        router.refresh();
+      } else {
+        toast.error(
+          `Error ao sincronizar usuario ${user.Username} => ${result.ErrorMessage}`,
+          {
+            id: toastId,
+          }
+        );
+      }
+    } catch (error) {
+      toast.error(
+        `Error ao sincronizar usuario ${user.Username} => ${error}`,
+        {
+          id: toastId,
+        }
+      );
+    }
+  };
+
   return (
+   
     <div className="max-h-screen ">
       <div className="flex items-center py-4 space-x-4">
         <DataTableToolbar table={table} />
