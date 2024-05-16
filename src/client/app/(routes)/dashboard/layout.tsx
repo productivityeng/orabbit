@@ -6,6 +6,7 @@ import { Metadata } from "next";
 import React from "react";
 import { RabbitMqCluster } from "@/types";
 import { MainProvider } from "@/providers/main-provider";
+import { NextIntlClientProvider } from "next-intl";
 
 export const metadata: Metadata = {
   title: "ORabbit | Dashboard",

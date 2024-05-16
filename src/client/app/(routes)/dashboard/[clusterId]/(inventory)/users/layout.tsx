@@ -4,6 +4,7 @@ import Heading from "@/components/Heading/Heading";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Plus, User, UserIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -16,7 +17,7 @@ function UsersLayout({ children }: { children: React.ReactNode }) {
       <Heading
         Icon={UserIcon}
         IconColor="text-purple-500 "
-        Titlei18Label="Commons.User"
+        Titlei18Label={"Dashboard.UsersPage.Title"}
         BgIconColor="bg-purple-200/50"
         Descriptioni18Label="UsersPage.TopDescription"
       >
