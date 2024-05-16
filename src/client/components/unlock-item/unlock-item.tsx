@@ -18,17 +18,18 @@ interface UnlockItemProps {
 }
 export function UnlockItem({ Locker, onRemoveLocker }: UnlockItemProps) {
   return (
-    <AlertDialog>
+    <AlertDialog >
       <AlertDialogTrigger>
         <Button
           size="sm"
+          data-testid="unlock-icon-button"
           variant={Locker ? "destructive" : "outline"}
           className=" items-center justify-center"
         >
-          <LockIcon className="w-4 h-4 " />
+          <UnlockIcon className="w-4 h-4 " />
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent data-testid="unlock-dialog">
         <AlertDialogHeader>Locked</AlertDialogHeader>
         <AlertDialogDescription>
           <span>
@@ -47,6 +48,7 @@ export function UnlockItem({ Locker, onRemoveLocker }: UnlockItemProps) {
             <XIcon className="w-4 h-4" /> Fechar
           </AlertDialogCancel>
           <AlertDialogAction
+            data-testid="unlock-action-button"
             onClick={onRemoveLocker}
             className="flex gap-x-2 h-9"
           >

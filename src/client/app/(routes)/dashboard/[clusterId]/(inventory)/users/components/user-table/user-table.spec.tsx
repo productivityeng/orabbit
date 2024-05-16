@@ -191,4 +191,137 @@ describe('UserTable render state', () => {
         expect(onImportUserMock).toHaveBeenCalled();
     });
 
+    it('should lock user when lock button is clicked', async () => {
+        const onLockUserMock = jest.fn();
+        const {findByTestId,getByTestId} = render(
+            <UserTableContext.Provider 
+            value={{ onLockUser: onLockUserMock }}><UserTable data={[{
+                Id: 1,
+                Username: 'test',
+                PasswordHash: 'test',
+                Lockers: [],
+                ClusterId: 200,
+                IsInCluster: true,
+                IsInDatabase: true
+            }]} columns={RabbitMqUserTableColumnsDef} /></UserTableContext.Provider>
+        );
+
+        const userCheckbox = await findByTestId(`user-table-checkbox-${1}`);
+        const lockUserButton = await findByTestId("lock-unlock-button");
+
+        expect(lockUserButton).toHaveProperty('disabled', true);
+
+        expect(userCheckbox).toBeDefined()
+        act(() => {
+            fireEvent.click(userCheckbox);
+        });
+        expect(lockUserButton).toHaveProperty('disabled', false);
+
+        act(()=>{
+            fireEvent.click(lockUserButton);
+        });
+
+        let lockItemDialog = await findByTestId("lock-item-dialog");
+        expect(lockItemDialog).toBeDefined();
+
+        const lockItemReasonTextarea = await findByTestId("lock-item-reason-textarea");
+        act(()=>{
+            fireEvent.change(lockItemReasonTextarea, { target: { value: 'reason with more than 10 characters' } });
+        })
+
+        const lockItemSubmitButton = await findByTestId("lock-item-submit-button");
+        act(()=>{
+            fireEvent.click(lockItemSubmitButton);
+        });
+        
+        await waitFor(() => {
+            expect(onLockUserMock).toHaveBeenCalled();
+        });
+     });
+
+    it('should unlock user when unlock button is clicked', async () => { 
+        const onUnlockUserMock = jest.fn();
+        const {findByTestId} = render(
+            <UserTableContext.Provider 
+            value={{ onUnlockUser: onUnlockUserMock }}><UserTable data={[{
+                Id: 1,
+                Username: 'test',
+                PasswordHash: 'test',
+                Lockers: [{
+                    Id: 1,
+                    Reason: 'reason',
+                    UserResponsibleEmail: 'user@email.com',
+                    CreatedAt: new Date(),
+                    Enabled: true,
+                    UpdatedAt: new Date(),
+                    
+                }],
+                ClusterId: 200,
+                IsInCluster: true,
+                IsInDatabase: true
+            }]} columns={RabbitMqUserTableColumnsDef} /></UserTableContext.Provider>
+        );
+
+        const userCheckbox = await findByTestId(`user-table-checkbox-${1}`);
+        const unlockIconButton = await findByTestId("unlock-icon-button");
+
+        act(() => {
+            fireEvent.click(userCheckbox);
+            fireEvent.click(unlockIconButton);
+        });
+
+        await findByTestId("unlock-dialog");
+        const unlockUserButton = await findByTestId("unlock-action-button");
+
+        act(()=>{
+            fireEvent.click(unlockUserButton);
+        });
+
+        await waitFor(() => {
+            expect(onUnlockUserMock).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    it('should not show any action if user is locked', async () => {
+        const {findByTestId} = render(
+            <UserTable data={[{
+                Id: 1,
+                Username: 'test',
+                PasswordHash: 'test',
+                Lockers: [{
+                    Id: 1,
+                    Reason: 'reason',
+                    UserResponsibleEmail: 'user',
+                    CreatedAt: new Date(),
+                    Enabled: true,
+                    UpdatedAt: new Date(),
+                    
+                }],
+                ClusterId: 200,
+                IsInCluster: true,
+                IsInDatabase: true
+            }]} columns={RabbitMqUserTableColumnsDef} />
+        );
+
+        const userCheckbox = await findByTestId(`user-table-checkbox-${1}`);
+        const lockUserButton = await findByTestId("lock-unlock-button");
+        const removeUserButton = await findByTestId("remove-user-button");
+        const syncUserButton = await findByTestId("syncronize-user-button");
+        const importUserButton = await findByTestId("import-user-button");
+
+        expect(lockUserButton).toHaveProperty('disabled', true);
+        expect(removeUserButton).toHaveProperty('disabled', true);
+        expect(syncUserButton).toHaveProperty('disabled', true);
+        expect(importUserButton).toHaveProperty('disabled', true);
+
+        act(() => {
+            fireEvent.click(userCheckbox);
+        });
+
+        expect(lockUserButton).toHaveProperty('disabled', true);
+        expect(removeUserButton).toHaveProperty('disabled', true);
+        expect(syncUserButton).toHaveProperty('disabled', true);
+        expect(importUserButton).toHaveProperty('disabled', true);
+    });
+
 });

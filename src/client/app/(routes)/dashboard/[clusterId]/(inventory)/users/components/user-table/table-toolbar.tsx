@@ -27,7 +27,7 @@ interface DataTableToolbarProps {
 
 export function DataTableToolbar({ table }: DataTableToolbarProps) {
   const router = useRouter();
-  const {onSyncronizeUser,onRemoveUser,onImportUser} = useContext(UserTableContext);
+  const {onSyncronizeUser,onRemoveUser,onImportUser,onLockUser} = useContext(UserTableContext);
   const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
 
   let selectUser: RabbitMqUser | null = null;
@@ -35,56 +35,15 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
     selectUser = table.getFilteredSelectedRowModel().rows[0].original;
   }
 
+  const hasActiveLocker = selectUser && GetActiveLocker(selectUser.Lockers) != null
 
+  const IsImporDisabled = hasActiveLocker || !isRowSelected || selectUser?.IsInDatabase;
 
+  const IsRemoveDisabled = hasActiveLocker ||!isRowSelected || !selectUser?.IsInCluster;
 
-  const onLockItem = async (data: z.infer<typeof LockItemFormSchema>) => {
-    if (!selectUser) return;
-    const toastId = toast.loading(`Bloqueando usuario ${selectUser.Username}`);
+  const IsSyncronizeDisable = hasActiveLocker || !isRowSelected || selectUser?.IsInCluster || !selectUser?.IsInDatabase;
 
-    try {
-      let result = await CreateLockerAction(
-        selectUser.ClusterId,
-        "user",
-        selectUser.Id,
-        {
-          reason: data.reason,
-          responsible: "Victor",
-        }
-      );
-      if (result.Result) {
-        toast.success(`Usuario ${selectUser.Username} bloqueado com sucesso`, {
-          id: toastId,
-        });
-        router.refresh();
-      } else {
-        toast.error(
-          `Error ao bloquear usuario ${selectUser.Username} => ${result.ErrorMessage}`,
-          {
-            id: toastId,
-          }
-        );
-      }
-    } catch (error) {
-      toast.error(
-        `Error ao bloquear usuario ${selectUser.Username} => ${error}`,
-        {
-          id: toastId,
-        }
-      );
-    }
-  };
-
-  const IsImporDisabled = !isRowSelected || selectUser?.IsInDatabase;
-
-  const IsRemoveDisable = !isRowSelected || !selectUser?.IsInCluster;
-
-  const IsSyncronizeDisable =
-    !isRowSelected || selectUser?.IsInCluster || !selectUser?.IsInDatabase;
-
-  const IsLockDisabled =
-    !selectUser?.IsInDatabase || GetActiveLocker(selectUser?.Lockers) != null;
-
+  const IsLockDisabled = hasActiveLocker || !selectUser?.IsInDatabase 
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
@@ -124,9 +83,15 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
         </Button>
         <LockItem
           Disabled={IsLockDisabled}
-          onLockItem={onLockItem}
+          onLockItem={async (data: z.infer<typeof LockItemFormSchema>) => {
+            const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
+            if (!isRowSelected) return;
+            const selectUser = table.getFilteredSelectedRowModel().rows[0].original;
+            await onLockUser?.(selectUser,data );
+          }}
           Label={`fila ${selectUser?.Username}`}
           Lockers={selectUser?.Lockers}
+          
         />
 
         <Button
@@ -139,7 +104,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
           }}
           size="sm"
           variant="destructive"
-          disabled={IsRemoveDisable}
+          disabled={IsRemoveDisabled}
           data-testid="remove-user-button"
           className="h-8"
         >

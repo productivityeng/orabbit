@@ -32,7 +32,7 @@ function LockItem({ Disabled, Label, onLockItem }: LockItem) {
   if (!isMounted) return null;
 
   return (
-    <Dialog open={isDialogOpen} onOpenChange={(open) => setDialogOpen(open)}>
+    <Dialog  open={isDialogOpen} onOpenChange={(open) => setDialogOpen(open)}>
       <DialogTrigger asChild>
         <Button
           disabled={Disabled}
@@ -42,12 +42,12 @@ function LockItem({ Disabled, Label, onLockItem }: LockItem) {
           data-testid="lock-unlock-button"
         >
           <>
-            <Unlock data-testid="lock-icon" className="w-4 h-4  " />
+            <Unlock data-testid="lock-button-id" className="w-4 h-4  " />
             Trancar
           </>
         </Button>
       </DialogTrigger>
-      <DialogContent className="min-w-max">
+      <DialogContent data-testid="lock-item-dialog" className="min-w-max">
         <DialogHeader>
           <DialogTitle>Trancar {Label}</DialogTitle>
           <DialogDescription>
@@ -56,6 +56,7 @@ function LockItem({ Disabled, Label, onLockItem }: LockItem) {
         </DialogHeader>
         <LockItemForm
           onFormSubmit={async (data) => {
+            console.log(`Sending data + ${JSON.stringify(data)}`);
             await onLockItem(data);
             setDialogOpen(false);
           }}

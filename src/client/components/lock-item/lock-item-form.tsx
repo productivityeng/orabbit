@@ -36,7 +36,7 @@ function LockItemForm({ onFormSubmit, ...props }: LockItemFormProps) {
               <FormLabel role="heading">Motivo</FormLabel>
               <FormControl>
                 <Textarea
-                  data-testid="reason-textarea"
+                  data-testid="lock-item-reason-textarea"
                   className="resize-none"
                   {...field}
                 />
@@ -47,7 +47,7 @@ function LockItemForm({ onFormSubmit, ...props }: LockItemFormProps) {
           )}
         />
         <Button
-          data-testid="submit-button"
+          data-testid="lock-item-submit-button"
           size="sm"
           className="float-right"
           type="submit"

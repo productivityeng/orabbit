@@ -1,55 +1,27 @@
-import { LockerModel, RemoveLockerAction } from "@/actions/locker";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { UnlockItem } from "@/components/unlock-item/unlock-item";
 import { GetActiveLocker } from "@/lib/utils";
-import { RabbitMqQueue } from "@/models/queues";
 import { RabbitMqUser } from "@/models/users";
-import { LockIcon, UnlockIcon, XIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { UnlockIcon } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+import { UserTableContext } from "./user-table-context";
 
 interface CellLockerProps {
   User: RabbitMqUser;
 }
 function CellLocker({ User }: CellLockerProps) {
   let activeLocker = GetActiveLocker(User.Lockers);
-  const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  const {onUnlockUser} = useContext(UserTableContext);
 
   useEffect(() => {
     setIsMounted(true);
   }, [isMounted]);
 
-  const onRemoveLocker = async () => {
-    let toastId = toast.loading(
-      `Removendo bloqueio da fila ${User.Username}...`
-    );
-    try {
-      await RemoveLockerAction(User.ClusterId, "user", activeLocker?.Id!);
-      toast.success(`Bloqueio removido com sucesso`, { id: toastId });
-      router.refresh();
-    } catch (error) {
-      toast.error(`Erro ${JSON.stringify(error)} ao remover bloqueio`, {
-        id: toastId,
-      });
-    }
-  };
-
   if (!isMounted) return null;
 
   if (activeLocker) {
-    return <UnlockItem Locker={activeLocker} onRemoveLocker={onRemoveLocker} />;
+    return <UnlockItem Locker={activeLocker} onRemoveLocker={async () => await onUnlockUser?.(User, activeLocker?.Id!)} />;
   } else {
     return (
       <Button

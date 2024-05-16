@@ -22,9 +22,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DataTableToolbar } from "./table-toolbar";
 import { RabbitMqUser } from "@/models/users";
-import { UserTableContext } from "./user-table-context";
-import toast from "react-hot-toast";
-import { SyncronizeUserAction } from "@/actions/users";
 import { useRouter } from "next/navigation";
 
 interface QueueTableProps {
@@ -57,8 +54,6 @@ export function UserTable({
       },
     },
   });
-
-
 
   return (
    
