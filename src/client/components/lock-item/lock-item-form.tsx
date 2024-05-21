@@ -16,11 +16,13 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { extend } from "lodash";
 import { LockItemFormSchema } from "@/schemas/locker-item-schemas";
+import { useTranslations } from "next-intl";
 
 interface LockItemFormProps extends React.HTMLAttributes<HTMLFormElement> {
   onFormSubmit: (data: z.infer<typeof LockItemFormSchema>) => Promise<void>;
 }
 function LockItemForm({ onFormSubmit, ...props }: LockItemFormProps) {
+  const t = useTranslations("Common.Component.LockItemForm");
   const form = useForm<z.infer<typeof LockItemFormSchema>>({
     resolver: zodResolver(LockItemFormSchema),
     defaultValues: {},
@@ -33,7 +35,7 @@ function LockItemForm({ onFormSubmit, ...props }: LockItemFormProps) {
           name="reason"
           render={({ field }) => (
             <FormItem>
-              <FormLabel role="heading">Motivo</FormLabel>
+              <FormLabel role="heading">{t("Reason")}</FormLabel>
               <FormControl>
                 <Textarea
                   data-testid="lock-item-reason-textarea"
@@ -41,7 +43,7 @@ function LockItemForm({ onFormSubmit, ...props }: LockItemFormProps) {
                   {...field}
                 />
               </FormControl>
-              <FormDescription>Explique o motivo do bloqueio</FormDescription>
+              <FormDescription>{t("ExtendedReason")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -52,7 +54,7 @@ function LockItemForm({ onFormSubmit, ...props }: LockItemFormProps) {
           className="float-right"
           type="submit"
         >
-          Enviar
+          {t("Send")}
         </Button>
       </form>
     </Form>

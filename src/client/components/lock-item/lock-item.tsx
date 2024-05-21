@@ -14,6 +14,7 @@ import LockItemForm from "./lock-item-form";
 import { LockerModel } from "@/actions/locker";
 import { z } from "zod";
 import { LockItemFormSchema } from "@/schemas/locker-item-schemas";
+import { useTranslations } from "next-intl";
 
 interface LockItem {
   Lockers?: LockerModel[];
@@ -26,6 +27,7 @@ function LockItem({ Disabled, Label, onLockItem }: LockItem) {
   const [isDialogOpen, setDialogOpen] = useState(false);
 
   const [isMounted, setIsMounted] = useState(false);
+  const t  = useTranslations("Common.Component")
   useEffect(() => {
     setIsMounted(true);
   }, [isMounted]);
@@ -43,20 +45,19 @@ function LockItem({ Disabled, Label, onLockItem }: LockItem) {
         >
           <>
             <Unlock data-testid="lock-button-id" className="w-4 h-4  " />
-            Trancar
+            {t("Lock")}
           </>
         </Button>
       </DialogTrigger>
       <DialogContent data-testid="lock-item-dialog" className="min-w-max">
         <DialogHeader>
-          <DialogTitle>Trancar {Label}</DialogTitle>
+          <DialogTitle>{t("Lock")} {Label}</DialogTitle>
           <DialogDescription>
-            Impeça que alterações não combinadas sejam realizadas
+            {t("LockItemDialogDescription")}
           </DialogDescription>
         </DialogHeader>
         <LockItemForm
           onFormSubmit={async (data) => {
-            console.log(`Sending data + ${JSON.stringify(data)}`);
             await onLockItem(data);
             setDialogOpen(false);
           }}

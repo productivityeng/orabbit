@@ -33,6 +33,7 @@ import {
   removeExchangeFromClusterAction,
   syncronizeExchangeAction,
 } from "@/actions/exchanges";
+import { useTranslations } from "next-intl";
 
 interface DataTableToolbarProps {
   table: Table<RabbitMqExchange>;
@@ -42,6 +43,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
   const { clusterId } = useParams() as { clusterId: string };
   const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
   const router = useRouter();
+  const t = useTranslations("Dashboard.UserPage");
 
   let selectedExchange: RabbitMqExchange | null = null;
   if (isRowSelected) {
@@ -164,7 +166,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
           className="h-8 w-[150px] md:w-[250px]"
         />
         <Button size="sm" disabled={IsImporDisabled} onClick={onImportClick}>
-          <FileStack className="w-4 h-4 mr-2" /> Importar
+          <FileStack className="w-4 h-4 mr-2" /> {t("Import")}
         </Button>
         <Button
           onClick={onSyncronizeQueueClick}
@@ -172,7 +174,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
           disabled={IsSyncronizeDisable}
           className="h-8"
         >
-          <RefreshCcwDot className="w-4 h-4 mr-2" /> Sincronizar
+          <RefreshCcwDot className="w-4 h-4 mr-2" /> {t("Syncronize")}
         </Button>
         <LockItem
           Disabled={IsLockDisabled}
@@ -188,7 +190,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
           disabled={IsRemoveDisable}
           className="h-8"
         >
-          <XCircle className="w-4 h-4 mr-2" /> Remover
+          <XCircle className="w-4 h-4 mr-2" /> {t("Remove")}
         </Button>
       </div>
     </div>

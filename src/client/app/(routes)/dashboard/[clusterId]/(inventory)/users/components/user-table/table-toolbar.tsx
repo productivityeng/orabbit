@@ -20,16 +20,17 @@ import { GetActiveLocker } from "@/lib/utils";
 import { RabbitMqUser } from "@/models/users";
 import { useContext } from "react";
 import { UserTableContext } from "./user-table-context";
+import { useTranslations } from "next-intl";
 
 interface DataTableToolbarProps {
   table: Table<RabbitMqUser>;
 }
 
 export function DataTableToolbar({ table }: DataTableToolbarProps) {
-  const router = useRouter();
   const {onSyncronizeUser,onRemoveUser,onImportUser,onLockUser} = useContext(UserTableContext);
   const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
-
+  const t = useTranslations("Dashboard.UserPage");
+  
   let selectUser: RabbitMqUser | null = null;
   if (isRowSelected) {
     selectUser = table.getFilteredSelectedRowModel().rows[0].original;
@@ -65,7 +66,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
             await onImportUser?.(selectUser);
           }}
         >
-          <FileStack className="w-4 h-4 mr-2" /> Importar
+          <FileStack className="w-4 h-4 mr-2" /> {t("Import")}
         </Button>
         <Button
           onClick={async () => {
@@ -79,7 +80,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
           disabled={IsSyncronizeDisable}
           className="h-8"
         >
-          <RefreshCcwDot className="w-4 h-4 mr-2" /> Sincronizar
+          <RefreshCcwDot className="w-4 h-4 mr-2" /> {t("Syncronize")}
         </Button>
         <LockItem
           Disabled={IsLockDisabled}
@@ -89,7 +90,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
             const selectUser = table.getFilteredSelectedRowModel().rows[0].original;
             await onLockUser?.(selectUser,data );
           }}
-          Label={`fila ${selectUser?.Username}`}
+          Label={`${t("Queue")} ${selectUser?.Username}`}
           Lockers={selectUser?.Lockers}
           
         />
@@ -108,7 +109,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
           data-testid="remove-user-button"
           className="h-8"
         >
-          <XCircle className="w-4 h-4 mr-2" /> Remover
+          <XCircle className="w-4 h-4 mr-2" /> {t("Remove")}
         </Button>
       </div>
     </div>
