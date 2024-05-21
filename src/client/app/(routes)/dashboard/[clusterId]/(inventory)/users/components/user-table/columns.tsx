@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RabbitMqUser } from "@/models/users";
 import CellLocker from "./cell-locker";
 import CellMaintening from "./cell-maintening";
+import { tree } from "next/dist/build/templates/app-page";
 
 export const RabbitMqUserTableColumnsDef: ColumnDef<RabbitMqUser>[] = [
   {
@@ -42,6 +43,7 @@ export const RabbitMqUserTableColumnsDef: ColumnDef<RabbitMqUser>[] = [
   },
   {
     header: "Is Registered",
+    enableSorting: true,
     cell: ({ row }) => <CellMaintening User={row.original} />,
   },
   {

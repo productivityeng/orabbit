@@ -1,10 +1,10 @@
-import { getClientSideLocale, getClientSideTranslation } from "@/i18n";
 import "./globals.css";
-import { NextIntlClientProvider } from "next-intl";
 import { Frank_Ruhl_Libre } from "next/font/google";
 import {} from "next/font/local";
 import { cn } from "@/lib/utils";
 import { Toaster } from "react-hot-toast";
+import { getLocale, getMessages } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
 const inter = Frank_Ruhl_Libre({
   subsets: ["latin"],
 });
@@ -14,12 +14,17 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const messages = await getMessages();
+  const locale = await getLocale();
+
   return (
-    <html lang="en">
-      <body className={cn(inter.className, "bg-white", "h-screen")}>
-        <Toaster position="top-center" />
-        {children}
-      </body>
+    <html lang={locale}>
+      <NextIntlClientProvider messages={messages}>
+        <body className={cn(inter.className, "bg-white", "h-screen")}>
+          <Toaster position="top-center" />
+          {children}
+        </body>
+      </NextIntlClientProvider>
     </html>
   );
 }

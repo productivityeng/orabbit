@@ -1,4 +1,8 @@
 {
+  "Common":{
+    "Language":"Language",
+    "LanguageChanged":"Language changed to English"
+  },
   "Dashboard": {
     "UsersPage":{
       "Title":"Users",

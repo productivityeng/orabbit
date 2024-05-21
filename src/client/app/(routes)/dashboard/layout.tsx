@@ -4,9 +4,7 @@ import ImportClusterProvider from "@/providers/import-cluster-provider";
 import { fetchAllClusters } from "@/actions/cluster";
 import { Metadata } from "next";
 import React from "react";
-import { RabbitMqCluster } from "@/types";
 import { MainProvider } from "@/providers/main-provider";
-import { NextIntlClientProvider } from "next-intl";
 
 export const metadata: Metadata = {
   title: "ORabbit | Dashboard",
@@ -15,8 +13,10 @@ export const metadata: Metadata = {
 
 async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const cluster = await fetchAllClusters();
+ 
   return (
     <MainProvider>
+
       <div className="grid grid-cols-12 h-screen">
         <div className="col-span-2">
           <Sidebar Clusters={cluster} />
@@ -32,6 +32,7 @@ async function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </div>
+
     </MainProvider>
   );
 }

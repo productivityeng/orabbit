@@ -50,7 +50,7 @@ export function UserTable({
     initialState: {
       pagination: {
         pageIndex: 0,
-        pageSize: 7,
+        pageSize: 20,
       },
     },
   });

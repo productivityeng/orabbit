@@ -1,3 +1,4 @@
+// @ts-check
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   i18n: {
@@ -6,6 +7,9 @@ const nextConfig = {
   },
 };
 
-const withNextItl = require("next-intl/plugin")("./i18n.ts");
+const createNextIntlPlugin = require('next-intl/plugin');
+const withNextIntl = createNextIntlPlugin();
 
-module.exports = withNextItl(nextConfig);
+
+
+module.exports = withNextIntl(nextConfig);

@@ -12,14 +12,15 @@ import React from "react";
 function UsersLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const homeUserSlice = "/users";
+  const t = useTranslations("Dashboard.UsersPage");
   return (
     <div className="max-h-screen">
       <Heading
         Icon={UserIcon}
         IconColor="text-purple-500 "
-        Titlei18Label={"Dashboard.UsersPage.Title"}
+        Titlei18Label={t("Title")}
         BgIconColor="bg-purple-200/50"
-        Descriptioni18Label="UsersPage.TopDescription"
+        Descriptioni18Label={t("SubTitle")}
       >
         <Separator />
         <Link hidden={!pathname.endsWith(homeUserSlice)} href={"users/new"}>
