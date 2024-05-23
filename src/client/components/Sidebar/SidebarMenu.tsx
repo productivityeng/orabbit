@@ -14,28 +14,29 @@ import React from "react";
 import { useAppState } from "@/hooks/cluster";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const menuItems = [
   {
-    label: "Commons.User",
+    label: "Common.User",
     icon: User,
     href: "users",
     iconColor: "text-purple-500",
   },
   {
-    label: "Commons.Queue",
+    label: "Common.Queue",
     icon: Mail,
     href: "queuesandstreams",
     iconColor: "text-orange-500",
   },
   {
-    label: "Commons.Exchange",
+    label: "Common.Exchange",
     icon: Router,
     href: "exchanges",
     iconColor: "text-stone-500",
   },
   {
-    label: "Commons.VirtualHost",
+    label: "Common.VirtualHost",
     icon: Home,
     href: "virtualhosts",
     iconColor: "text-sky-500",
@@ -44,13 +45,13 @@ const menuItems = [
 
 const complianceItems = [
   {
-    label: "Commons.Drift",
+    label: "Common.Drift",
     icon: ShieldClose,
     href: "drift",
     iconColor: "text-red-500",
   },
   {
-    label: "Commons.Trail",
+    label: "Common.Trail",
     icon: CompassIcon,
     href: "trail",
     iconColor: "text-green-500",
@@ -59,7 +60,7 @@ const complianceItems = [
 
 const generalItems = [
   {
-    label: "Commons.Settings",
+    label: "Common.Settings",
     icon: Settings2,
     href: "settings",
     iconColor: "text-zinc-500",
@@ -68,6 +69,7 @@ const generalItems = [
 
 function MenuItems() {
   const SelectedClusterId = useAppState((state) => state.SelectedClusterId);
+  const t = useTranslations();
   const pathname = usePathname();
 
   return (
@@ -95,7 +97,7 @@ function MenuItems() {
             </div>
             <p className="text-white text-base truncate hidden lg:block">
               {" "}
-              {item.label}
+              {t(item.label)}
             </p>
           </div>
         </Link>
@@ -123,7 +125,7 @@ function MenuItems() {
                 />
               </div>
               <p className="text-white text-base truncate  hidden lg:block">
-                {item.label}
+              {t(item.label)}
               </p>
             </div>
           </Link>
@@ -153,7 +155,7 @@ function MenuItems() {
               </div>
               <p className="text-white text-base truncat hidden lg:block ">
                 {" "}
-                {item.label}
+                {t(item.label)}
               </p>
             </div>
           </Link>

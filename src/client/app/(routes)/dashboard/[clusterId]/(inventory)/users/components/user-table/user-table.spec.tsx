@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { UserTable } from "./user-table";
 
 import 'jest';
@@ -6,9 +6,7 @@ import assert from "assert";
 import { GenerateRabbitMqList } from "@/__mocks__/models-generator";
 import { RabbitMqUserTableColumnsDef } from "./columns";
 import { CheckboxProps } from "@radix-ui/react-checkbox";
-import { act } from "react-dom/test-utils";
 import { UserTableContext, UserTableContextProps } from "./user-table-context";
-
 
 jest.mock('next/navigation', () => ({
     useRouter: () => ({
@@ -16,6 +14,9 @@ jest.mock('next/navigation', () => ({
     }),
 }));
 
+jest.mock('next-intl',()=> ({
+    useTranslations: () => jest.fn()
+}))
 describe('UserTable render state', () => {
     let users = GenerateRabbitMqList(5,200);
     it('should render the component with correct users', async () => {

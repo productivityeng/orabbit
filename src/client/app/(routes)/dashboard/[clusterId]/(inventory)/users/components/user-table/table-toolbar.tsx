@@ -29,7 +29,7 @@ interface DataTableToolbarProps {
 export function DataTableToolbar({ table }: DataTableToolbarProps) {
   const {onSyncronizeUser,onRemoveUser,onImportUser,onLockUser} = useContext(UserTableContext);
   const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
-  const t = useTranslations("Dashboard.UserPage");
+  const t = useTranslations("Dashboard.UsersPage");
   
   let selectUser: RabbitMqUser | null = null;
   if (isRowSelected) {

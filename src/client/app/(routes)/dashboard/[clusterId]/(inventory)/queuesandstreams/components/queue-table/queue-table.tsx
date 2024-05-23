@@ -26,15 +26,11 @@ import { RabbitMqQueue } from "@/models/queues";
 interface QueueTableProps<TValue> {
   columns: ColumnDef<RabbitMqQueue, TValue>[];
   data: RabbitMqQueue[];
-  searchKey: string;
-  extraActions?: React.ReactElement;
 }
 
-export function QueueTable<TData, TValue>({
+export function QueueTable<TValue>({
   columns,
   data,
-  searchKey,
-  extraActions,
 }: QueueTableProps<TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState({});

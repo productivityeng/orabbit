@@ -29,13 +29,16 @@ import { z } from "zod";
 import { LockItemFormSchema } from "@/schemas/locker-item-schemas";
 import { GetActiveLocker } from "@/lib/utils";
 import Link from "next/link";
+import { useContext } from "react";
+import { QueueTableContext } from "./queue-table-context";
 
 interface DataTableToolbarProps {
   table: Table<RabbitMqQueue>;
 }
 
 export function DataTableToolbar({ table }: DataTableToolbarProps) {
-  const { clusterId } = useParams() as { clusterId: string };
+
+  const {onSyncronizeQueueClick,ClusterId,onRemoveQueueClick} = useContext(QueueTableContext)
   const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
   const router = useRouter();
 
@@ -44,27 +47,6 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
     selectedQueue = table.getFilteredSelectedRowModel().rows[0].original;
   }
 
-  const onSyncronizeQueueClick = async () => {
-    if (!selectedQueue) return;
-    let toastId = toast.loading(<p>Sincronizando filas selecionadas ...</p>);
-    try {
-      let result = await syncronizeQueueAction({
-        ClusterId: Number(selectedQueue.ClusterId),
-        QueueId: selectedQueue.ID,
-      });
-      if (!result.Result) {
-        toast.error(<p>Erro {result.ErrorMessage} ao sincronizar filas</p>, {
-          id: toastId,
-        });
-        return;
-      }
-      toast.success(<p>Filas sincronizadas</p>, { id: toastId });
-      router.refresh();
-      table.toggleAllRowsSelected(false);
-    } catch (error) {
-      toast.error(<p>Erro ao sincronizar filas</p>, { id: toastId });
-    }
-  };
 
   const onImportQueueClick = async () => {
     if (!selectedQueue) return;
@@ -89,27 +71,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
     }
   };
 
-  const onRemoveQueueClick = async () => {
-    if (!selectedQueue) return;
-    let toastId = toast.loading(<p>Removendo filas selecionadas ...</p>);
-    try {
-      let result = await removeQueueFromClusterAction(
-        selectedQueue.ClusterId,
-        selectedQueue.ID
-      );
-      if (!result.Result) {
-        toast.error(<p>Erro {result.ErrorMessage} ao remover filas</p>, {
-          id: toastId,
-        });
-        return;
-      }
-      toast.success(<p>Filas removidas</p>, { id: toastId });
-      router.refresh();
-      table.toggleAllRowsSelected(false);
-    } catch (error) {
-      toast.error(<p>Erro ao remover filas</p>, { id: toastId });
-    }
-  };
+ 
 
   const onLockItem = async (data: z.infer<typeof LockItemFormSchema>) => {
     if (!selectedQueue) return;
@@ -173,7 +135,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
           <FileStack className="w-4 h-4 mr-2" /> Importar
         </Button>
         <Button
-          onClick={onSyncronizeQueueClick}
+          onClick={() => selectedQueue && onSyncronizeQueueClick?.(selectedQueue)}
           size="sm"
           disabled={IsSyncronizeDisable}
           className="h-8"
@@ -181,7 +143,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
           <RefreshCcwDot className="w-4 h-4 mr-2" /> Sincronizar
         </Button>
         <Link
-          href={`/dashboard/${clusterId}/queuesandstreams/${selectedQueue?.ID}`}
+          href={`/dashboard/${ClusterId}/queuesandstreams/${selectedQueue?.ID}`}
         >
           <Button
             disabled={IsManageDisable}
@@ -201,7 +163,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
         />
 
         <Button
-          onClick={onRemoveQueueClick}
+          onClick={() => selectedQueue && onRemoveQueueClick?.(selectedQueue)}
           size="sm"
           variant="destructive"
           disabled={IsRemoveDisable}

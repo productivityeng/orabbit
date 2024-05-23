@@ -18,7 +18,6 @@ function UsersPage() {
   const {data,isLoading,refetch} = useQuery({
     queryKey: ["users", params.clusterId],
     queryFn: async () => fetchUsersFromCluster(Number(params.clusterId)),
-
   })
 
   if (isLoading) {

@@ -43,7 +43,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
   const { clusterId } = useParams() as { clusterId: string };
   const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
   const router = useRouter();
-  const t = useTranslations("Dashboard.UserPage");
+  const t = useTranslations("Dashboard.UsersPage");
 
   let selectedExchange: RabbitMqExchange | null = null;
   if (isRowSelected) {

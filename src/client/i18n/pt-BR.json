@@ -1,12 +1,32 @@
 {
   "Common":{
+    "User":"Usuarios",
+    "Queue":"Filas",
+    "Exchange":"Tópicos",
+    "VirtualHost":"Virtual Host",
+    "Drift":"Violações",
+    "Trail":"Trilha",
+    "Settings":"Configurações",
     "Language":"Idioma",
-    "LanguageChanged":"Idioma alterado com sucesso"
+    "LanguageChanged":"Idioma alterado com sucesso",
+    "Component":{
+      "Lock": "Bloquear",
+      "LockItemDialogDescription":"Bloquear o item para que alterações não sejam feitas por outros usuários",
+      "LockItemForm": {
+        "Reason":"Motivo",
+        "ExtendedReason":"Descreva o motivo para bloquear o item",
+        "Send":"Confirmar"
+      }
+    }
   },
   "Dashboard": {
     "UsersPage":{
       "Title":"Usuarios",
-      "SubTitle":"Lista de usuarios"
+      "SubTitle":"Lista de usuarios",
+      "Import":"Importar",
+      "Syncronize":"Sincronizar",
+      "Remove":"Remover",
+      "Queue":"Fila"
     }
   }
 }
