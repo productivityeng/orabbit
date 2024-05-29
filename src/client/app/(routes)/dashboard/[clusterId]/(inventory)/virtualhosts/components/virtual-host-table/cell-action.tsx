@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +11,7 @@ import { Edit, Files, RefreshCw, SettingsIcon } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { RabbitMqVirtualHost } from "@/models/virtualhosts";
+import { VirtualTableContext } from "./virtualhost-table-context";
 
 interface CellActionProps {
   data: RabbitMqVirtualHost;
@@ -21,10 +22,9 @@ function CellAction({ data }: CellActionProps) {
   const params = useParams();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { OnImportVirtualHostClick } = useContext(VirtualTableContext);
 
   const removeQueueFromCluster = async () => {};
-
-  const importQueueFromCluster = async () => {};
 
   async function syncronizeQueue() {
     router.refresh();
@@ -52,7 +52,7 @@ function CellAction({ data }: CellActionProps) {
           </DropdownMenuItem>
         )}
         {data.IsInCluster && !data.IsInDatabase && (
-          <DropdownMenuItem onClick={importQueueFromCluster}>
+          <DropdownMenuItem onClick={() => OnImportVirtualHostClick?.(data)}>
             <Files className="mr-2 h-4 w-4" /> Importar
           </DropdownMenuItem>
         )}

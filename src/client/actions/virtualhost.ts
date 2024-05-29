@@ -16,6 +16,42 @@ export async function fetchVirtualHosts(clusterId: number) {
   return finalResult;
 }
 
+/**
+ * Import a virtual host from a cluster
+ * @param clusterId Id of the cluster that the virtual host will be imported
+ * @param virtualHostName  Name of the virtual host that will be imported
+ * @returns
+ */
+export async function ImportVirtualHost(
+  clusterId: number,
+  virtualHostName: string
+): Promise<FrontResponse<RabbitMqVirtualHost | undefined>> {
+  let result = await fetch(
+    `${process.env
+      .PRIVATE_INVENTORY_ENDPOINT!}/${clusterId}/virtualhost/import`,
+    {
+      method: "POST",
+      cache: "no-store",
+      body: JSON.stringify({ Name: virtualHostName }),
+    }
+  );
+
+  if (result.status !== 201) {
+    return {
+      ErrorMessage: ((await result.json()) as { error: string }).error,
+      Result: undefined,
+    };
+  }
+
+  let payloadResult = await result.json();
+  let finalResult = payloadResult as RabbitMqVirtualHost;
+
+  return {
+    ErrorMessage: null,
+    Result: finalResult,
+  };
+}
+
 export async function removeVirtualHostAction(
   clusterId: number,
   virtualHostId: number

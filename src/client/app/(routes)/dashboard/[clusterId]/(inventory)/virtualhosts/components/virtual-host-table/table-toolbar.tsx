@@ -28,6 +28,8 @@ import {
   removeVirtualHostAction,
   syncronizeVirtualHostAction,
 } from "@/actions/virtualhost";
+import { useContext } from "react";
+import { VirtualTableContext } from "./virtualhost-table-context";
 
 interface DataTableToolbarProps {
   table: Table<RabbitMqVirtualHost>;
@@ -35,6 +37,7 @@ interface DataTableToolbarProps {
 
 export function DataTableToolbar({ table }: DataTableToolbarProps) {
   const { clusterId } = useParams() as { clusterId: string };
+  const { OnImportVirtualHostClick } = useContext(VirtualTableContext);
   const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
   const router = useRouter();
 
@@ -68,8 +71,6 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
       });
     }
   };
-
-  const onImportClick = async () => {};
 
   const onRemoveClick = async () => {
     if (!selectedVirtualHost) return;
@@ -142,7 +143,14 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
           }}
           className="h-8 w-[150px] md:w-[250px]"
         />
-        <Button size="sm" disabled={IsImporDisabled} onClick={onImportClick}>
+        <Button
+          size="sm"
+          disabled={IsImporDisabled}
+          onClick={() =>
+            selectedVirtualHost &&
+            OnImportVirtualHostClick?.(selectedVirtualHost)
+          }
+        >
           <FileStack className="w-4 h-4 mr-2" /> Importar
         </Button>
         <Button
