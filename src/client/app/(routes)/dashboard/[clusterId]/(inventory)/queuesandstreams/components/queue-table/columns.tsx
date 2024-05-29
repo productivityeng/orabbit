@@ -1,15 +1,11 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import CellAction from "./cell-action";
 import CellMaintening from "./cell-maintening";
 import CellArguments from "./cell-arguments";
 import { RabbitMqQueue } from "@/models/queues";
 import CellDurable from "./cell-durable";
 import { Checkbox } from "@/components/ui/checkbox";
-import { GetActiveLocker } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { LockIcon, UnlockIcon } from "lucide-react";
 import CellLocker from "./cell-locker";
 
 export const RabbitMqQueueColumn: ColumnDef<RabbitMqQueue>[] = [

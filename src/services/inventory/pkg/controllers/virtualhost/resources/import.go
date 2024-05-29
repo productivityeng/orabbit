@@ -74,7 +74,7 @@ func (controller VirtualHostControllerImpl) Import(c *gin.Context) {
 	},c)
 	
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error creating virtual host"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error trying to save imported virtualHost"})
 		return
 	}
 	c.JSON(http.StatusCreated, response)

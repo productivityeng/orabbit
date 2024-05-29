@@ -38,7 +38,7 @@ interface DataTableToolbarProps {
 
 export function DataTableToolbar({ table }: DataTableToolbarProps) {
 
-  const {onSyncronizeQueueClick,ClusterId,onRemoveQueueClick} = useContext(QueueTableContext)
+  const {onSyncronizeQueueClick,ClusterId,onRemoveQueueClick,onImportQueueClick} = useContext(QueueTableContext)
   const isRowSelected = table.getFilteredSelectedRowModel().rows.length > 0;
   const router = useRouter();
 
@@ -46,31 +46,6 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
   if (isRowSelected) {
     selectedQueue = table.getFilteredSelectedRowModel().rows[0].original;
   }
-
-
-  const onImportQueueClick = async () => {
-    if (!selectedQueue) return;
-    let toastId = toast.loading(<p>Importando filas selecionadas ...</p>);
-    try {
-      let result = await ImportQueueFromClusterAction(
-        selectedQueue.ClusterId,
-        selectedQueue.VHost,
-        selectedQueue.Name
-      );
-      if (result.Result) {
-        toast.success(<p>Filas importadas</p>, { id: toastId });
-        router.refresh();
-        table.toggleAllRowsSelected(false);
-      } else {
-        toast.error(<p>Erro ao importar fila: {result.ErrorMessage} </p>, {
-          id: toastId,
-        });
-      }
-    } catch (error) {
-      toast.error(<p>Erro ao importar filas</p>, { id: toastId });
-    }
-  };
-
  
 
   const onLockItem = async (data: z.infer<typeof LockItemFormSchema>) => {
@@ -130,7 +105,7 @@ export function DataTableToolbar({ table }: DataTableToolbarProps) {
         <Button
           size="sm"
           disabled={IsImporDisabled}
-          onClick={onImportQueueClick}
+          onClick={() => selectedQueue && onImportQueueClick?.(selectedQueue)}
         >
           <FileStack className="w-4 h-4 mr-2" /> Importar
         </Button>

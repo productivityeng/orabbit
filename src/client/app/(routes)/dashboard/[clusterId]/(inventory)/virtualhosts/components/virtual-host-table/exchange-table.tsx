@@ -33,7 +33,6 @@ export function VirtualHostsTable<TValue>({
   data,
 }: VirtualHostsTableProps<TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     data,

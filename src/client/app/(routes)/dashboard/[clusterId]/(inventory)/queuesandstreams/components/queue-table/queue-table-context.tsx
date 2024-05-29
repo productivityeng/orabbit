@@ -7,6 +7,7 @@ interface QueueTableContextProps {
     RemoveQueueHandle? : () =>{}
     onSyncronizeQueueClick?(queue: RabbitMqQueue): Promise<void>
     onRemoveQueueClick?(queue:RabbitMqQueue): Promise<void>
+    onImportQueueClick?(queue:RabbitMqQueue): Promise<void>
     ClusterId?: number
 }
 

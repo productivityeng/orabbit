@@ -34,7 +34,7 @@ model Cluster {
 // Represents a virtual host in RabbitMQ
 model VirtualHost {
     Id Int @id @default(autoincrement())
-    Name String @map("TX_NAME") @unique
+    Name String @map("TX_NAME") 
     Description String @map("TX_DESCRIPTION")
     DefaultQueueType QueueType @map("TY_DEFAULT_QUEUE_TYPE")
     Tags Json @map("JS_TAGS")
@@ -58,6 +58,7 @@ enum QueueType {
     classic
     quorum
     stream
+    undefined
 }
 
 // Represents a queue in RabbitMQ

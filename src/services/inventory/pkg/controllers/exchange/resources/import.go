@@ -42,7 +42,16 @@ func (ctrl *ExchangeController) ImportExchange(c *gin.Context)  {
 	err = functions.VerifyIfExchangesIsAlreadyInDatabase(ctrl.DependencyLocator.PrismaClient,requestBody.Name,c)
 	if err != nil { return }
 
-	virtualHost,err := ctrl.DependencyLocator.PrismaClient.VirtualHost.FindUnique(db.VirtualHost.Name.Equals(requestBody.VirtualHostName)).Exec(c)
+	virtualHost, err := ctrl.DependencyLocator.PrismaClient.VirtualHost.FindUnique(
+		db.VirtualHost.UniqueNameClusterid(
+			db.VirtualHostWithPrismaNameWhereParam(db.VirtualHost.Name.Set(requestBody.VirtualHostName)),
+			db.VirtualHostWithPrismaClusterIDWhereParam(db.VirtualHost.ClusterID.Equals(clusterId))),
+	).Exec(c)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to retrieve virtual host"})
+		return
+	}
 	if errors.Is(err, db.ErrNotFound) { 
 		c.JSON(http.StatusBadRequest, gin.H{"error": "VirtualHost not found"})
 		return 

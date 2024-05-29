@@ -1,5 +1,5 @@
 "use client";
-import { fetchQeueusFromCluster, removeQueueFromClusterAction, syncronizeQueueAction } from "@/actions/queue";
+import { ImportQueueFromClusterAction, fetchQeueusFromCluster, removeQueueFromClusterAction, syncronizeQueueAction } from "@/actions/queue";
 import React from "react";
 import _ from "lodash";
 import SimpleHeading from "@/components/Heading/SimpleHeading";
@@ -74,6 +74,28 @@ function QueuesPage() {
     }
   };
 
+  async function onImportQueueClick(queue:RabbitMqQueue){
+    if (!queue) return;
+    let toastId = toast.loading(<p>{t("Toast.Importing")}</p>);
+    try {
+      let result = await ImportQueueFromClusterAction(
+        queue.ClusterId,
+        queue.VHost,
+        queue.Name
+      );
+      if (result.Result) {
+        toast.success(<p>{t("Toast.ImportSuccess")}</p>, { id: toastId });
+        await refetch();
+      } else {
+        toast.error(<p>{t("Toast.ImportFail")}</p>, {
+          id: toastId,
+        });
+      }
+    } catch (error) {
+      toast.error(<p>{t("Toast.ImportFail")}</p>, { id: toastId });
+    }
+  };
+
   return (
     <div className="flex flex-col pt-5">
       <SimpleHeading
@@ -83,6 +105,7 @@ function QueuesPage() {
       <QueueTableContext.Provider value={{
         onSyncronizeQueueClick,
         onRemoveQueueClick,
+        onImportQueueClick,
         ClusterId: Number(params.clusterId)
       }} >
       <QueueTable
