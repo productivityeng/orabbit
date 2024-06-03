@@ -24,6 +24,7 @@ export const RabbitMqVirtualHostColumnDef: ColumnDef<RabbitMqVirtualHost>[] = [
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
+        data-testid={`virtual-host-table-checkbox-${row.original.Id}`}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
         className="translate-y-[2px]"

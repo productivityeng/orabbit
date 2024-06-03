@@ -20,21 +20,23 @@ interface LockItem {
   Lockers?: LockerModel[];
   Disabled: boolean;
   Label: string;
-  onLockItem: (data: z.infer<typeof LockItemFormSchema>) => Promise<void>;
+  onLockItem?: (
+    data: z.infer<typeof LockItemFormSchema>
+  ) => Promise<void> | void | null;
 }
 
 function LockItem({ Disabled, Label, onLockItem }: LockItem) {
   const [isDialogOpen, setDialogOpen] = useState(false);
 
   const [isMounted, setIsMounted] = useState(false);
-  const t  = useTranslations("Common.Component")
+  const t = useTranslations("Common.Component");
   useEffect(() => {
     setIsMounted(true);
   }, [isMounted]);
   if (!isMounted) return null;
 
   return (
-    <Dialog  open={isDialogOpen} onOpenChange={(open) => setDialogOpen(open)}>
+    <Dialog open={isDialogOpen} onOpenChange={(open) => setDialogOpen(open)}>
       <DialogTrigger asChild>
         <Button
           disabled={Disabled}
@@ -51,14 +53,16 @@ function LockItem({ Disabled, Label, onLockItem }: LockItem) {
       </DialogTrigger>
       <DialogContent data-testid="lock-item-dialog" className="min-w-max">
         <DialogHeader>
-          <DialogTitle>{t("Lock")} {Label}</DialogTitle>
+          <DialogTitle>
+            {t("Lock")} {Label}
+          </DialogTitle>
           <DialogDescription>
             {t("LockItemDialogDescription")}
           </DialogDescription>
         </DialogHeader>
         <LockItemForm
           onFormSubmit={async (data) => {
-            await onLockItem(data);
+            await onLockItem?.(data);
             setDialogOpen(false);
           }}
         />

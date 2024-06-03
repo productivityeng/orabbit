@@ -23,7 +23,15 @@ export default async function RootLayout({
     <html lang={locale}>
       <NextIntlClientProvider messages={messages}>
         <body className={cn(inter.className, "bg-white", "h-screen")}>
-          <Toaster position="top-center" />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 5000,
+              style: {
+                maxWidth: 500,
+              },
+            }}
+          />
           {children}
         </body>
       </NextIntlClientProvider>
